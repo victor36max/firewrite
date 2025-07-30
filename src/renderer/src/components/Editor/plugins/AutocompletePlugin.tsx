@@ -1,27 +1,60 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { $createAutocompleteNode } from '@renderer/nodes/AutocompleteNode'
+import { $createAutocompleteNode } from '@renderer/components/Editor/nodes/AutocompleteNode'
 import {
   $getNodeByKey,
   $getSelection,
+  $isParagraphNode,
   $isRangeSelection,
   $setSelection,
   COMMAND_PRIORITY_EDITOR,
   KEY_ARROW_RIGHT_COMMAND,
-  KEY_TAB_COMMAND
+  KEY_TAB_COMMAND,
+  LexicalNode
 } from 'lexical'
 import { useCallback, useEffect, useRef } from 'react'
 import { mergeRegister } from '@lexical/utils'
+import { useMutation } from '@tanstack/react-query'
+import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 
 const AUTOCOMPLETE_DELAY = 3000
+
+const findParentParagraphNodes = (
+  node: LexicalNode
+): { previous: string | null; current: string | null; next: string | null } => {
+  let previous: LexicalNode | null = null
+  let current: LexicalNode | null = node
+  let next: LexicalNode | null = null
+
+  while (current) {
+    if ($isParagraphNode(current)) {
+      previous = current.getPreviousSibling()
+      next = current.getNextSibling()
+      return {
+        previous: previous?.getTextContent() || null,
+        current: current.getTextContent(),
+        next: next?.getTextContent() || null
+      }
+    }
+
+    current = current.getParent()
+  }
+
+  return { previous: null, current: null, next: null }
+}
 
 export const AutocompletePlugin = (): null => {
   const [editor] = useLexicalComposerContext()
   const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const autocompleteTextRef = useRef('Hello')
   const autocompleteNodeKeyRef = useRef<string | null>(null)
+  const { mutate: genAutocomplete } = useMutation({
+    mutationFn: generateAutocompleteSuggestion,
+    onSuccess: (data) => {
+      showAutocomplete(data)
+    }
+  })
 
   const showAutocomplete = useCallback(
-    (onShow?: () => void) => {
+    (text: string) => {
       if (autocompleteNodeKeyRef.current) return
       editor.update(
         () => {
@@ -30,19 +63,8 @@ export const AutocompletePlugin = (): null => {
           const selectionNode = $getNodeByKey(selection.anchor.key)
           if (!selectionNode) return
 
-          // If the selection is not at the end of the text node, don't show the autocomplete
-          if (selectionNode.getType() === 'text') {
-            const textContent = selectionNode.getTextContent()
-
-            if (selection.anchor.offset !== textContent.length) {
-              return
-            }
-          }
-
-          onShow?.()
-
           const selectionClone = selection.clone()
-          const node = $createAutocompleteNode(autocompleteTextRef.current, 'autocomplete')
+          const node = $createAutocompleteNode(text, 'autocomplete')
           const nodeKey = node.getKey()
           autocompleteNodeKeyRef.current = nodeKey
           selection.insertNodes([node])
@@ -74,9 +96,13 @@ export const AutocompletePlugin = (): null => {
   const commitAutocomplete = useCallback(() => {
     editor.update(
       () => {
+        if (!autocompleteNodeKeyRef.current) return
         const selection = $getSelection()
-        if (selection && autocompleteTextRef.current) {
-          selection.insertText(autocompleteTextRef.current)
+        const node = $getNodeByKey(autocompleteNodeKeyRef.current)
+        if (!node) return
+        const text = node.getTextContent()
+        if (selection && text) {
+          selection.insertText(text)
         }
       },
       {
@@ -84,6 +110,35 @@ export const AutocompletePlugin = (): null => {
       }
     )
   }, [editor])
+
+  const getTextAndGenerateAutocomplete = useCallback(() => {
+    editor.read(() => {
+      const selection = $getSelection()
+      if (!selection || !$isRangeSelection(selection)) return
+      const selectionNode = $getNodeByKey(selection.anchor.key)
+      if (!selectionNode) return
+
+      let selectionTextContent = ''
+      // If the selection is not at the end of the text node, don't gen autocomplete
+      if (selectionNode.getType() === 'text') {
+        selectionTextContent = selectionNode.getTextContent()
+
+        if (selection.anchor.offset !== selectionTextContent.length) {
+          return
+        }
+      }
+
+      const { previous, current, next } = findParentParagraphNodes(selectionNode)
+
+      if (!previous && !current && !next) return
+
+      genAutocomplete({
+        previous,
+        current,
+        next
+      })
+    })
+  }, [editor, genAutocomplete])
 
   useEffect(() => {
     return mergeRegister(
@@ -99,7 +154,7 @@ export const AutocompletePlugin = (): null => {
           clearTimeout(autocompleteTimeoutRef.current)
         }
         autocompleteTimeoutRef.current = setTimeout(() => {
-          showAutocomplete()
+          getTextAndGenerateAutocomplete()
         }, AUTOCOMPLETE_DELAY)
       }),
 
@@ -112,7 +167,7 @@ export const AutocompletePlugin = (): null => {
               clearTimeout(autocompleteTimeoutRef.current)
             }
 
-            showAutocomplete()
+            getTextAndGenerateAutocomplete()
             return false
           }
 
@@ -129,9 +184,7 @@ export const AutocompletePlugin = (): null => {
               clearTimeout(autocompleteTimeoutRef.current)
             }
 
-            showAutocomplete(() => {
-              event.preventDefault()
-            })
+            getTextAndGenerateAutocomplete()
             return false
           }
 
@@ -142,7 +195,13 @@ export const AutocompletePlugin = (): null => {
         COMMAND_PRIORITY_EDITOR
       )
     )
-  }, [commitAutocomplete, editor, removeAutocomplete, showAutocomplete])
+  }, [
+    commitAutocomplete,
+    editor,
+    getTextAndGenerateAutocomplete,
+    removeAutocomplete,
+    showAutocomplete
+  ])
 
   return null
 }

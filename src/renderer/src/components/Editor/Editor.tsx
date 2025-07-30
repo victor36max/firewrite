@@ -14,11 +14,12 @@ import { CodeNode } from '@lexical/code'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
-import { AutocompletePlugin } from './AutocompletePlugin'
-import { AutocompleteNode } from '@renderer/nodes/AutocompleteNode'
-import TreeViewPlugin from './TreeViewPlugin'
+import { AutocompletePlugin } from './plugins/AutocompletePlugin'
+import { AutocompleteNode } from '@renderer/components/Editor/nodes/AutocompleteNode'
+import TreeViewPlugin from './plugins/TreeViewPlugin'
+import { SlashMenuPlugin } from './plugins/SlashMenuPlugin'
 
-export const MarkdownEditor = (): React.JSX.Element => {
+export const Editor = (): React.JSX.Element => {
   return (
     <div className="prose flex-1 flex flex-col">
       <LexicalComposer
@@ -65,6 +66,7 @@ export const MarkdownEditor = (): React.JSX.Element => {
         <AutocompletePlugin />
         <TabIndentationPlugin />
         <TreeViewPlugin />
+        <SlashMenuPlugin />
       </LexicalComposer>
     </div>
   )
