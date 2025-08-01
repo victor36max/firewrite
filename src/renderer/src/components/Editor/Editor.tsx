@@ -18,17 +18,20 @@ import { AutocompletePlugin } from './plugins/AutocompletePlugin'
 import { AutocompleteNode } from '@renderer/components/Editor/nodes/AutocompleteNode'
 // import TreeViewPlugin from './plugins/TreeViewPlugin'
 import { SlashMenuPlugin } from './plugins/SlashMenuPlugin'
-import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
-import { useNoteContentQuery } from '@renderer/hooks/queries/useNoteContentQuery'
-import { SavePlugin } from './plugins/SavePlugin'
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
+import { useCurrentNoteContent } from '@renderer/hooks/useCurrentNoteContent'
+import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
+import { useDebouncedCallback } from 'use-debounce'
+import { EditorState } from 'lexical'
 
 export const Editor = (): React.JSX.Element | null => {
-  const { currentNoteId } = useCurrentNoteIdStore()
-  const { data: noteContent } = useNoteContentQuery(currentNoteId || '', {
-    enabled: !!currentNoteId
-  })
+  const noteContent = useCurrentNoteContent()
+  const updateNote = useUpdateCurrentNote()
+  const autoSave = useDebouncedCallback((editorState: EditorState) => {
+    updateNote({ content: JSON.stringify(editorState.toJSON()) })
+  }, 1000)
 
-  if (!currentNoteId || !noteContent) {
+  if (!noteContent) {
     return null
   }
 
@@ -77,7 +80,7 @@ export const Editor = (): React.JSX.Element | null => {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
-        <SavePlugin />
+        <OnChangePlugin onChange={autoSave} />
         <HistoryPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <ListPlugin hasStrictIndent />

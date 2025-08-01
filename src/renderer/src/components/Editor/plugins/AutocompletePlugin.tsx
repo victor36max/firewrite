@@ -3,8 +3,8 @@ import { $createAutocompleteNode } from '@renderer/components/Editor/nodes/Autoc
 import {
   $getNodeByKey,
   $getSelection,
-  $isParagraphNode,
   $isRangeSelection,
+  $isRootNode,
   $setSelection,
   COMMAND_PRIORITY_EDITOR,
   KEY_ARROW_RIGHT_COMMAND,
@@ -15,10 +15,11 @@ import { useCallback, useEffect, useRef } from 'react'
 import { mergeRegister } from '@lexical/utils'
 import { useMutation } from '@tanstack/react-query'
 import { generateAutocompleteSuggestion } from '@renderer/services/ai'
+import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 
 const AUTOCOMPLETE_DELAY = 3000
 
-const findParentParagraphNodes = (
+const findTopLevelSiblingNodes = (
   node: LexicalNode
 ): { previous: string | null; current: string | null; next: string | null } => {
   let previous: LexicalNode | null = null
@@ -26,17 +27,30 @@ const findParentParagraphNodes = (
   let next: LexicalNode | null = null
 
   while (current) {
-    if ($isParagraphNode(current)) {
+    const parent = current.getParent()
+    if ($isRootNode(parent)) {
       previous = current.getPreviousSibling()
+      let prevTextContent = previous?.getTextContent() || null
+      while (previous && !prevTextContent) {
+        previous = previous?.getPreviousSibling()
+        prevTextContent = previous?.getTextContent() || null
+      }
+
       next = current.getNextSibling()
+      let nextTextContent = next?.getTextContent() || null
+      while (next && !nextTextContent) {
+        next = next?.getNextSibling()
+        nextTextContent = next?.getTextContent() || null
+      }
+
       return {
-        previous: previous?.getTextContent() || null,
+        previous: prevTextContent,
         current: current.getTextContent(),
-        next: next?.getTextContent() || null
+        next: nextTextContent
       }
     }
 
-    current = current.getParent()
+    current = parent
   }
 
   return { previous: null, current: null, next: null }
@@ -46,6 +60,7 @@ export const AutocompletePlugin = (): null => {
   const [editor] = useLexicalComposerContext()
   const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const autocompleteNodeKeyRef = useRef<string | null>(null)
+  const note = useCurrentNote()
   const { mutate: genAutocomplete } = useMutation({
     mutationFn: generateAutocompleteSuggestion,
     onSuccess: (data) => {
@@ -128,17 +143,18 @@ export const AutocompletePlugin = (): null => {
         }
       }
 
-      const { previous, current, next } = findParentParagraphNodes(selectionNode)
+      const { previous, current, next } = findTopLevelSiblingNodes(selectionNode)
 
       if (!previous && !current && !next) return
 
       genAutocomplete({
+        title: note?.title || '',
         previous,
         current,
         next
       })
     })
-  }, [editor, genAutocomplete])
+  }, [editor, genAutocomplete, note?.title])
 
   useEffect(() => {
     return mergeRegister(

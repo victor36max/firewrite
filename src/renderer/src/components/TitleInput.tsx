@@ -1,26 +1,22 @@
-import { useUpdateNoteMutation } from '@renderer/hooks/mutations/useUpdateNoteMutation'
-import { useNoteQuery } from '@renderer/hooks/queries/useNoteQuery'
-import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
+import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
+import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
 
 export const TitleInput = (): React.JSX.Element | null => {
-  const { currentNoteId } = useCurrentNoteIdStore()
-  const { data: note } = useNoteQuery(currentNoteId || '', {
-    enabled: !!currentNoteId
-  })
+  const note = useCurrentNote()
 
-  const { mutate: updateNote } = useUpdateNoteMutation()
+  const updateNote = useUpdateCurrentNote()
 
-  if (!currentNoteId || !note) {
+  if (!note) {
     return null
   }
 
   return (
     <input
       type="text"
-      className="w-full h-10 text-2xl font-bold"
+      className="w-full h-10 text-2xl font-bold outline-none"
       defaultValue={note.title}
       placeholder="Title"
-      onBlur={(e) => updateNote({ id: currentNoteId, title: e.target.value })}
+      onBlur={(e) => updateNote({ title: e.target.value })}
     />
   )
 }

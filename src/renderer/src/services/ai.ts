@@ -8,10 +8,12 @@ const azure = createAzure({
 })
 
 export const generateAutocompleteSuggestion = async ({
+  title,
   previous,
   current,
   next
 }: {
+  title: string
   previous: string | null
   current: string | null
   next: string | null
@@ -23,7 +25,8 @@ You are a writing assistant. You are given a text and you need to autocomplete t
 If the sentence is not complete, you need to return the text needed to complete the sentence.
 Otherwise, return what you think is the best for the next sentence.
 
-You are given the ${[previous && 'previous', next && 'next'].filter(Boolean).join(' and ')} paragraph as your context.
+You are given the title, ${[previous && 'previous', next && 'next'].filter(Boolean).join(' and ')} paragraph as your context.
+<title>${title}</title>
 ${previous ? `<previous>${previous}</previous>` : ''}
 ${next ? `<next>${next}</next>` : ''}
 

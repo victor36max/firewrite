@@ -7,11 +7,13 @@ function App(): React.JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-row w-screen h-screen">
-        <div className="w-[300px] h-screen sticky top-0 border-r border-gray-200">
+        <div className="w-[300px] h-screen sticky top-0 border-r border-gray-200 overflow-y-auto">
           <NotesMenu />
         </div>
-        <div className="p-10 mx-auto max-w-screen-lg flex flex-col min-h-screen flex-1">
-          <NoteEditor />
+        <div className="flex-1 py-10 px-6 min-h-screen flex">
+          <div className="max-w-screen-sm flex flex-col flex-1 mx-auto">
+            <NoteEditor />
+          </div>
         </div>
       </div>
     </QueryClientProvider>

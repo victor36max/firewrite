@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export const useCurrentNoteIdStore = create<{
   currentNoteId: string | null
-  setCurrentNoteId: (id: string) => void
+  setCurrentNoteId: (id: string | null) => void
 }>()(
   persist(
     (set) => ({

@@ -6,13 +6,13 @@ export const useUpdateNoteMutation = (): UseMutationResult<void, Error, UpdateNo
   return useMutation({
     mutationFn: updateNote,
     onSuccess: (_, payload) => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
+      queryClient.refetchQueries({ queryKey: ['notes'] })
       if (payload.title) {
-        queryClient.invalidateQueries({ queryKey: ['note', payload.id] })
+        queryClient.refetchQueries({ queryKey: ['note', payload.id] })
       }
 
       if (payload.content) {
-        queryClient.invalidateQueries({ queryKey: ['note-content', payload.id] })
+        queryClient.refetchQueries({ queryKey: ['note-content', payload.id] })
       }
     }
   })
