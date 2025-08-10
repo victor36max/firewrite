@@ -2,13 +2,19 @@ import * as ai from 'ai'
 import * as tavily from './tavily'
 import { createAzure } from '@ai-sdk/azure'
 import { z } from 'zod'
+import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 
-const azure = createAzure({
-  apiKey: import.meta.env.PUBLIC_AZURE_API_KEY,
-  resourceName: import.meta.env.PUBLIC_AZURE_RESOURCE_NAME
-})
+const getModel = () => {
+  const { azureApiKey, azureResourceName } = useSettingsStore.getState()
+  if (azureApiKey && azureResourceName) {
+    return createAzure({
+      apiKey: azureApiKey,
+      resourceName: azureResourceName
+    })('gpt-4o-mini')
+  }
 
-const model = azure('gpt-4o-mini')
+  return null
+}
 
 export const generateAutocompleteSuggestion = async ({
   title,
@@ -21,6 +27,11 @@ export const generateAutocompleteSuggestion = async ({
   current: string | null
   next: string | null
 }): Promise<string> => {
+  const model = getModel()
+  if (!model) {
+    throw new Error('No model found')
+  }
+
   const result = await ai.generateText({
     model,
     system: `
@@ -60,6 +71,11 @@ export const generateResearch = async ({
   content: string
   selection: string | null
 }): Promise<void> => {
+  const model = getModel()
+  if (!model) {
+    throw new Error('No model found')
+  }
+
   const {
     object: { queries }
   } = await ai.generateObject({
@@ -114,6 +130,11 @@ export const streamChatResponse = async ({
     content: string
   }[]
 }) => {
+  const model = getModel()
+  if (!model) {
+    throw new Error('No model found')
+  }
+
   return ai.streamText({
     model,
     system: `

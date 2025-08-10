@@ -1,3 +1,5 @@
+import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
+
 type TavilySearchResult = {
   results: {
     title: string
@@ -11,6 +13,11 @@ type TavilySearchParams = {
 }
 
 export const search = async (params: TavilySearchParams): Promise<TavilySearchResult> => {
+  const { tavilyApiKey } = useSettingsStore.getState()
+  if (!tavilyApiKey) {
+    throw new Error('Tavily API key is not set')
+  }
+
   const result = await fetch(`https://api.tavily.com/search`, {
     method: 'POST',
     body: JSON.stringify({
@@ -19,7 +26,7 @@ export const search = async (params: TavilySearchParams): Promise<TavilySearchRe
     }),
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.PUBLIC_TAVILY_API_KEY}`
+      Authorization: `Bearer ${tavilyApiKey}`
     }
   })
   return (await result.json()) as TavilySearchResult

@@ -5,6 +5,7 @@ import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdSt
 import { Note } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
 import { useCallback, useEffect, useRef } from 'react'
+import { SettingsDialog } from './SettingsDialog'
 
 export const NotesMenu = (): React.JSX.Element => {
   const { data: notes } = useNotesQuery()
@@ -72,7 +73,8 @@ export const NotesMenu = (): React.JSX.Element => {
 
   return (
     <div className="py-4">
-      <div className="py-2 px-4 flex flex-row justify-end items-center">
+      <div className="py-2 px-4 flex flex-row justify-between items-center">
+        <SettingsDialog />
         <button
           type="button"
           className="bg-blue-500 text-white px-4 py-2 rounded-md"

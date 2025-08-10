@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Chat } from './Chat'
 
 interface AppLayoutProps {
-  sideBar: React.JSX.Element
+  leftSideBar: React.JSX.Element
+  rightSideBar: React.JSX.Element
   children: React.JSX.Element
 }
 
-export const AppLayout = ({ sideBar, children }: AppLayoutProps): React.JSX.Element => {
+export const AppLayout = ({
+  leftSideBar,
+  rightSideBar,
+  children
+}: AppLayoutProps): React.JSX.Element => {
   const [sideMenuWidth, setSideMenuWidth] = useState(300)
   const [chatWidth, setChatWidth] = useState(300)
   const [isDraggingSideMenuHandle, setIsDraggingSideMenuHandle] = useState(false)
@@ -92,7 +96,7 @@ export const AppLayout = ({ sideBar, children }: AppLayoutProps): React.JSX.Elem
         }}
         className="sticky top-0 bottom-0 overflow-y-auto"
       >
-        {sideBar}
+        {leftSideBar}
       </div>
       {renderSideMenuHandle()}
       <div className="flex-1 h-full overflow-y-auto">{children}</div>
@@ -103,7 +107,7 @@ export const AppLayout = ({ sideBar, children }: AppLayoutProps): React.JSX.Elem
         }}
         className="sticky top-0 bottom-0 overflow-y-auto"
       >
-        <Chat />
+        {rightSideBar}
       </div>
     </div>
   )
