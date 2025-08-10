@@ -1,12 +1,11 @@
-import { Note } from '@renderer/services/idb'
 import { useCurrentNoteIdStore } from './stores/useCurrentNodeIdStore'
-import { useNoteQuery } from './queries/useNoteQuery'
+import { useNoteQuery, UseNoteQueryOptions } from './queries/useNoteQuery'
+import { Note } from '@renderer/services/idb'
 
-export const useCurrentNote = (): Note | undefined => {
+export const useCurrentNote = <T = Note>(options?: Omit<UseNoteQueryOptions<T>, 'enabled'>) => {
   const { currentNoteId } = useCurrentNoteIdStore()
-  const { data: note } = useNoteQuery(currentNoteId || '', {
-    enabled: !!currentNoteId
+  return useNoteQuery(currentNoteId || '', {
+    enabled: !!currentNoteId,
+    ...options
   })
-
-  return note
 }

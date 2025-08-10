@@ -1,11 +1,14 @@
 import * as ai from 'ai'
+import * as tavily from './tavily'
 import { createAzure } from '@ai-sdk/azure'
+import { z } from 'zod'
 
 const azure = createAzure({
   apiKey: import.meta.env.PUBLIC_AZURE_API_KEY,
-  resourceName: import.meta.env.PUBLIC_AZURE_RESOURCE_NAME,
-  apiVersion: import.meta.env.PUBLIC_AZURE_API_VERSION
+  resourceName: import.meta.env.PUBLIC_AZURE_RESOURCE_NAME
 })
+
+const model = azure('gpt-4o-mini')
 
 export const generateAutocompleteSuggestion = async ({
   title,
@@ -19,7 +22,7 @@ export const generateAutocompleteSuggestion = async ({
   next: string | null
 }): Promise<string> => {
   const result = await ai.generateText({
-    model: azure('gpt-4o-mini'),
+    model,
     system: `
 You are a writing assistant. You are given a text and you need to autocomplete the text.
 If the sentence is not complete, you need to return the text needed to complete the sentence.
@@ -46,4 +49,95 @@ Output: "I'm fine, thank you!"
   })
 
   return result.text
+}
+
+export const generateResearch = async ({
+  title,
+  content,
+  selection
+}: {
+  title: string
+  content: string
+  selection: string | null
+}): Promise<void> => {
+  const {
+    object: { queries }
+  } = await ai.generateObject({
+    model,
+    schema: z.object({
+      queries: z.array(z.string())
+    }),
+    system: `
+  You are a research assistant of a writer. You are given a title, content and selection.
+  You need to generate a list of 5 queries that we will put in a search engine to find the
+  best information in order to expand and/or improve the content.
+  `,
+    prompt: `
+          <title>${title}</title>
+          <content>${content}</content>
+          <selection>${selection}</selection>
+          `
+  })
+
+  const contentList = (await Promise.all(queries.map((query) => tavily.search({ query }))))
+    .flatMap((result) => result.results)
+    .map((result) => result.content)
+
+  const researchReport = await ai.generateText({
+    model,
+    system: `
+    You are a research assistant of a writer. 
+    You are given a title, content and selection.
+    Also, you are given a list of content that we found in a search engine.
+    You need to produce a research report that will be used to expand and/or improve the content.
+    `,
+    prompt: `
+    <title>${title}</title>
+    <content>${content}</content>
+    <selection>${selection}</selection>
+    <contentList>${contentList.join('\n')}</contentList>
+    `
+  })
+
+  console.log(researchReport.text)
+}
+
+export const streamChatResponse = async ({
+  title,
+  content,
+  messages
+}: {
+  title: string
+  content: string
+  messages: {
+    role: 'user' | 'assistant'
+    content: string
+  }[]
+}) => {
+  return ai.streamText({
+    model,
+    system: `
+     You are a writer assistant. You are given a current title, content and the writer's query.
+     You need to answer the query based on the title and content.
+     If you need to do research in order to answer the query, you can use the web search tool.
+
+     <title>${title}</title>
+     <content>${content}</content>
+    `,
+    messages,
+    tools: {
+      webSearch: ai.tool({
+        description: 'Search the web for information',
+        inputSchema: z.object({
+          query: z.string(),
+          maxResults: z.number().optional()
+        }),
+        execute: async (params) => {
+          const result = await tavily.search(params)
+          return result.results.map((result) => result.content).join('\n')
+        }
+      })
+    },
+    stopWhen: ai.stepCountIs(10)
+  })
 }

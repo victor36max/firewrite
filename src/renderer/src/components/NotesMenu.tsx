@@ -2,12 +2,14 @@ import { useCreateNoteMutation } from '@renderer/hooks/mutations/useCreateNoteMu
 import { useDeleteNoteMutation } from '@renderer/hooks/mutations/useDeleteNoteMutation'
 import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
+import { Note } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 export const NotesMenu = (): React.JSX.Element => {
   const { data: notes } = useNotesQuery()
   const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
+  const menuItemRefs = useRef<Record<string, HTMLButtonElement>>({})
   const { mutate: createNote } = useCreateNoteMutation({
     onSuccess: (id) => {
       setCurrentNoteId(id)
@@ -25,6 +27,49 @@ export const NotesMenu = (): React.JSX.Element => {
     }
   }, [notes, createNote])
 
+  const renderNoteMenuItem = useCallback(
+    (note: Note, index: number): React.JSX.Element => {
+      return (
+        <button
+          ref={(el) => {
+            if (el) {
+              menuItemRefs.current[note.id] = el
+            }
+          }}
+          type="button"
+          className={cn(
+            'w-full py-2 px-4 text-left cursor-pointer',
+            currentNoteId === note.id && 'bg-gray-200'
+          )}
+          key={note.id}
+          onClick={() => setCurrentNoteId(note.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+              deleteNote(note.id)
+            }
+
+            if (e.key === 'ArrowUp' && notes) {
+              if (index > 0) {
+                const previousNoteId = notes[index - 1].id
+                menuItemRefs.current[previousNoteId].focus()
+              }
+            }
+
+            if (e.key === 'ArrowDown' && notes) {
+              if (index < notes.length - 1) {
+                const nextNoteId = notes[index + 1].id
+                menuItemRefs.current[nextNoteId].focus()
+              }
+            }
+          }}
+        >
+          {note.title || 'New Note'}
+        </button>
+      )
+    },
+    [notes, currentNoteId, setCurrentNoteId, deleteNote]
+  )
+
   return (
     <div className="py-4">
       <div className="py-2 px-4 flex flex-row justify-end items-center">
@@ -36,21 +81,7 @@ export const NotesMenu = (): React.JSX.Element => {
           New
         </button>
       </div>
-      {notes?.map((note) => (
-        <button
-          type="button"
-          className={cn('w-full py-2 px-4 text-left', currentNoteId === note.id && 'bg-gray-200')}
-          key={note.id}
-          onClick={() => setCurrentNoteId(note.id)}
-          onKeyDown={(e) => {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-              deleteNote(note.id)
-            }
-          }}
-        >
-          {note.title || 'New Note'}
-        </button>
-      ))}
+      {notes?.map(renderNoteMenuItem)}
     </div>
   )
 }

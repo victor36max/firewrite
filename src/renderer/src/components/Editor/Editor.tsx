@@ -23,51 +23,58 @@ import { useCurrentNoteContent } from '@renderer/hooks/useCurrentNoteContent'
 import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
 import { useDebouncedCallback } from 'use-debounce'
 import { EditorState } from 'lexical'
+import { useState } from 'react'
+import { SelectionMenuPlugin } from './plugins/SelectionMenuPlugin'
+import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin'
+import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
 
 export const Editor = (): React.JSX.Element | null => {
-  const noteContent = useCurrentNoteContent()
+  const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
+  const { data: noteContent } = useCurrentNoteContent()
   const updateNote = useUpdateCurrentNote()
   const autoSave = useDebouncedCallback((editorState: EditorState) => {
     updateNote({ content: JSON.stringify(editorState.toJSON()) })
   }, 1000)
+  const setEditor = useLexicalEditorStore((store) => store.setEditor)
 
   if (!noteContent) {
     return null
   }
 
   return (
-    <div className="prose flex-1 flex flex-col relative">
-      <LexicalComposer
-        initialConfig={{
-          namespace: 'MyEditor',
-          nodes: [
-            LinkNode,
-            AutoLinkNode,
-            ListNode,
-            ListItemNode,
-            TableNode,
-            TableCellNode,
-            TableRowNode,
-            HorizontalRuleNode,
-            CodeNode,
-            HeadingNode,
-            LinkNode,
-            ListNode,
-            ListItemNode,
-            QuoteNode,
-            AutocompleteNode
-          ],
-          theme: {
-            autocomplete: 'text-gray-400'
-          },
-          editorState: noteContent.content || undefined,
-          onError: (error) => {
-            console.error(error)
-          }
-        }}
-      >
-        <RichTextPlugin
-          contentEditable={
+    <LexicalComposer
+      initialConfig={{
+        namespace: 'firewrite-editor',
+        nodes: [
+          LinkNode,
+          AutoLinkNode,
+          ListNode,
+          ListItemNode,
+          TableNode,
+          TableCellNode,
+          TableRowNode,
+          HorizontalRuleNode,
+          CodeNode,
+          HeadingNode,
+          LinkNode,
+          ListNode,
+          ListItemNode,
+          QuoteNode,
+          AutocompleteNode
+        ],
+        theme: {
+          autocomplete: 'text-gray-400'
+        },
+        editorState: noteContent.content || undefined,
+        onError: (error) => {
+          console.error(error)
+        }
+      }}
+    >
+      <EditorRefPlugin editorRef={setEditor} />
+      <RichTextPlugin
+        contentEditable={
+          <div className="prose flex-1 flex flex-col relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
               className="focus:outline-none flex-1"
@@ -77,18 +84,19 @@ export const Editor = (): React.JSX.Element | null => {
                 </p>
               )}
             />
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <OnChangePlugin onChange={autoSave} />
-        <HistoryPlugin />
-        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        <ListPlugin hasStrictIndent />
-        <AutocompletePlugin />
-        <TabIndentationPlugin />
-        {/* <TreeViewPlugin /> */}
-        <SlashMenuPlugin />
-      </LexicalComposer>
-    </div>
+          </div>
+        }
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+      <OnChangePlugin onChange={autoSave} />
+      <HistoryPlugin />
+      <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+      <ListPlugin hasStrictIndent />
+      <TabIndentationPlugin />
+      {/* <TreeViewPlugin /> */}
+      <SlashMenuPlugin />
+      <AutocompletePlugin />
+      <SelectionMenuPlugin anchorElement={anchorElement} />
+    </LexicalComposer>
   )
 }

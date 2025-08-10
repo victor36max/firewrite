@@ -2,11 +2,13 @@ import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
 
 export const TitleInput = (): React.JSX.Element | null => {
-  const note = useCurrentNote()
+  const { data: title } = useCurrentNote({
+    select: (note) => note.title
+  })
 
   const updateNote = useUpdateCurrentNote()
 
-  if (!note) {
+  if (title === undefined) {
     return null
   }
 
@@ -14,7 +16,7 @@ export const TitleInput = (): React.JSX.Element | null => {
     <input
       type="text"
       className="w-full h-10 text-2xl font-bold outline-none"
-      defaultValue={note.title}
+      defaultValue={title}
       placeholder="Title"
       onBlur={(e) => updateNote({ title: e.target.value })}
     />

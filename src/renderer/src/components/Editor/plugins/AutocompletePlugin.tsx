@@ -6,7 +6,7 @@ import {
   $isRangeSelection,
   $isRootNode,
   $setSelection,
-  COMMAND_PRIORITY_EDITOR,
+  COMMAND_PRIORITY_LOW,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_TAB_COMMAND,
   LexicalNode
@@ -18,6 +18,11 @@ import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 
 const AUTOCOMPLETE_DELAY = 3000
+
+// This UUID is to make sure that we only display autocomplete suggestions for the current app lifecycle
+// It doesn't load any previously persisted autocomplete suggestions
+// eslint-disable-next-line react-refresh/only-export-components
+export const AUTOCOMPLETE_UUID = crypto.randomUUID()
 
 const findTopLevelSiblingNodes = (
   node: LexicalNode
@@ -60,7 +65,7 @@ export const AutocompletePlugin = (): null => {
   const [editor] = useLexicalComposerContext()
   const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const autocompleteNodeKeyRef = useRef<string | null>(null)
-  const note = useCurrentNote()
+  const { data: note } = useCurrentNote()
   const { mutate: genAutocomplete } = useMutation({
     mutationFn: generateAutocompleteSuggestion,
     onSuccess: (data) => {
@@ -79,7 +84,7 @@ export const AutocompletePlugin = (): null => {
           if (!selectionNode) return
 
           const selectionClone = selection.clone()
-          const node = $createAutocompleteNode(text, 'autocomplete')
+          const node = $createAutocompleteNode(text, AUTOCOMPLETE_UUID)
           const nodeKey = node.getKey()
           autocompleteNodeKeyRef.current = nodeKey
           selection.insertNodes([node])
@@ -177,7 +182,6 @@ export const AutocompletePlugin = (): null => {
       editor.registerCommand(
         KEY_TAB_COMMAND,
         (event: KeyboardEvent) => {
-          event.preventDefault()
           if (!autocompleteNodeKeyRef.current) {
             if (autocompleteTimeoutRef.current) {
               clearTimeout(autocompleteTimeoutRef.current)
@@ -187,10 +191,11 @@ export const AutocompletePlugin = (): null => {
             return false
           }
 
+          event.preventDefault()
           commitAutocomplete()
           return true
         },
-        COMMAND_PRIORITY_EDITOR
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         KEY_ARROW_RIGHT_COMMAND,
@@ -208,7 +213,7 @@ export const AutocompletePlugin = (): null => {
           commitAutocomplete()
           return true
         },
-        COMMAND_PRIORITY_EDITOR
+        COMMAND_PRIORITY_LOW
       )
     )
   }, [

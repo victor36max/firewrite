@@ -1,6 +1,7 @@
 import type { DOMExportOutput, EditorConfig, NodeKey, SerializedTextNode, Spread } from 'lexical'
 
 import { TextNode } from 'lexical'
+import { AUTOCOMPLETE_UUID } from '../plugins/AutocompletePlugin'
 
 export type SerializedAutocompleteNode = Spread<
   {
@@ -66,6 +67,9 @@ export class AutocompleteNode extends TextNode {
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config)
     dom.classList.add(config.theme.autocomplete)
+    if (this.__uuid !== AUTOCOMPLETE_UUID) {
+      dom.style.display = 'none'
+    }
     return dom
   }
 }
