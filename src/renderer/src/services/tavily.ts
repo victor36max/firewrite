@@ -4,6 +4,7 @@ type TavilySearchResult = {
   results: {
     title: string
     content: string
+    url: string
   }[]
 }
 

@@ -77,9 +77,9 @@ export const Editor = (): React.JSX.Element | null => {
           <div className="prose flex-1 flex flex-col relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
-              className="focus:outline-none flex-1"
+              className="focus:outline-none flex-1 caret-primary"
               placeholder={() => (
-                <p className="text-gray-400 absolute top-0 left-0 pointer-events-none">
+                <p className="text-muted-foreground absolute top-0 left-0 pointer-events-none">
                   Enter some text...
                 </p>
               )}

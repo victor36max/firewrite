@@ -1,2 +1,148 @@
 @import 'tailwindcss';
-@plugin '@tailwindcss/typography';
+/* @plugin '@tailwindcss/typography'; */
+
+@theme {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-serif: 'Lora', serif;
+  --color-background: #ffffff;
+  --color-foreground: #1d1c1a;
+  --color-muted: #dfddd6;
+  --color-muted-foreground: #888680;
+  --color-primary: #d14424;
+  --color-primary-foreground: #ffffff;
+}
+
+@utility prose {
+  @apply font-serif;
+  /* Lists */
+
+  ol,
+  ul {
+    @apply my-4;
+
+    ol,
+    ul {
+      @apply my-1;
+    }
+
+    li {
+      @apply my-1 ml-6;
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p {
+        @apply my-1;
+      }
+    }
+  }
+
+  ol {
+    @apply list-decimal;
+
+    ol {
+      @apply list-[lower-alpha];
+
+      ol {
+        @apply list-[lower-roman];
+      }
+    }
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  /* Tables */
+
+  table {
+    @apply my-4 w-full table-auto border-collapse text-left text-sm/6;
+
+    caption {
+      @apply mt-2 caption-bottom text-left text-sm/6;
+    }
+
+    thead {
+      @apply border-b border-neutral-200;
+    }
+
+    tfoot {
+      @apply border-t border-neutral-200;
+    }
+
+    tr {
+      @apply border-y border-neutral-200 first:border-t-0 last:border-b-0;
+    }
+
+    th {
+      @apply align-bottom font-semibold;
+    }
+
+    td,
+    th {
+      @apply p-2 first:pl-0 last:pr-0;
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p {
+        @apply my-2 first:mt-0 last:mb-0;
+      }
+    }
+  }
+
+  /* Typography */
+
+  del {
+    @apply line-through opacity-60;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply my-4 font-semibold empty:hidden;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+  h3 {
+    @apply text-lg;
+  }
+  h4 {
+    @apply text-base;
+  }
+  h5 {
+    @apply text-sm;
+  }
+
+  p {
+    @apply my-4 empty:hidden leading-relaxed;
+  }
+
+  hr {
+    @apply my-4 border-muted;
+  }
+
+
+  a {
+    @apply text-primary underline;
+  }
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}

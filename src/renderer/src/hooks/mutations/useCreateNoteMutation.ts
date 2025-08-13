@@ -13,8 +13,8 @@ export const useCreateNoteMutation = (
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: createNote,
-    onSuccess: (...args) => {
-      queryClient.refetchQueries({ queryKey: ['notes'] })
+    onSuccess: async (...args) => {
+      await queryClient.refetchQueries({ queryKey: ['notes'] })
       onSuccess?.(...args)
     },
     ...rest

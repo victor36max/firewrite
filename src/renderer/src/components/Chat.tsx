@@ -4,6 +4,9 @@ import { streamChatResponse } from '@renderer/services/ai'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
+import { IconButton } from './primitives/IconButton'
+import { ArrowUp } from 'lucide-react'
+import { ChatTextArea } from './ChatTextArea'
 
 type ChatMessage = {
   id: string
@@ -13,7 +16,7 @@ type ChatMessage = {
 
 export const Chat = (): React.JSX.Element => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const inputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
   const { data: title } = useCurrentNote({
     select: (note) => note.title
   })
@@ -45,20 +48,28 @@ export const Chat = (): React.JSX.Element => {
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
+
       const formData = new FormData(e.target as HTMLFormElement)
-      const message = formData.get('message') as string
+      const message = formData.get('message')
+      if (!message || typeof message !== 'string') {
+        return
+      }
+
+      const normalizedMessage = message.trim()
+
+      if (normalizedMessage.length === 0) {
+        return
+      }
 
       const newMessages = [
         ...messages,
-        { id: crypto.randomUUID(), role: 'user', content: message }
+        { id: crypto.randomUUID(), role: 'user', content: normalizedMessage }
       ] satisfies ChatMessage[]
 
       sendMessage(newMessages)
       setMessages(newMessages)
 
-      if (inputRef.current) {
-        inputRef.current.value = ''
-      }
+      formRef.current?.reset()
     },
     [messages, sendMessage]
   )
@@ -66,9 +77,9 @@ export const Chat = (): React.JSX.Element => {
   const renderMessage = useCallback((message: ChatMessage): React.JSX.Element | null => {
     if (message.role === 'user') {
       return (
-        <div key={message.id} className="px-4 flex flex-row justify-end">
-          <div className="bg-blue-500 text-white p-2 px-4 rounded-lg max-w-4/5">
-            {message.content}
+        <div key={message.id} className="px-6 flex flex-row justify-end">
+          <div className="border border-muted p-2 px-3 rounded-2xl max-w-4/5">
+            <Markdown>{message.content}</Markdown>
           </div>
         </div>
       )
@@ -76,8 +87,8 @@ export const Chat = (): React.JSX.Element => {
 
     if (message.role === 'assistant') {
       return (
-        <div key={message.id} className="px-4 flex flex-row justify-start">
-          <div className="bg-gray-200 p-2 px-4 rounded-lg max-w-4/5 prose">
+        <div key={message.id} className="px-6 flex flex-row justify-start">
+          <div className="prose !font-sans">
             <Markdown>{message.content}</Markdown>
           </div>
         </div>
@@ -99,20 +110,20 @@ export const Chat = (): React.JSX.Element => {
           </div>
         )}
       </div>
-      <form id="chat-form" className="p-4 flex flex-row gap-2" onSubmit={handleSubmit}>
-        <input
-          ref={inputRef}
-          type="text"
-          name="message"
-          className="w-full p-2 rounded-lg border border-gray-300"
-        />
-        <button
+      <form
+        ref={formRef}
+        className="py-4 px-6 flex flex-row gap-2 items-center"
+        onSubmit={handleSubmit}
+      >
+        <ChatTextArea name="message" isRequired minLength={1} />
+        <IconButton
           type="submit"
-          className="bg-blue-500 text-white p-2 px-4 rounded-lg"
-          disabled={isResponding}
-        >
-          Send
-        </button>
+          isDisabled={isResponding}
+          Icon={ArrowUp}
+          className="rounded-full"
+          size="lg"
+          variant="secondary"
+        />
       </form>
     </div>
   )

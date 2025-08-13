@@ -110,12 +110,13 @@ export const updateNote = async (payload: UpdateNotePayload): Promise<void> => {
   await tx.done
 }
 
-export const deleteNote = async (id: string): Promise<void> => {
+export const deleteNote = async (id: string) => {
   const db = await getDb()
   const tx = db.transaction(['notes', 'note-contents'], 'readwrite')
   await tx.objectStore('notes').delete(id)
   await tx.objectStore('note-contents').delete(id)
   await tx.done
+  return id
 }
 
 export const getNoteContent = async (noteId: string): Promise<NoteContent> => {

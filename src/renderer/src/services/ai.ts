@@ -142,6 +142,10 @@ export const streamChatResponse = async ({
      You need to answer the query based on the title and content.
      If you need to do research in order to answer the query, you can use the web search tool.
 
+     Format:
+     - If your answer is long, make it in a well structured markdown.
+     - If the results from the web search contains URLs, incorporate them in the answer as references and citations.
+
      <title>${title}</title>
      <content>${content}</content>
     `,
@@ -155,7 +159,7 @@ export const streamChatResponse = async ({
         }),
         execute: async (params) => {
           const result = await tavily.search(params)
-          return result.results.map((result) => result.content).join('\n')
+          return result.results
         }
       })
     },

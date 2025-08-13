@@ -10,6 +10,7 @@ import {
   Input
 } from 'react-aria-components'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
+import { IconButton } from './primitives/IconButton'
 
 export const SettingsDialog = () => {
   const {
@@ -23,9 +24,7 @@ export const SettingsDialog = () => {
 
   return (
     <DialogTrigger>
-      <Button>
-        <Settings />
-      </Button>
+      <IconButton Icon={Settings} />
       <ModalOverlay
         isDismissable
         className="fixed inset-0 flex items-center justify-center bg-black/50"

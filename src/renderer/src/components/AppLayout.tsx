@@ -18,7 +18,7 @@ export const AppLayout = ({
 
   const renderSideMenuHandle = useCallback((): React.JSX.Element => {
     return (
-      <div className="w-px h-screen bg-gray-200 relative">
+      <div className="w-px h-screen bg-muted relative">
         <div
           className="absolute top-0 left-0 w-4 h-full cursor-ew-resize -translate-x-1/2"
           onMouseDown={() => {
@@ -31,7 +31,7 @@ export const AppLayout = ({
 
   const renderChatHandle = useCallback((): React.JSX.Element => {
     return (
-      <div className="w-px h-screen bg-gray-200 relative">
+      <div className="w-px h-screen bg-muted relative">
         <div
           className="absolute top-0 left-0 w-4 h-full cursor-ew-resize -translate-x-1/2"
           onMouseDown={() => {

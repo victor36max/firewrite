@@ -1,0 +1,42 @@
+import { useRef } from 'react'
+import type { AriaTextFieldProps } from 'react-aria'
+import TextArea from 'react-textarea-autosize'
+import { useTextField } from 'react-aria'
+import { cn } from '@renderer/utils'
+
+type ChatTextAreaProps = AriaTextFieldProps<HTMLTextAreaElement> & {
+  className?: string
+}
+
+export const ChatTextArea = ({ className, ...props }: ChatTextAreaProps) => {
+  const ref = useRef<HTMLTextAreaElement>(null)
+  const {
+    inputProps: { style: inputStyle, className: inputClassName, ...inputProps }
+  } = useTextField(
+    {
+      ...props,
+      'aria-label': 'Chat text area',
+      inputElementType: 'textarea',
+      placeholder: 'Ask me anything...'
+    },
+    ref
+  )
+
+  return (
+    <TextArea
+      ref={ref}
+      className={cn(
+        'flex-1 p-2 rounded-lg border border-gray-300 caret-primary outline-primary placeholder:text-muted-foreground',
+        inputClassName,
+        className
+      )}
+      minRows={1}
+      maxRows={10}
+      style={{
+        ...inputStyle,
+        height: inputStyle?.height !== undefined ? Number(inputStyle.height) : undefined
+      }}
+      {...inputProps}
+    />
+  )
+}
