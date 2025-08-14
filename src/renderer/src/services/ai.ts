@@ -34,32 +34,111 @@ export const generateAutocompleteSuggestion = async ({
 
   const result = await ai.generateText({
     model,
-    system: `
-You are a writing assistant. You are given a text and you need to autocomplete the text.
-If the sentence is not complete, you need to return the text needed to complete the sentence.
-Otherwise, return what you think is the best for the next sentence.
+    system: `You are an expert writing assistant that helps complete text intelligently. Your task is to analyze the current text and provide the most appropriate completion.
 
-You are given the title, ${[previous && 'previous', next && 'next'].filter(Boolean).join(' and ')} paragraph as your context.
+CONTEXT:
+- Title: Document's theme and subject matter
+- Previous paragraph: Content that came before (if available)
+- Next paragraph: Content that follows (if available)
+- Current text: The text that needs completion
+
+COMPLETION LOGIC:
+1. **Incomplete Sentence**: If the current text ends mid-sentence, complete it naturally
+2. **Complete Sentence**: If the current text is a complete sentence, suggest the next logical sentence
+3. **Context Awareness**: Use the title and surrounding paragraphs to maintain consistency
+
+OUTPUT RULES:
+- Return only the completion text, no additional formatting
+- If completing a sentence, start with a space if needed after punctuation
+- If starting a new sentence, begin with proper capitalization
+- Maintain the document's writing style and tone
+- Keep suggestions concise and contextually relevant
+
+EXAMPLES:
+Input: "The weather today is"
+Output: " beautiful and sunny."
+
+Input: "The weather today is beautiful and sunny."
+Output: "I think I'll go for a walk in the park."
+
+Input: "She opened the door and"
+Output: " stepped inside cautiously."
+`,
+    prompt: `
 <title>${title}</title>
 ${previous ? `<previous>${previous}</previous>` : ''}
 ${next ? `<next>${next}</next>` : ''}
-
-Format:
-- Return only the text needed to complete the autocomplete suggestion.
-- Do not include any other text or formatting (e.g. markdown, html, quotes, etc.)
-- If the sentence is complete with a punctuation mark without a space after it, add a space at the start of the autocomplete suggestion.
-
-Example:
-Input: "Hello, how are"
-Output: " you?"
-
-Input: "Hello, how are you?"
-Output: "I'm fine, thank you!"
-`,
-    prompt: current || ''
+<current>${current || ''}</current>`
   })
 
   return result.text
+}
+
+export const generateImprovementSuggestions = async ({
+  title,
+  content,
+  paragraph,
+  selection
+}: {
+  title: string
+  content: string
+  paragraph: string
+  selection: string
+}) => {
+  const model = getModel()
+  if (!model) {
+    throw new Error('No model found')
+  }
+
+  const result = await ai.generateObject({
+    model,
+    system: `You are an expert writing assistant specializing in text improvement and refinement. Your task is to analyze a selected piece of text within its broader context and provide 5 high-quality improvement suggestions.
+
+CONTEXT ANALYSIS:
+- Title: The document's title provides thematic context
+- Full Content: The complete document establishes writing style, tone, and voice
+- Current Paragraph: The immediate context where the selection appears
+- Selection: The specific text that needs improvement
+
+IMPROVEMENT CRITERIA:
+1. **Style Consistency**: Maintain the same writing style, tone, and voice as the surrounding content
+2. **Contextual Fit**: Ensure suggestions flow naturally within the current paragraph
+3. **Enhanced Clarity**: Improve precision, conciseness, or impact where appropriate
+4. **Variety**: Provide diverse approaches (synonyms, restructuring, alternative phrasing)
+5. **Quality**: Each suggestion should be genuinely better than the original
+
+OUTPUT FORMAT:
+- Return exactly 5 improvement suggestions
+- Each suggestion should be the complete replacement text for the selection
+- Do not include quotes, markdown, or any formatting
+- Ensure each suggestion is grammatically correct and contextually appropriate
+- Suggestions should be roughly the same length as the original selection
+
+EXAMPLE:
+Title: "The Great Gatsby"
+Content: "The Great Gatsby is a novel by F. Scott Fitzgerald. It is a story about a man who is trying to get rich and famous."
+Paragraph: "The Great Gatsby is a novel by F. Scott Fitzgerald. It is a story about a man who is trying to get rich and famous."
+Selection: "who is trying to get rich and famous"
+
+Output: [
+  "who is striving to achieve wealth and fame",
+  "who is pursuing riches and renown",
+  "who is working toward fortune and celebrity",
+  "who is seeking prosperity and recognition",
+  "who is attempting to attain affluence and stardom"
+]`,
+    prompt: `
+    <title>${title}</title>
+    <content>${content}</content>
+    <paragraph>${paragraph}</paragraph>
+    <selection>${selection}</selection>
+    `,
+    schema: z.object({
+      improvementSuggestions: z.array(z.string())
+    })
+  })
+
+  return result.object.improvementSuggestions
 }
 
 export const generateResearch = async ({
@@ -137,18 +216,23 @@ export const streamChatResponse = async ({
 
   return ai.streamText({
     model,
-    system: `
-     You are a writer assistant. You are given a current title, content and the writer's query.
-     You need to answer the query based on the title and content.
-     If you need to do research in order to answer the query, you can use the web search tool.
+    system: `You are an expert writing assistant helping authors improve their work. You have access to the current document's title and content, plus a web search tool for research.
 
-     Format:
-     - If your answer is long, make it in a well structured markdown.
-     - If the results from the web search contains URLs, incorporate them in the answer as references and citations.
+ROLE:
+- Answer the writer's questions about their document
+- Provide helpful writing advice and suggestions
+- Use web search when you need additional information to answer effectively
 
-     <title>${title}</title>
-     <content>${content}</content>
-    `,
+RESPONSE GUIDELINES:
+- Base your answers on the document's title and content
+- If your response is lengthy, structure it with clear markdown formatting
+- When using web search results, include URLs as references and citations
+- Be specific, actionable, and supportive in your advice
+- Maintain a helpful, professional tone
+
+CONTEXT:
+<title>${title}</title>
+<content>${content}</content>`,
     messages,
     tools: {
       webSearch: ai.tool({

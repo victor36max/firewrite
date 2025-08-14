@@ -103,10 +103,10 @@ export const Chat = (): React.JSX.Element => {
       <div className="flex-1 overflow-y-auto gap-4 flex flex-col py-4">
         {messages.map(renderMessage)}
         {isResponding && (
-          <div className="px-4 flex flex-row justify-start">
-            <div className="bg-gray-200 p-2 px-4 rounded-lg max-w-4/5">
-              <div className="animate-pulse">Thinking...</div>
-            </div>
+          <div className="px-6 flex flex-row justify-start text-muted-foreground">
+            <span className="animate-pulse">
+              <i>Thinking...</i>
+            </span>
           </div>
         )}
       </div>
