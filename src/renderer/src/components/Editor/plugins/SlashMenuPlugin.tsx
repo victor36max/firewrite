@@ -16,6 +16,7 @@ import { $createHeadingNode } from '@lexical/rich-text'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { cn } from '@renderer/utils'
 
 class ComponentPickerOption extends MenuOption {
   title: string
@@ -99,10 +100,14 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
   ) => {
     if (!anchorElementRef.current) return null
     return createPortal(
-      <ul className="min-w-[120px] bg-white rounded-md shadow-md">
+      <ul className="min-w-[120px] rounded-lg border border-muted">
         {menuOptions.map((option, i) => (
           <li
-            className={`${selectedIndex === i ? 'bg-gray-300' : ''} p-2`}
+            className={cn(
+              `px-3 py-2 bg-background`,
+              selectedIndex === i && 'brightness-95',
+              i !== 0 && 'border-t border-muted'
+            )}
             key={option.title}
             onClick={() => {
               setHighlightedIndex(i)

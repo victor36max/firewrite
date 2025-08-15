@@ -62,8 +62,8 @@ export const NotesMenu = (): React.JSX.Element => {
           }}
           type="button"
           className={cn(
-            'w-full py-2 px-4 text-left cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap outline-primary',
-            currentNoteId === note.id && 'bg-primary/10 font-medium'
+            'w-full py-2 px-4 text-left cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap outline-primary bg-background hover:brightness-95',
+            currentNoteId === note.id && 'bg-primary/10 font-medium hover:brightness-100'
           )}
           key={note.id}
           onClick={() => setCurrentNoteId(note.id)}

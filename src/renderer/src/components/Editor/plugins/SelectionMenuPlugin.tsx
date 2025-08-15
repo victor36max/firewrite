@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { mergeRegister } from '@lexical/utils'
 import { Button } from '@renderer/components/primitives/Button'
+import { LoadingText } from '@renderer/components/primitives/LoadingText'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { generateImprovementSuggestions } from '@renderer/services/ai'
 import { cn } from '@renderer/utils'
@@ -80,12 +81,10 @@ const ImprovementSuggestionMenu = ({
   }, [suggestions])
 
   return (
-    <div className="rounded-lg border border-muted bg-background max-w-md">
+    <div className="rounded-lg border border-muted max-w-md">
       {isImproving && (
-        <div className="p-2 px-3 text-left block w-full text-muted-foreground text-sm">
-          <span className="animate-pulse">
-            <i>Improving...</i>
-          </span>
+        <div className="p-2 px-3 text-left block w-full text-sm bg-background">
+          <LoadingText text="Improving" />
         </div>
       )}
       {suggestions.map((suggestion, index) => (
@@ -97,7 +96,7 @@ const ImprovementSuggestionMenu = ({
           }}
           key={suggestion}
           className={cn(
-            'p-2 px-3 text-left block w-full cursor-pointer outline-primary',
+            'p-2 px-3 text-left block w-full cursor-pointer outline-none bg-background focus:brightness-95 hover:brightness-95',
             index !== 0 && 'border-t border-muted'
           )}
           onPress={() => onPressMenuItem(suggestion)}

@@ -18,21 +18,22 @@ export const IconButton = ({
 }: IconButtonProps) => {
   const variants = tv({
     slots: {
-      button: 'flex items-center justify-center rounded-md cursor-pointer',
+      button:
+        'flex items-center justify-center rounded-md cursor-pointer hover:brightness-95 outline-primary',
       icon: ''
     },
     variants: {
       variant: {
         default: {
-          button: 'hover:bg-primary/10',
+          button: 'bg-background',
           icon: 'text-foreground'
         },
         primary: {
-          button: 'bg-primary text-primary-foreground hover:bg-primary/80',
+          button: 'bg-primary text-primary-foreground',
           icon: 'text-primary-foreground'
         },
         secondary: {
-          button: 'border border-muted-foreground hover:bg-primary/10',
+          button: 'border border-muted bg-background',
           icon: 'text-foreground'
         }
       },
@@ -56,7 +57,7 @@ export const IconButton = ({
   const { button, icon } = variants({ variant, size })
   return (
     <Button type="button" className={button({ className })} {...props}>
-      <Icon strokeWidth={1} className={icon()} />
+      <Icon strokeWidth={1.25} className={icon()} />
     </Button>
   )
 }

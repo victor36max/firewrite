@@ -2,11 +2,12 @@ import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorSt
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { streamChatResponse } from '@renderer/services/ai'
 import { useMutation } from '@tanstack/react-query'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { IconButton } from './primitives/IconButton'
 import { ArrowUp } from 'lucide-react'
 import { ChatTextArea } from './ChatTextArea'
+import { LoadingText } from './primitives/LoadingText'
 
 type ChatMessage = {
   id: string
@@ -15,6 +16,7 @@ type ChatMessage = {
 }
 
 export const Chat = (): React.JSX.Element => {
+  const scrollViewRef = useRef<HTMLDivElement>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const formRef = useRef<HTMLFormElement>(null)
   const { data: title } = useCurrentNote({
@@ -74,6 +76,15 @@ export const Chat = (): React.JSX.Element => {
     [messages, sendMessage]
   )
 
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        top: scrollViewRef.current.scrollHeight,
+        behavior: 'smooth'
+      })
+    }
+  }, [messages])
+
   const renderMessage = useCallback((message: ChatMessage): React.JSX.Element | null => {
     if (message.role === 'user') {
       return (
@@ -100,13 +111,11 @@ export const Chat = (): React.JSX.Element => {
 
   return (
     <div className="h-full w-full flex flex-col">
-      <div className="flex-1 overflow-y-auto gap-4 flex flex-col py-4">
+      <div className="flex-1 overflow-y-auto gap-4 flex flex-col py-4" ref={scrollViewRef}>
         {messages.map(renderMessage)}
         {isResponding && (
-          <div className="px-6 flex flex-row justify-start text-muted-foreground">
-            <span className="animate-pulse">
-              <i>Thinking...</i>
-            </span>
+          <div className="px-6 flex flex-row justify-start">
+            <LoadingText text="Thinking" />
           </div>
         )}
       </div>
