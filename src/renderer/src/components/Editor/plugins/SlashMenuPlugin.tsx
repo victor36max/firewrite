@@ -100,12 +100,12 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
   ) => {
     if (!anchorElementRef.current) return null
     return createPortal(
-      <ul className="min-w-[120px] rounded-lg border border-muted">
+      <ul className="min-w-[120px] rounded-lg border border-muted bg-background">
         {menuOptions.map((option, i) => (
           <li
             className={cn(
-              `px-3 py-2 bg-background`,
-              selectedIndex === i && 'brightness-95',
+              `px-3 py-2`,
+              selectedIndex === i && 'bg-muted-light',
               i !== 0 && 'border-t border-muted'
             )}
             key={option.title}

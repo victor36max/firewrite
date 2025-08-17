@@ -63,7 +63,7 @@ export const Editor = (): React.JSX.Element | null => {
           AutocompleteNode
         ],
         theme: {
-          autocomplete: 'text-gray-400'
+          autocomplete: 'text-muted-foreground'
         },
         editorState: noteContent.content || undefined,
         onError: (error) => {

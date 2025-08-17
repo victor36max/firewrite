@@ -14,8 +14,8 @@ import {
   getDOMSelection,
   LexicalNode
 } from 'lexical'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button as AriaButton } from 'react-aria-components'
+import { useCallback, useEffect, useState } from 'react'
+import { Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -46,65 +46,39 @@ const ImprovementSuggestionMenu = ({
   onPressMenuItem: (suggestion: string) => void
   onClose: () => void
 }) => {
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number | null>(null)
-  const suggestionRefs = useRef<HTMLButtonElement[]>([])
-
-  useHotkeys('up', () => {
-    setSelectedSuggestionIndex((prev) => {
-      if (prev === null) return 0
-      return Math.max(prev - 1, 0)
-    })
-  })
-
-  useHotkeys('down', () => {
-    setSelectedSuggestionIndex((prev) => {
-      if (prev === null) return 0
-      return Math.min(prev + 1, suggestions.length - 1)
-    })
-  })
-
   useHotkeys('esc', () => {
     onClose()
   })
 
-  useEffect(() => {
-    if (suggestionRefs.current.length > 0 && selectedSuggestionIndex !== null) {
-      suggestionRefs.current[selectedSuggestionIndex].focus()
-    }
-  }, [selectedSuggestionIndex])
-
-  useEffect(() => {
-    if (suggestions.length === 0) {
-      setSelectedSuggestionIndex(null)
-      suggestionRefs.current = []
-    }
-  }, [suggestions])
-
   return (
-    <div className="rounded-lg border border-muted max-w-md">
+    <Menu
+      aria-label="Improvement Suggestions"
+      className="rounded-lg border border-muted max-w-md bg-background outline-none"
+    >
       {isImproving && (
-        <div className="p-2 px-3 text-left block w-full text-sm bg-background">
+        <MenuItem aria-label="Improving" className="p-2 px-3 text-left block w-full text-sm">
           <LoadingText text="Improving" />
-        </div>
+        </MenuItem>
       )}
       {suggestions.map((suggestion, index) => (
-        <AriaButton
-          ref={(el) => {
-            if (el) {
-              suggestionRefs.current[index] = el
-            }
-          }}
+        <MenuItem
+          aria-label={suggestion}
+          id={suggestion}
           key={suggestion}
-          className={cn(
-            'p-2 px-3 text-left block w-full cursor-pointer outline-none bg-background focus:brightness-95 hover:brightness-95',
-            index !== 0 && 'border-t border-muted'
-          )}
-          onPress={() => onPressMenuItem(suggestion)}
+          className={({ isFocused, isHovered }) =>
+            cn(
+              'p-2 px-3 text-left block w-full cursor-pointer outline-none',
+              index !== 0 && 'border-t border-muted',
+              isFocused && 'bg-muted-light',
+              isHovered && 'bg-muted-light'
+            )
+          }
+          onAction={() => onPressMenuItem(suggestion)}
         >
           {suggestion}
-        </AriaButton>
+        </MenuItem>
       ))}
-    </div>
+    </Menu>
   )
 }
 

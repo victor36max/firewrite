@@ -14,6 +14,12 @@ export interface NoteContent {
   content: string
 }
 
+export interface Image {
+  id: string
+  noteId: string
+  blob: Blob
+}
+
 interface FirewriteDB extends DBSchema {
   notes: {
     key: string
@@ -28,12 +34,21 @@ interface FirewriteDB extends DBSchema {
   }
 }
 
+const migrations = [
+  (db: IDBPDatabase<FirewriteDB>) => {
+    const notesStore = db.createObjectStore('notes', { keyPath: 'id' })
+    notesStore.createIndex('by-updated', 'updatedAt')
+    db.createObjectStore('note-contents', { keyPath: 'noteId' })
+  }
+]
+
 export const getDb = async (): Promise<IDBPDatabase<FirewriteDB>> => {
-  return openDB<FirewriteDB>('firewrite', 1, {
-    upgrade(db) {
-      const notesStore = db.createObjectStore('notes', { keyPath: 'id' })
-      notesStore.createIndex('by-updated', 'updatedAt')
-      db.createObjectStore('note-contents', { keyPath: 'noteId' })
+  return openDB<FirewriteDB>('firewrite', 2, {
+    upgrade(db, oldVersion) {
+      const migrationStartIndex = oldVersion || 0
+      for (let i = migrationStartIndex; i < migrations.length; i++) {
+        migrations[i](db)
+      }
     }
   })
 }

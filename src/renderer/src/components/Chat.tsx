@@ -8,6 +8,7 @@ import { IconButton } from './primitives/IconButton'
 import { ArrowUp } from 'lucide-react'
 import { ChatTextArea } from './ChatTextArea'
 import { LoadingText } from './primitives/LoadingText'
+import { Form } from 'react-aria-components'
 
 type ChatMessage = {
   id: string
@@ -119,7 +120,7 @@ export const Chat = (): React.JSX.Element => {
           </div>
         )}
       </div>
-      <form
+      <Form
         ref={formRef}
         className="py-4 px-6 flex flex-row gap-2 items-center"
         onSubmit={handleSubmit}
@@ -130,10 +131,9 @@ export const Chat = (): React.JSX.Element => {
           isDisabled={isResponding}
           Icon={ArrowUp}
           className="rounded-full"
-          size="lg"
-          variant="secondary"
+          variant="primary"
         />
-      </form>
+      </Form>
     </div>
   )
 }

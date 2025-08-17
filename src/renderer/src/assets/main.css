@@ -7,8 +7,10 @@
   --color-background: #ffffff;
   --color-foreground: #1d1c1a;
   --color-muted: #dfddd6;
+  --color-muted-light: #f8f7f5;
   --color-muted-foreground: #888680;
   --color-primary: #d14424;
+  --color-primary-dark: #c13e20;
   --color-primary-foreground: #ffffff;
 }
 
@@ -135,7 +137,6 @@
   hr {
     @apply my-4 border-muted;
   }
-
 
   a {
     @apply text-primary underline;

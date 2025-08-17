@@ -16,12 +16,12 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const variants = tv({
-    base: 'cursor-pointer whitespace-nowrap hover:brightness-95 outline-primary',
+    base: 'cursor-pointer whitespace-nowrap outline-primary',
     variants: {
       variant: {
-        default: 'hover:bg-primary/10',
-        primary: 'bg-primary text-primary-foreground',
-        secondary: 'border border-muted bg-background'
+        default: 'hover:bg-muted-light',
+        primary: 'bg-primary text-primary-foreground hover:bg-primary-dark',
+        secondary: 'border border-muted bg-background hover:bg-muted-light'
       },
       size: {
         default: 'px-3 py-2 text-sm font-medium rounded-md',

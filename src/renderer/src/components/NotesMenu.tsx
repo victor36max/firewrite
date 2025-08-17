@@ -4,17 +4,16 @@ import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
 import { Note } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
-import { useCallback, useEffect, useRef } from 'react'
-import { SettingsDialog } from './SettingsDialog'
+import { useCallback, useEffect } from 'react'
+import { SettingsDialog } from './settings/SettingsDialog'
 import { IconButton } from './primitives/IconButton'
 import { Plus } from 'lucide-react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Button } from 'react-aria-components'
+import { Menu, MenuItem } from 'react-aria-components'
 
 export const NotesMenu = (): React.JSX.Element => {
   const { data: notes } = useNotesQuery()
   const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
-  const menuItemRefs = useRef<Record<string, HTMLButtonElement>>({})
   const { mutate: createNote } = useCreateNoteMutation({
     onSuccess: (id) => {
       setCurrentNoteId(id)
@@ -51,44 +50,29 @@ export const NotesMenu = (): React.JSX.Element => {
     }
   }, [notes, createNote])
 
-  const renderNoteMenuItem = useCallback(
-    (note: Note, index: number): React.JSX.Element => {
-      return (
-        <Button
-          ref={(el) => {
-            if (el) {
-              menuItemRefs.current[note.id] = el
-            }
-          }}
-          type="button"
-          className={cn(
-            'w-full py-2 px-4 text-left cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap outline-primary bg-background hover:brightness-95',
-            currentNoteId === note.id && 'bg-primary/10 font-medium hover:brightness-100'
-          )}
-          key={note.id}
-          onClick={() => setCurrentNoteId(note.id)}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowUp' && notes) {
-              if (index > 0) {
-                const previousNoteId = notes[index - 1].id
-                menuItemRefs.current[previousNoteId].focus()
-              }
-            }
+  const renderNoteMenuItem = useCallback((note: Note): React.JSX.Element => {
+    const noteTitle = note.title || 'New Note'
+    return (
+      <MenuItem
+        aria-label={noteTitle}
+        id={note.id}
+        key={note.id}
+        className={({ isSelected, isFocused, isHovered }) =>
+          cn(
+            'w-full py-2 px-4 text-left cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap outline-none',
 
-            if (e.key === 'ArrowDown' && notes) {
-              if (index < notes.length - 1) {
-                const nextNoteId = notes[index + 1].id
-                menuItemRefs.current[nextNoteId].focus()
-              }
-            }
-          }}
-        >
-          {note.title || 'New Note'}
-        </Button>
-      )
-    },
-    [notes, currentNoteId, setCurrentNoteId]
-  )
+            isHovered && 'bg-muted-light',
+            isFocused && 'bg-muted-light',
+            isSelected && 'bg-primary/10 font-medium'
+          )
+        }
+      >
+        {noteTitle}
+      </MenuItem>
+    )
+  }, [])
+
+  console.log(currentNoteId)
 
   return (
     <div className="py-4">
@@ -96,7 +80,19 @@ export const NotesMenu = (): React.JSX.Element => {
         <SettingsDialog />
         <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={Plus} />
       </div>
-      {notes?.map(renderNoteMenuItem)}
+      <Menu
+        className="outline-none"
+        aria-label="Notes"
+        selectionMode="single"
+        selectedKeys={currentNoteId ? new Set([currentNoteId]) : new Set()}
+        onSelectionChange={(keys) => {
+          if (keys === 'all') return
+          const key = keys.values().next().value
+          setCurrentNoteId(key as string)
+        }}
+      >
+        {notes?.map(renderNoteMenuItem)}
+      </Menu>
     </div>
   )
 }
