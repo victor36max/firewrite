@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { IconButton } from './primitives/IconButton'
-import { ArrowUp } from 'lucide-react'
+import { LuArrowUp } from 'react-icons/lu'
 import { ChatTextArea } from './ChatTextArea'
 import { LoadingText } from './primitives/LoadingText'
 import { Form } from 'react-aria-components'
@@ -129,7 +129,7 @@ export const Chat = (): React.JSX.Element => {
         <IconButton
           type="submit"
           isDisabled={isResponding}
-          Icon={ArrowUp}
+          Icon={LuArrowUp}
           className="rounded-full"
           variant="primary"
         />

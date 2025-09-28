@@ -20,7 +20,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Bold, Italic, WandSparkles, Underline } from 'lucide-react'
+import { LuSparkles } from 'react-icons/lu'
+import { GrBold, GrUnderline, GrItalic } from 'react-icons/gr'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 
 interface SelectionMenuPluginProps {
@@ -208,21 +209,24 @@ export const SelectionMenuPlugin = ({
           onPress={() => handleFormat('bold')}
           className={cn(isBold && 'bg-muted-light')}
           iconClassName={cn(!isBold && 'text-muted-foreground')}
-          Icon={Bold}
+          Icon={GrBold}
+          iconProps={{ strokeWidth: 0.5 }}
         />
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('italic')}
           className={cn(isItalic && 'bg-muted-light')}
           iconClassName={cn(!isItalic && 'text-muted-foreground')}
-          Icon={Italic}
+          Icon={GrItalic}
+          iconProps={{ strokeWidth: 0.5 }}
         />
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('underline')}
           className={cn(isUnderline && 'bg-muted-light')}
           iconClassName={cn(!isUnderline && 'text-muted-foreground')}
-          Icon={Underline}
+          Icon={GrUnderline}
+          iconProps={{ strokeWidth: 0.5 }}
         />
       </div>
     )
@@ -247,7 +251,7 @@ export const SelectionMenuPlugin = ({
               onPress={handleImprove}
               className="flex flex-row gap-2 items-center"
             >
-              <WandSparkles className="w-4 h-4" />
+              <LuSparkles className="w-4 h-4" />
               Improve
             </Button>
           </div>

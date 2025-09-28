@@ -1,4 +1,4 @@
-import { Settings, X } from 'lucide-react'
+import { LuSettings, LuX } from 'react-icons/lu'
 import { Dialog, DialogTrigger, Modal, Heading, ModalOverlay } from 'react-aria-components'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { IconButton } from '../primitives/IconButton'
@@ -17,7 +17,7 @@ export const SettingsDialog = () => {
 
   return (
     <DialogTrigger>
-      <IconButton Icon={Settings} />
+      <IconButton Icon={LuSettings} />
       <ModalOverlay
         isDismissable
         className="fixed inset-0 flex items-center justify-center bg-black/50"
@@ -28,7 +28,7 @@ export const SettingsDialog = () => {
               <Heading slot="title" className="text-lg font-semibold">
                 Settings
               </Heading>
-              <IconButton slot="close" Icon={X} />
+              <IconButton slot="close" Icon={LuX} />
             </div>
             <div className="p-4">
               <div className="flex flex-col gap-4">

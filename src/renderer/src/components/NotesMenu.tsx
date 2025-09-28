@@ -7,7 +7,7 @@ import { cn } from '@renderer/utils'
 import { useCallback, useEffect } from 'react'
 import { SettingsDialog } from './settings/SettingsDialog'
 import { IconButton } from './primitives/IconButton'
-import { Plus } from 'lucide-react'
+import { LuPlus } from 'react-icons/lu'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Menu, MenuItem } from 'react-aria-components'
 
@@ -72,13 +72,11 @@ export const NotesMenu = (): React.JSX.Element => {
     )
   }, [])
 
-  console.log(currentNoteId)
-
   return (
     <div className="py-4">
       <div className="py-2 px-2 flex flex-row justify-between items-center">
         <SettingsDialog />
-        <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={Plus} />
+        <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={LuPlus} />
       </div>
       <Menu
         className="outline-none"

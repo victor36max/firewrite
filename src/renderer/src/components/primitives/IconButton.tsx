@@ -1,13 +1,14 @@
 import { Button, ButtonProps } from 'react-aria-components'
-import { LucideIcon } from 'lucide-react'
+import { IconBaseProps, IconType } from 'react-icons'
 import { tv } from 'tailwind-variants'
 
 interface IconButtonProps extends Omit<ButtonProps, 'children'> {
   className?: string
   iconClassName?: string
-  Icon: LucideIcon
+  Icon: IconType
   variant?: 'default' | 'primary' | 'secondary'
   size?: 'default' | 'sm' | 'lg'
+  iconProps?: IconBaseProps
 }
 
 export const IconButton = ({
@@ -16,6 +17,7 @@ export const IconButton = ({
   Icon,
   variant = 'default',
   size = 'default',
+  iconProps,
   ...props
 }: IconButtonProps) => {
   const variants = tv({
@@ -58,7 +60,7 @@ export const IconButton = ({
   const { button, icon } = variants({ variant, size })
   return (
     <Button type="button" className={button({ className })} {...props}>
-      <Icon strokeWidth={1.25} className={icon({ className: iconClassName })} />
+      <Icon strokeWidth={1.25} className={icon({ className: iconClassName })} {...iconProps} />
     </Button>
   )
 }
