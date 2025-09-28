@@ -11,6 +11,12 @@ import {
   LexicalEditor,
   TextNode
 } from 'lexical'
+
+import {
+  INSERT_CHECK_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND
+} from '@lexical/list'
 import { $setBlocksType } from '@lexical/selection'
 import { $createHeadingNode } from '@lexical/rich-text'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
@@ -65,7 +71,19 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
               }
             })
         })
-    )
+    ),
+    new ComponentPickerOption('Numbered List', {
+      keywords: ['numbered list', 'ordered list', 'ol'],
+      onSelect: () => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+    }),
+    new ComponentPickerOption('Bulleted List', {
+      keywords: ['bulleted list', 'unordered list', 'ul'],
+      onSelect: () => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+    }),
+    new ComponentPickerOption('Check List', {
+      keywords: ['check list', 'todo list'],
+      onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
+    })
   ]
 }
 

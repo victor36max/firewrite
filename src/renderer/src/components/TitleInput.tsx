@@ -1,5 +1,6 @@
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
+import { Input } from 'react-aria-components'
 
 export const TitleInput = (): React.JSX.Element | null => {
   const { data: title } = useCurrentNote({
@@ -13,7 +14,7 @@ export const TitleInput = (): React.JSX.Element | null => {
   }
 
   return (
-    <input
+    <Input
       type="text"
       className="w-full h-10 text-2xl font-serif font-semibold outline-none placeholder:text-muted-foreground caret-primary"
       defaultValue={title}

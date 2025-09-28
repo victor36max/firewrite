@@ -27,6 +27,7 @@ import { useState } from 'react'
 import { SelectionMenuPlugin } from './plugins/SelectionMenuPlugin'
 import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin'
 import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -63,7 +64,11 @@ export const Editor = (): React.JSX.Element | null => {
           AutocompleteNode
         ],
         theme: {
-          autocomplete: 'text-muted-foreground'
+          autocomplete: 'text-muted-foreground',
+          list: {
+            listitemChecked: 'fw__list_item_checked',
+            listitemUnchecked: 'fw__list_item_unchecked'
+          }
         },
         editorState: noteContent.content || undefined,
         onError: (error) => {
@@ -92,6 +97,7 @@ export const Editor = (): React.JSX.Element | null => {
       <HistoryPlugin />
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       <ListPlugin hasStrictIndent />
+      <CheckListPlugin />
       <TabIndentationPlugin />
       {/* <TreeViewPlugin /> */}
       <SlashMenuPlugin />
