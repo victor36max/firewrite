@@ -11,13 +11,17 @@ import {
   $getSelection,
   $isRangeSelection,
   $isRootNode,
+  FORMAT_TEXT_COMMAND,
   getDOMSelection,
-  LexicalNode
+  LexicalNode,
+  TextFormatType
 } from 'lexical'
 import { useCallback, useEffect, useState } from 'react'
 import { Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { Bold, Italic, WandSparkles, Underline } from 'lucide-react'
+import { IconButton } from '@renderer/components/primitives/IconButton'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -95,6 +99,9 @@ export const SelectionMenuPlugin = ({
     left: number
   } | null>(null)
   const [improvementSuggestions, setImprovementSuggestions] = useState<string[]>([])
+  const [isBold, setIsBold] = useState(false)
+  const [isItalic, setIsItalic] = useState(false)
+  const [isUnderline, setIsUnderline] = useState(false)
 
   const { mutate: improve, isPending: isImproving } = useMutation({
     mutationFn: generateImprovementSuggestions,
@@ -137,6 +144,13 @@ export const SelectionMenuPlugin = ({
     [editor]
   )
 
+  const handleFormat = useCallback(
+    (format: TextFormatType) => {
+      editor.dispatchCommand(FORMAT_TEXT_COMMAND, format)
+    },
+    [editor]
+  )
+
   useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(() => {
@@ -167,6 +181,10 @@ export const SelectionMenuPlugin = ({
           const selectionRect = nativeRange.getBoundingClientRect()
           const anchorRect = anchorElement.getBoundingClientRect()
 
+          setIsBold(selection.hasFormat('bold'))
+          setIsItalic(selection.hasFormat('italic'))
+          setIsUnderline(selection.hasFormat('underline'))
+
           setPosition({
             top: selectionRect.y + selectionRect.height - anchorRect.y,
             left: selectionRect.x - anchorRect.x
@@ -182,6 +200,34 @@ export const SelectionMenuPlugin = ({
     return null
   }
 
+  const renderFormattingMenu = () => {
+    return (
+      <div className="flex flex-row border border-muted rounded-lg">
+        <IconButton
+          variant="default"
+          onPress={() => handleFormat('bold')}
+          className={cn(isBold && 'bg-muted-light')}
+          iconClassName={cn(!isBold && 'text-muted-foreground')}
+          Icon={Bold}
+        />
+        <div className="w-px h-full bg-muted" />
+        <IconButton
+          onPress={() => handleFormat('italic')}
+          className={cn(isItalic && 'bg-muted-light')}
+          iconClassName={cn(!isItalic && 'text-muted-foreground')}
+          Icon={Italic}
+        />
+        <div className="w-px h-full bg-muted" />
+        <IconButton
+          onPress={() => handleFormat('underline')}
+          className={cn(isUnderline && 'bg-muted-light')}
+          iconClassName={cn(!isUnderline && 'text-muted-foreground')}
+          Icon={Underline}
+        />
+      </div>
+    )
+  }
+
   return createPortal(
     <div style={{ position: 'absolute', top: position?.top, left: position?.left }}>
       <div className="mt-2 font-sans">
@@ -194,9 +240,17 @@ export const SelectionMenuPlugin = ({
           />
         )}
         {improvementSuggestions.length === 0 && !isImproving && (
-          <Button variant="primary" onPress={handleImprove}>
-            Improve
-          </Button>
+          <div className="flex flex-row gap-2">
+            {renderFormattingMenu()}
+            <Button
+              variant="primary"
+              onPress={handleImprove}
+              className="flex flex-row gap-2 items-center"
+            >
+              <WandSparkles className="w-4 h-4" />
+              Improve
+            </Button>
+          </div>
         )}
       </div>
     </div>,

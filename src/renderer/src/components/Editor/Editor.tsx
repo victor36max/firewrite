@@ -28,6 +28,7 @@ import { SelectionMenuPlugin } from './plugins/SelectionMenuPlugin'
 import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin'
 import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -66,8 +67,13 @@ export const Editor = (): React.JSX.Element | null => {
         theme: {
           autocomplete: 'text-muted-foreground',
           list: {
-            listitemChecked: 'fw__list_item_checked',
-            listitemUnchecked: 'fw__list_item_unchecked'
+            listitemChecked: 'FWEditor__listItemChecked',
+            listitemUnchecked: 'FWEditor__listItemUnchecked'
+          },
+          text: {
+            bold: 'FWEditor__bold',
+            italic: 'FWEditor__italic',
+            underline: 'FWEditor__underline'
           }
         },
         editorState: noteContent.content || undefined,
@@ -98,6 +104,7 @@ export const Editor = (): React.JSX.Element | null => {
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       <ListPlugin hasStrictIndent />
       <CheckListPlugin />
+      <TablePlugin />
       <TabIndentationPlugin />
       {/* <TreeViewPlugin /> */}
       <SlashMenuPlugin />

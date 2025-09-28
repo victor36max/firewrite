@@ -171,31 +171,47 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
-li.fw__list_item_checked,
-li.fw__list_item_unchecked {
+li.FWEditor__listItemChecked,
+li.FWEditor__listItemUnchecked {
   @apply list-none relative ml-1 pl-6 outline-none;
 }
 
-li.fw__list_item_checked:before,
-li.fw__list_item_unchecked:before {
+li.FWEditor__listItemChecked {
+  text-decoration: line-through;
+}
+
+li.FWEditor__listItemChecked:before,
+li.FWEditor__listItemUnchecked:before {
   @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1/2 -translate-y-1/2 cursor-pointer;
 }
 
-li.fw__list_item_checked:before {
+li.FWEditor__listItemChecked:before {
   @apply bg-primary border-primary;
 }
 
-.fw__list_item_checked:after {
+li.FWEditor__listItemChecked:after {
   content: '';
   cursor: pointer;
   border-color: var(--color-primary-foreground);
   border-style: solid;
   position: absolute;
   display: block;
-  top: 45%;
-  width: 0.25em;
-  left: 0.35em;
-  height: 0.4em;
+  top: 44%;
+  width: 5px;
+  left: 5px;
+  height: 10px;
   transform: translateY(-50%) rotate(45deg);
   border-width: 0 0.1em 0.1em 0;
+}
+
+.FWEditor__bold {
+  font-weight: bold;
+}
+
+.FWEditor__italic {
+  font-style: italic;
+}
+
+.FWEditor__underline {
+  text-decoration: underline;
 }

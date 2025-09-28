@@ -23,6 +23,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@renderer/utils'
+// import { INSERT_TABLE_COMMAND } from '@lexical/table'
 
 class ComponentPickerOption extends MenuOption {
   title: string
@@ -72,6 +73,10 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
             })
         })
     ),
+    // new ComponentPickerOption('Table', {
+    //   keywords: ['table'],
+    //   onSelect: () => editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: '2', rows: '2' })
+    // }),
     new ComponentPickerOption('Numbered List', {
       keywords: ['numbered list', 'ordered list', 'ol'],
       onSelect: () => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)

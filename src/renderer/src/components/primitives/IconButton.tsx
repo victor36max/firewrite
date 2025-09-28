@@ -4,6 +4,7 @@ import { tv } from 'tailwind-variants'
 
 interface IconButtonProps extends Omit<ButtonProps, 'children'> {
   className?: string
+  iconClassName?: string
   Icon: LucideIcon
   variant?: 'default' | 'primary' | 'secondary'
   size?: 'default' | 'sm' | 'lg'
@@ -11,6 +12,7 @@ interface IconButtonProps extends Omit<ButtonProps, 'children'> {
 
 export const IconButton = ({
   className,
+  iconClassName,
   Icon,
   variant = 'default',
   size = 'default',
@@ -56,7 +58,7 @@ export const IconButton = ({
   const { button, icon } = variants({ variant, size })
   return (
     <Button type="button" className={button({ className })} {...props}>
-      <Icon strokeWidth={1.25} className={icon()} />
+      <Icon strokeWidth={1.25} className={icon({ className: iconClassName })} />
     </Button>
   )
 }
