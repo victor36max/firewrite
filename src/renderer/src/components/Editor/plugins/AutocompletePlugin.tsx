@@ -65,10 +65,12 @@ export const AutocompletePlugin = (): null => {
   const [editor] = useLexicalComposerContext()
   const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const autocompleteNodeKeyRef = useRef<string | null>(null)
+  const shouldShowAutocompleteRef = useRef(false)
   const { data: note } = useCurrentNote()
   const { mutate: genAutocomplete } = useMutation({
     mutationFn: generateAutocompleteSuggestion,
     onSuccess: (data) => {
+      if (!shouldShowAutocompleteRef.current) return
       showAutocomplete(data)
     }
   })
@@ -100,6 +102,7 @@ export const AutocompletePlugin = (): null => {
 
   const removeAutocomplete = useCallback(() => {
     if (!autocompleteNodeKeyRef.current) return
+    shouldShowAutocompleteRef.current = false
     editor.update(
       () => {
         const node = $getNodeByKey(autocompleteNodeKeyRef.current!)
@@ -114,6 +117,7 @@ export const AutocompletePlugin = (): null => {
   }, [editor])
 
   const commitAutocomplete = useCallback(() => {
+    shouldShowAutocompleteRef.current = false
     editor.update(
       () => {
         if (!autocompleteNodeKeyRef.current) return
@@ -132,6 +136,7 @@ export const AutocompletePlugin = (): null => {
   }, [editor])
 
   const getTextAndGenerateAutocomplete = useCallback(() => {
+    shouldShowAutocompleteRef.current = true
     editor.read(() => {
       const selection = $getSelection()
       if (!selection || !$isRangeSelection(selection)) return

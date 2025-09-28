@@ -180,9 +180,9 @@ li.FWEditor__listItemChecked {
   text-decoration: line-through;
 }
 
-li.FWEditor__listItemChecked:before,
-li.FWEditor__listItemUnchecked:before {
-  @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1/2 -translate-y-1/2 cursor-pointer;
+li.FWEditor__listItemChecked:not(:has(ul)):not(:has(ol)):before,
+li.FWEditor__listItemUnchecked:not(:has(ul)):not(:has(ol)):before {
+  @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
 }
 
 li.FWEditor__listItemChecked:before {
@@ -196,7 +196,7 @@ li.FWEditor__listItemChecked:after {
   border-style: solid;
   position: absolute;
   display: block;
-  top: 44%;
+  top: 10px;
   width: 5px;
   left: 5px;
   height: 10px;
