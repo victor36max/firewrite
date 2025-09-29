@@ -123,7 +123,7 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
   ) => {
     if (!anchorElementRef.current) return null
     return createPortal(
-      <ul className="min-w-[120px] rounded-lg border border-muted bg-background">
+      <ul className="min-w-[150px] rounded-lg border border-muted bg-background">
         {menuOptions.map((option, i) => (
           <li
             className={cn(

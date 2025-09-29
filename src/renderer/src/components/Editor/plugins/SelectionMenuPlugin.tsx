@@ -1,28 +1,32 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { mergeRegister } from '@lexical/utils'
+import { $findMatchingParent, mergeRegister } from '@lexical/utils'
 import { Button } from '@renderer/components/primitives/Button'
 import { LoadingText } from '@renderer/components/primitives/LoadingText'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { generateImprovementSuggestions } from '@renderer/services/ai'
-import { cn } from '@renderer/utils'
+import { cn, isValidUrl } from '@renderer/utils'
 import { useMutation } from '@tanstack/react-query'
 import {
   $getRoot,
   $getSelection,
   $isRangeSelection,
   $isRootNode,
+  $setSelection,
   FORMAT_TEXT_COMMAND,
   getDOMSelection,
   LexicalNode,
   TextFormatType
 } from 'lexical'
 import { useCallback, useEffect, useState } from 'react'
-import { Menu, MenuItem } from 'react-aria-components'
+import { Form, Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { LuSparkles } from 'react-icons/lu'
+import { LuCheck, LuPencilLine, LuSparkles, LuX } from 'react-icons/lu'
 import { GrBold, GrUnderline, GrItalic } from 'react-icons/gr'
+import { IoIosLink } from 'react-icons/io'
 import { IconButton } from '@renderer/components/primitives/IconButton'
+import { $isLinkNode, $toggleLink } from '@lexical/link'
+import { Input } from '@renderer/components/primitives/Input'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -103,6 +107,10 @@ export const SelectionMenuPlugin = ({
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
+  const [linkUrl, setLinkUrl] = useState<string | null>(null)
+  const [linkUrlError, setLinkUrlError] = useState<string | null>(null)
+  const [isCreatingLink, setIsCreatingLink] = useState(false)
+  const [isEditingLink, setIsEditingLink] = useState(false)
 
   const { mutate: improve, isPending: isImproving } = useMutation({
     mutationFn: generateImprovementSuggestions,
@@ -112,6 +120,10 @@ export const SelectionMenuPlugin = ({
   useEffect(() => {
     if (!isOpen) {
       setImprovementSuggestions([])
+      setIsCreatingLink(false)
+      setIsEditingLink(false)
+      setLinkUrl(null)
+      setLinkUrlError(null)
     }
   }, [isOpen])
 
@@ -152,6 +164,38 @@ export const SelectionMenuPlugin = ({
     [editor]
   )
 
+  const handleToggleLink = useCallback(() => {
+    if (linkUrl) {
+      editor.update(() => {
+        $toggleLink(null)
+      })
+    } else {
+      setIsCreatingLink(true)
+    }
+  }, [editor, linkUrl])
+
+  const handleLinkSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      const formData = new FormData(event.target as HTMLFormElement)
+      const link = formData.get('link') as string
+
+      if (!link || !isValidUrl(link)) {
+        setLinkUrlError('Invalid URL')
+        return
+      }
+
+      editor.update(() => {
+        $toggleLink(link, {
+          target: '_blank',
+          rel: 'noreferrer'
+        })
+        $setSelection(null)
+      })
+    },
+    [editor]
+  )
+
   useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(() => {
@@ -185,6 +229,10 @@ export const SelectionMenuPlugin = ({
           setIsBold(selection.hasFormat('bold'))
           setIsItalic(selection.hasFormat('italic'))
           setIsUnderline(selection.hasFormat('underline'))
+
+          const linkNode = $findMatchingParent(selection.anchor.getNode(), $isLinkNode)
+
+          setLinkUrl(linkNode?.getURL() || null)
 
           setPosition({
             top: selectionRect.y + selectionRect.height - anchorRect.y,
@@ -228,13 +276,64 @@ export const SelectionMenuPlugin = ({
           Icon={GrUnderline}
           iconProps={{ strokeWidth: 0.5 }}
         />
+        <div className="w-px h-full bg-muted" />
+        <IconButton
+          onPress={handleToggleLink}
+          className={cn(linkUrl && 'bg-muted-light')}
+          iconClassName={cn(!linkUrl && 'text-muted-foreground')}
+          Icon={IoIosLink}
+        />
       </div>
     )
   }
 
   return createPortal(
     <div style={{ position: 'absolute', top: position?.top, left: position?.left }}>
-      <div className="mt-2 font-sans">
+      <div className="mt-2 font-sans flex flex-col gap-2">
+        {linkUrl && !isEditingLink && (
+          <div className="flex flex-row gap-2 items-center bg-background border border-muted rounded-lg px-4 py-3">
+            <a
+              href={linkUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="underline text-primary flex-1"
+            >
+              {linkUrl}
+            </a>
+            <IconButton type="button" Icon={LuPencilLine} onPress={() => setIsEditingLink(true)} />
+          </div>
+        )}
+        {(isCreatingLink || isEditingLink) && (
+          <Form
+            className="flex flex-row gap-2 items-center bg-background border border-muted rounded-lg p-2"
+            onSubmit={handleLinkSubmit}
+          >
+            <div className="flex flex-col gap-1">
+              <Input
+                type="text"
+                name="link"
+                placeholder="Enter link"
+                autoFocus={isCreatingLink}
+                defaultValue={linkUrl || 'https://'}
+                onChange={() => {
+                  setLinkUrlError(null)
+                }}
+                isError={!!linkUrlError}
+              />
+              {linkUrlError && <i className="text-xs text-destructive">{linkUrlError}</i>}
+            </div>
+            <IconButton
+              type="button"
+              Icon={LuX}
+              onPress={() => {
+                setIsEditingLink(false)
+                setIsCreatingLink(false)
+                setLinkUrlError(null)
+              }}
+            />
+            <IconButton type="submit" Icon={LuCheck} />
+          </Form>
+        )}
         {(improvementSuggestions.length > 0 || isImproving) && (
           <ImprovementSuggestionMenu
             suggestions={improvementSuggestions}
@@ -243,7 +342,7 @@ export const SelectionMenuPlugin = ({
             onClose={() => setIsOpen(false)}
           />
         )}
-        {improvementSuggestions.length === 0 && !isImproving && (
+        {improvementSuggestions.length === 0 && !isImproving && !isCreatingLink && (
           <div className="flex flex-row gap-2">
             {renderFormattingMenu()}
             <Button

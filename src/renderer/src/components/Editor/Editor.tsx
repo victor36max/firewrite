@@ -29,6 +29,7 @@ import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin'
 import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -110,6 +111,7 @@ export const Editor = (): React.JSX.Element | null => {
       <SlashMenuPlugin />
       <AutocompletePlugin />
       <SelectionMenuPlugin anchorElement={anchorElement} />
+      <LinkPlugin />
     </LexicalComposer>
   )
 }
