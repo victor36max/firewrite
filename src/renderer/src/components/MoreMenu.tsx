@@ -7,6 +7,7 @@ import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdSt
 import { DeleteNoteDialog } from './DeleteNoteDialog'
 import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
+import { useToast } from '@renderer/hooks/useToast'
 
 export const MoreMenuItem = ({ className, children, ...props }: MenuItemProps) => {
   return (
@@ -33,10 +34,15 @@ export const MoreMenu = () => {
     select: (note) => note.title
   })
   const { getMarkdownContent } = useLexicalEditorStore()
-
+  const { showToast } = useToast()
   const exportMarkdown = async () => {
     const markdown = await getMarkdownContent()
     if (!markdown) {
+      showToast({
+        title: 'Error',
+        description: 'No content to export',
+        variant: 'error'
+      })
       return
     }
     const markdownWithTitle = `# ${title}\n\n${markdown}`
