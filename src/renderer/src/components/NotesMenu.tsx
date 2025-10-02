@@ -1,17 +1,18 @@
 import { useCreateNoteMutation } from '@renderer/hooks/mutations/useCreateNoteMutation'
-import { useDeleteNoteMutation } from '@renderer/hooks/mutations/useDeleteNoteMutation'
 import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
 import { Note } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { SettingsDialog } from './settings/SettingsDialog'
 import { IconButton } from './primitives/IconButton'
 import { LuPlus } from 'react-icons/lu'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Menu, MenuItem } from 'react-aria-components'
+import { DeleteNoteDialog } from './DeleteNoteDialog'
 
 export const NotesMenu = (): React.JSX.Element => {
+  const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
   const { data: notes } = useNotesQuery()
   const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
   const { mutate: createNote } = useCreateNoteMutation({
@@ -19,21 +20,15 @@ export const NotesMenu = (): React.JSX.Element => {
       setCurrentNoteId(id)
     }
   })
-  const { mutate: deleteNote } = useDeleteNoteMutation({
-    onSuccess: (deletedNoteId) => {
-      const nextNoteId = notes?.find((note) => note.id !== deletedNoteId)?.id || null
-      setCurrentNoteId(nextNoteId)
-    }
-  })
 
   useHotkeys(
     ['ctrl+backspace', 'meta+backspace'],
     () => {
       if (currentNoteId) {
-        deleteNote(currentNoteId)
+        setIsDeleteNoteDialogOpen(true)
       }
     },
-    [currentNoteId, deleteNote]
+    [currentNoteId, setIsDeleteNoteDialogOpen]
   )
 
   useHotkeys(
@@ -91,6 +86,13 @@ export const NotesMenu = (): React.JSX.Element => {
       >
         {notes?.map(renderNoteMenuItem)}
       </Menu>
+      {currentNoteId && (
+        <DeleteNoteDialog
+          noteId={currentNoteId}
+          isOpen={isDeleteNoteDialogOpen}
+          onOpenChange={setIsDeleteNoteDialogOpen}
+        />
+      )}
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { tv } from 'tailwind-variants'
 
 interface ButtonProps extends AriaButtonProps {
   className?: string
-  variant?: 'default' | 'primary' | 'secondary'
+  variant?: 'default' | 'primary' | 'secondary' | 'destructive'
   size?: 'default' | 'sm' | 'lg'
 }
 
@@ -21,7 +21,8 @@ export const Button = ({
       variant: {
         default: 'hover:bg-muted-light',
         primary: 'bg-primary text-primary-foreground hover:bg-primary-dark',
-        secondary: 'border border-muted bg-background hover:bg-muted-light'
+        secondary: 'border border-muted bg-background hover:bg-muted-light',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive-dark'
       },
       size: {
         default: 'px-3 py-2 text-sm font-medium rounded-md',

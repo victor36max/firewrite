@@ -13,6 +13,8 @@
   --color-primary-dark: #c13e20;
   --color-primary-foreground: #ffffff;
   --color-destructive: #ef4444;
+  --color-destructive-dark: #d13e3e;
+  --color-destructive-foreground: #ffffff;
 }
 
 @utility prose {
