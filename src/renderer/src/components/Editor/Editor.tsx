@@ -30,13 +30,14 @@ import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorSt
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+import { removeAutocompleteNodes } from '@renderer/utils'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
   const { data: noteContent } = useCurrentNoteContent()
   const updateNote = useUpdateCurrentNote()
   const autoSave = useDebouncedCallback((editorState: EditorState) => {
-    updateNote({ content: JSON.stringify(editorState.toJSON()) })
+    updateNote({ content: JSON.stringify(removeAutocompleteNodes(editorState.toJSON())) })
   }, 1000)
   const setEditor = useLexicalEditorStore((store) => store.setEditor)
 

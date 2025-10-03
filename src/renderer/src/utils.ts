@@ -1,5 +1,6 @@
 import { twMerge } from 'tailwind-merge'
 import { ClassValue, clsx } from 'clsx'
+import { SerializedEditorState, SerializedLexicalNode } from 'lexical'
 
 export const cn = (...classes: ClassValue[]): string => {
   return twMerge(clsx(classes))
@@ -9,4 +10,30 @@ export const isValidUrl = (url: string): boolean => {
   const regex =
     /^(https:\/\/)(?:localhost|(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3})|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+))(?::\d{2,5})?(?:[/?#][^\s]*)?$/i
   return regex.test(url)
+}
+
+export const removeAutocompleteNodes = (
+  serializedNodeState: SerializedEditorState
+): SerializedEditorState => {
+  const removeAutocompleteChildren = (node: SerializedLexicalNode) => {
+    if (node.type === 'autocomplete') {
+      return null
+    }
+
+    if ('children' in node && Array.isArray(node.children)) {
+      return {
+        ...node,
+        children: node.children
+          .map(removeAutocompleteChildren)
+          .filter((child): child is SerializedLexicalNode => child !== null)
+      }
+    }
+
+    return node
+  }
+
+  return {
+    ...serializedNodeState,
+    root: removeAutocompleteChildren(serializedNodeState.root)
+  }
 }
