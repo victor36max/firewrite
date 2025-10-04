@@ -6,6 +6,7 @@ import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
 import { Button } from './primitives/Button'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
+import { useToast } from '@renderer/hooks/useToast'
 
 interface DeleteNoteDialogProps {
   noteId: string
@@ -17,6 +18,7 @@ interface DeleteNoteDialogProps {
 export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDialogProps) => {
   const { data: notes } = useNotesQuery()
   const { setCurrentNoteId } = useCurrentNoteIdStore()
+  const { showToast } = useToast()
   const { data: title } = useCurrentNote({
     select: (note) => note.title
   })
@@ -25,6 +27,11 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
       const nextNoteId = notes?.find((note) => note.id !== deletedNoteId)?.id || null
       setCurrentNoteId(nextNoteId)
       onOpenChange?.(false)
+      showToast({
+        title: 'Note deleted',
+        description: `Note ${title || 'Untitled'} deleted successfully`,
+        variant: 'success'
+      })
     }
   })
   return (
@@ -39,7 +46,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
               <Heading slot="title" className="text-lg font-semibold">
                 Delete Note
               </Heading>
-              <IconButton slot="close" Icon={LuX} />
+              <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
             <div className="p-4 space-y-4">
               <div>Are you sure you want to delete {title || 'Untitled'}?</div>
@@ -47,7 +54,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
                 <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={() => deleteNote(noteId)}>
+                <Button variant="destructive" onClick={() => deleteNote(noteId)} autoFocus>
                   Delete
                 </Button>
               </div>

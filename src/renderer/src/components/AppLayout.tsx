@@ -1,3 +1,4 @@
+import { cn } from '@renderer/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -43,29 +44,43 @@ export const AppLayout = ({
 
   const renderSideMenuHandle = useCallback((): React.JSX.Element => {
     return (
-      <div className="w-px h-screen bg-muted relative">
+      <div
+        className={cn(
+          'w-px h-screen bg-muted relative',
+          isDraggingSideMenuHandle && 'w-1 bg-primary/10'
+        )}
+      >
         <div
-          className="absolute top-0 left-0 w-4 h-full cursor-ew-resize -translate-x-1/2"
-          onMouseDown={() => {
+          className="absolute top-0 left-0 w-4 h-full cursor-col-resize -translate-x-1/2"
+          onMouseDown={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
             setIsDraggingSideMenuHandle(true)
           }}
         />
       </div>
     )
-  }, [setIsDraggingSideMenuHandle])
+  }, [isDraggingSideMenuHandle])
 
   const renderChatHandle = useCallback((): React.JSX.Element => {
     return (
-      <div className="w-px h-screen bg-muted relative">
+      <div
+        className={cn(
+          'w-px h-screen bg-muted relative',
+          isDraggingChatHandle && 'w-1 bg-primary/10'
+        )}
+      >
         <div
-          className="absolute top-0 left-0 w-4 h-full cursor-ew-resize -translate-x-1/2"
-          onMouseDown={() => {
+          className="absolute top-0 left-0 w-4 h-full cursor-col-resize -translate-x-1/2"
+          onMouseDown={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
             setIsDraggingChatHandle(true)
           }}
         />
       </div>
     )
-  }, [setIsDraggingChatHandle])
+  }, [isDraggingChatHandle])
 
   useEffect(() => {
     if (!isDraggingSideMenuHandle) {
@@ -74,6 +89,7 @@ export const AppLayout = ({
 
     const handleMouseMove = (e: MouseEvent): void => {
       e.preventDefault()
+      e.stopPropagation()
       const minWidth = 150
       const maxWidth = window.innerWidth - 640
       setSideMenuWidth(Math.min(maxWidth, Math.max(minWidth, e.clientX)))
@@ -98,6 +114,7 @@ export const AppLayout = ({
 
     const handleMouseMove = (e: MouseEvent): void => {
       e.preventDefault()
+      e.stopPropagation()
       const minWidth = 150
       const maxWidth = window.innerWidth - 640
       setChatWidth(Math.min(maxWidth, Math.max(minWidth, window.innerWidth - e.clientX)))
