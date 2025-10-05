@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, safeStorage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -12,7 +12,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false
     }
   })
@@ -51,6 +51,25 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  // Handler for encrypting a string
+  ipcMain.handle('encryptString', async (_event, plainText) => {
+    console.log('encryptString', plainText)
+    if (!safeStorage.isEncryptionAvailable()) {
+      throw new Error('Encryption is not available on this platform.')
+    }
+    const encryptedBuffer = safeStorage.encryptString(plainText)
+    return encryptedBuffer.toString('base64') // Convert to base64 for IPC
+  })
+
+  // Handler for decrypting a string
+  ipcMain.handle('decryptString', async (_event, encryptedBase64) => {
+    if (!safeStorage.isEncryptionAvailable()) {
+      throw new Error('Encryption is not available on this platform.')
+    }
+    const encryptedBuffer = Buffer.from(encryptedBase64, 'base64')
+    return safeStorage.decryptString(encryptedBuffer)
+  })
 
   createWindow()
 

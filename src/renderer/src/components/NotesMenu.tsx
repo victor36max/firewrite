@@ -8,7 +8,7 @@ import { SettingsDialog } from './settings/SettingsDialog'
 import { IconButton } from './primitives/IconButton'
 import { LuPlus } from 'react-icons/lu'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Menu, MenuItem } from 'react-aria-components'
+import { GridList, GridListItem } from 'react-aria-components'
 import { DeleteNoteDialog } from './DeleteNoteDialog'
 
 export const NotesMenu = (): React.JSX.Element => {
@@ -48,7 +48,7 @@ export const NotesMenu = (): React.JSX.Element => {
   const renderNoteMenuItem = useCallback((note: Note): React.JSX.Element => {
     const noteTitle = note.title || 'New Note'
     return (
-      <MenuItem
+      <GridListItem
         aria-label={noteTitle}
         id={note.id}
         key={note.id}
@@ -63,7 +63,7 @@ export const NotesMenu = (): React.JSX.Element => {
         }
       >
         {noteTitle}
-      </MenuItem>
+      </GridListItem>
     )
   }, [])
 
@@ -73,10 +73,11 @@ export const NotesMenu = (): React.JSX.Element => {
         <SettingsDialog />
         <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={LuPlus} />
       </div>
-      <Menu
+      <GridList
         className="outline-none"
         aria-label="Notes"
         selectionMode="single"
+        disallowEmptySelection
         selectedKeys={currentNoteId ? new Set([currentNoteId]) : new Set()}
         onSelectionChange={(keys) => {
           if (keys === 'all') return
@@ -85,7 +86,7 @@ export const NotesMenu = (): React.JSX.Element => {
         }}
       >
         {notes?.map(renderNoteMenuItem)}
-      </Menu>
+      </GridList>
       {currentNoteId && (
         <DeleteNoteDialog
           noteId={currentNoteId}

@@ -58,7 +58,7 @@ export const MoreMenu = () => {
   return (
     <>
       <MenuTrigger>
-        <IconButton aria-label="Menu" Icon={LuEllipsis} />
+        <IconButton aria-label="Menu" Icon={LuEllipsis} excludeFromTabOrder />
         <Popover placement="bottom right">
           <Menu className="outline-none rounded-lg border border-muted min-w-24">
             <MoreMenuItem onAction={exportMarkdown}>Export Markdown</MoreMenuItem>

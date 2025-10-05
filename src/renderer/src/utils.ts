@@ -37,3 +37,7 @@ export const removeAutocompleteNodes = (
     root: removeAutocompleteChildren(serializedNodeState.root)
   }
 }
+
+export const isElectron = () => {
+  return window.api !== undefined && window.electron !== undefined
+}

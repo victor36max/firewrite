@@ -1,8 +1,11 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  encryptString: (plainText) => ipcRenderer.invoke('encryptString', plainText),
+  decryptString: (encryptedBase64) => ipcRenderer.invoke('decryptString', encryptedBase64)
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

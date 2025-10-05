@@ -122,7 +122,7 @@ export const Chat = (): React.JSX.Element => {
       </div>
       <Form
         ref={formRef}
-        className="py-4 px-6 flex flex-row gap-2 items-center bg-background border border-muted rounded-lg"
+        className="py-4 px-6 flex flex-row gap-2 items-center bg-background border-t border-muted"
         onSubmit={handleSubmit}
       >
         <ChatTextArea name="message" isRequired minLength={1} />
