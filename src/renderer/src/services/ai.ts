@@ -1,19 +1,93 @@
 import * as ai from 'ai'
 import * as tavily from './tavily'
-import { createAzure } from '@ai-sdk/azure'
+import { createOpenAI } from '@ai-sdk/openai'
+import { createAnthropic } from '@ai-sdk/anthropic'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createXai } from '@ai-sdk/xai'
+import { createDeepSeek } from '@ai-sdk/deepseek'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { z } from 'zod'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 
-const getModel = () => {
-  const { azureApiKey, azureResourceName } = useSettingsStore.getState()
-  if (azureApiKey && azureResourceName) {
-    return createAzure({
-      apiKey: azureApiKey,
-      resourceName: azureResourceName
-    })('gpt-4o-mini')
-  }
+type BaseLlmParams = {
+  model: string
+  headers?: Record<string, string>
+}
 
-  return null
+export type CloudLlmParams = BaseLlmParams & {
+  baseUrl?: string
+  apiKey: string
+}
+
+export type CustomLlmParams = BaseLlmParams & {
+  name: string
+  baseUrl: string
+  apiKey: string
+}
+
+export type LlmConfig = {
+  xai: CloudLlmParams
+  openai: CloudLlmParams
+  anthropic: CloudLlmParams
+  google: CloudLlmParams
+  deepseek: CloudLlmParams
+  openaiCompatible: CustomLlmParams
+}
+
+export type LlmProvider = keyof LlmConfig
+
+const getModel = () => {
+  const { llmProvider, llmConfig } = useSettingsStore.getState()
+  if (!llmProvider) {
+    throw new Error('No LLM provider found')
+  }
+  switch (llmProvider) {
+    case 'xai': {
+      const params = llmConfig[llmProvider] as LlmConfig['xai']
+      return createXai({
+        apiKey: params.apiKey,
+        headers: params.headers,
+        baseURL: params.baseUrl
+      })(params.model)
+    }
+    case 'openai': {
+      const params = llmConfig[llmProvider] as LlmConfig['openai']
+      return createOpenAI({
+        apiKey: params.apiKey,
+        headers: params.headers,
+        baseURL: params.baseUrl
+      })(params.model)
+    }
+    case 'anthropic': {
+      const params = llmConfig[llmProvider] as LlmConfig['anthropic']
+      return createAnthropic({
+        apiKey: params.apiKey,
+        headers: params.headers,
+        baseURL: params.baseUrl
+      })(params.model)
+    }
+    case 'google': {
+      const params = llmConfig[llmProvider] as LlmConfig['google']
+      return createGoogleGenerativeAI({
+        apiKey: params.apiKey
+      })(params.model)
+    }
+    case 'deepseek': {
+      const params = llmConfig[llmProvider] as LlmConfig['deepseek']
+      return createDeepSeek({
+        apiKey: params.apiKey
+      })(params.model)
+    }
+    case 'openaiCompatible': {
+      const params = llmConfig[llmProvider] as LlmConfig['openaiCompatible']
+      return createOpenAICompatible({
+        apiKey: params.apiKey,
+        baseURL: params.baseUrl,
+        name: params.name,
+        headers: params.headers
+      })(params.model)
+    }
+  }
 }
 
 export const generateAutocompleteSuggestion = async ({
@@ -28,9 +102,6 @@ export const generateAutocompleteSuggestion = async ({
   next: string | null
 }): Promise<string> => {
   const model = getModel()
-  if (!model) {
-    throw new Error('No model found')
-  }
 
   const result = await ai.generateText({
     model,
@@ -108,6 +179,7 @@ IMPROVEMENT CRITERIA:
 5. **Quality**: Each suggestion should be genuinely better than the original
 
 OUTPUT FORMAT:
+- Return a JSON array of improvement suggestions
 - Return exactly 5 improvement suggestions
 - Each suggestion should be the complete replacement text for the selection
 - Do not include quotes, markdown, or any formatting
@@ -133,12 +205,11 @@ Output: [
     <paragraph>${paragraph}</paragraph>
     <selection>${selection}</selection>
     `,
-    schema: z.object({
-      improvementSuggestions: z.array(z.string())
-    })
+    output: 'array',
+    schema: z.string()
   })
 
-  return result.object.improvementSuggestions
+  return result.object
 }
 
 export const generateResearch = async ({
@@ -209,6 +280,7 @@ export const streamChatResponse = async ({
     content: string
   }[]
 }) => {
+  const { tavilyApiKey } = useSettingsStore.getState()
   const model = getModel()
   if (!model) {
     throw new Error('No model found')
@@ -235,16 +307,18 @@ CONTEXT:
 <content>${content}</content>`,
     messages,
     tools: {
-      webSearch: ai.tool({
-        description: 'Search the web for information',
-        inputSchema: z.object({
-          query: z.string(),
-          maxResults: z.number().optional()
-        }),
-        execute: async (params) => {
-          const result = await tavily.search(params)
-          return result.results
-        }
+      ...(tavilyApiKey && {
+        webSearch: ai.tool({
+          description: 'Search the web for information',
+          inputSchema: z.object({
+            query: z.string(),
+            maxResults: z.number().optional()
+          }),
+          execute: async (params) => {
+            const result = await tavily.search(params)
+            return result.results
+          }
+        })
       })
     },
     stopWhen: ai.stepCountIs(10)

@@ -1,3 +1,4 @@
+import { LlmProvider } from '@renderer/services/ai'
 import { isElectron } from '@renderer/utils'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
@@ -19,20 +20,23 @@ const encryptedLocalStorage = {
   }
 }
 
-export const useSettingsStore = create<{
-  azureApiKey: string | null
-  setAzureApiKey: (key: string | null) => void
-  azureResourceName: string | null
-  setAzureResourceName: (name: string | null) => void
+type SettingsStore = {
+  llmProvider: LlmProvider | null
+  setLlmProvider: (provider: LlmProvider | null) => void
+  llmConfig: Record<LlmProvider, unknown>
+  setLlmConfig: (provider: LlmProvider, config: unknown | undefined) => void
   tavilyApiKey: string | null
   setTavilyApiKey: (key: string | null) => void
-}>()(
+}
+
+export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
-      azureApiKey: null,
-      setAzureApiKey: (key) => set({ azureApiKey: key }),
-      azureResourceName: null,
-      setAzureResourceName: (name) => set({ azureResourceName: name }),
+      llmProvider: null,
+      setLlmProvider: (provider) => set({ llmProvider: provider }),
+      llmConfig: {} as Record<LlmProvider, unknown>,
+      setLlmConfig: (provider, config) =>
+        set(({ llmConfig }) => ({ llmConfig: { ...llmConfig, [provider]: config } })),
       tavilyApiKey: null,
       setTavilyApiKey: (key) => set({ tavilyApiKey: key })
     }),
@@ -42,3 +46,7 @@ export const useSettingsStore = create<{
     }
   )
 )
+
+export const selectIfLlmConfigured = (store: SettingsStore) => {
+  return store.llmProvider && store.llmConfig[store.llmProvider]
+}

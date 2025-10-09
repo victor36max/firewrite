@@ -12,6 +12,7 @@ import { IconButton } from '../primitives/IconButton'
 import { cn } from '@renderer/utils'
 import { useState } from 'react'
 import { LlmSettingsPanel } from './LlmSettingsPanel'
+import { ToolsSettingsPanel } from './ToolsSettingsPanel'
 
 const SettingCategoryMenuItem = ({ id, title }: { id: string; title: string }) => {
   return (
@@ -70,7 +71,7 @@ export const SettingsDialog = () => {
               </GridList>
               <div className="flex-1 border-l border-muted">
                 {settingCategoryId === 'llm' && <LlmSettingsPanel />}
-                {settingCategoryId === 'tools' && <div>Tools</div>}
+                {settingCategoryId === 'tools' && <ToolsSettingsPanel />}
               </div>
             </div>
           </Dialog>

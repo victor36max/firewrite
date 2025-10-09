@@ -1,3 +1,4 @@
+import { cn } from '@renderer/utils'
 import { Button, ButtonProps } from 'react-aria-components'
 import { IconBaseProps, IconType } from 'react-icons'
 import { tv } from 'tailwind-variants'
@@ -59,7 +60,13 @@ export const IconButton = ({
 
   const { button, icon } = variants({ variant, size })
   return (
-    <Button type="button" className={button({ className })} {...props}>
+    <Button
+      type="button"
+      className={button({
+        className: cn(props.isDisabled && 'opacity-50 cursor-not-allowed', className)
+      })}
+      {...props}
+    >
       <Icon strokeWidth={1.25} className={icon({ className: iconClassName })} {...iconProps} />
     </Button>
   )

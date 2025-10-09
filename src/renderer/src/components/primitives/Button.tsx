@@ -37,7 +37,7 @@ export const Button = ({
       className={variants({
         variant,
         size,
-        className: cn(isDisabled && 'opacity-50', className)
+        className: cn(isDisabled && 'opacity-50 cursor-not-allowed', className)
       })}
       isDisabled={isDisabled}
       {...props}

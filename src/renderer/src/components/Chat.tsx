@@ -9,6 +9,8 @@ import { LuArrowUp } from 'react-icons/lu'
 import { ChatTextArea } from './ChatTextArea'
 import { LoadingText } from './primitives/LoadingText'
 import { Form } from 'react-aria-components'
+import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
+import { useToast } from '@renderer/hooks/useToast'
 
 type ChatMessage = {
   id: string
@@ -17,6 +19,7 @@ type ChatMessage = {
 }
 
 export const Chat = (): React.JSX.Element => {
+  const { showToast } = useToast()
   const scrollViewRef = useRef<HTMLDivElement>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const formRef = useRef<HTMLFormElement>(null)
@@ -24,7 +27,7 @@ export const Chat = (): React.JSX.Element => {
     select: (note) => note.title
   })
   const getTextContent = useLexicalEditorStore((store) => store.getTextContent)
-
+  const isLlmConfigured = useSettingsStore(selectIfLlmConfigured)
   const { mutate: sendMessage, isPending: isResponding } = useMutation({
     mutationFn: async (newMessages: ChatMessage[]) => {
       const content = await getTextContent()
@@ -45,6 +48,13 @@ export const Chat = (): React.JSX.Element => {
           { id: messageId, role: 'assistant', content: currentMessage }
         ])
       }
+    },
+    onError: (error) => {
+      showToast({
+        title: 'Error',
+        description: error.message,
+        variant: 'error'
+      })
     }
   })
 
@@ -128,7 +138,7 @@ export const Chat = (): React.JSX.Element => {
         <ChatTextArea name="message" isRequired minLength={1} />
         <IconButton
           type="submit"
-          isDisabled={isResponding}
+          isDisabled={isResponding || !isLlmConfigured}
           Icon={LuArrowUp}
           className="rounded-full"
           variant="primary"

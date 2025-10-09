@@ -27,6 +27,8 @@ import { IoIosLink } from 'react-icons/io'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 import { $isLinkNode, $toggleLink } from '@lexical/link'
 import { Input } from '@renderer/components/primitives/Input'
+import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
+import { useToast } from '@renderer/hooks/useToast'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -97,6 +99,8 @@ export const SelectionMenuPlugin = ({
   const { data: title } = useCurrentNote({
     select: (note) => note.title
   })
+  const { showToast } = useToast()
+  const isLlmConfigured = useSettingsStore(selectIfLlmConfigured)
   const [editor] = useLexicalComposerContext()
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState<{
@@ -114,7 +118,14 @@ export const SelectionMenuPlugin = ({
 
   const { mutate: improve, isPending: isImproving } = useMutation({
     mutationFn: generateImprovementSuggestions,
-    onSuccess: setImprovementSuggestions
+    onSuccess: setImprovementSuggestions,
+    onError: (error) => {
+      showToast({
+        title: 'Error',
+        description: error.message,
+        variant: 'error'
+      })
+    }
   })
 
   useEffect(() => {
@@ -348,6 +359,7 @@ export const SelectionMenuPlugin = ({
             <Button
               variant="primary"
               onPress={handleImprove}
+              isDisabled={!isLlmConfigured}
               className="flex flex-row gap-2 items-center"
             >
               <LuSparkles className="w-4 h-4" />
