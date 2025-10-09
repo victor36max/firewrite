@@ -76,7 +76,8 @@ export const Editor = (): React.JSX.Element | null => {
             bold: 'FWEditor__bold',
             italic: 'FWEditor__italic',
             underline: 'FWEditor__underline'
-          }
+          },
+          quote: 'border-l-4 border-muted pl-4 !italic text-muted-foreground'
         },
         editorState: noteContent.content || undefined,
         onError: (error) => {

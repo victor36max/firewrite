@@ -26,11 +26,11 @@ export const Chat = (): React.JSX.Element => {
   const { data: title } = useCurrentNote({
     select: (note) => note.title
   })
-  const getTextContent = useLexicalEditorStore((store) => store.getTextContent)
+  const getMarkdownContent = useLexicalEditorStore((store) => store.getMarkdownContent)
   const isLlmConfigured = useSettingsStore(selectIfLlmConfigured)
   const { mutate: sendMessage, isPending: isResponding } = useMutation({
     mutationFn: async (newMessages: ChatMessage[]) => {
-      const content = await getTextContent()
+      const content = await getMarkdownContent()
       return streamChatResponse({
         title: title || '',
         content: content || '',

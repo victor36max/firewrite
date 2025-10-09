@@ -21,9 +21,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { Form, Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { LuCheck, LuPencilLine, LuSparkles, LuX } from 'react-icons/lu'
-import { GrBold, GrUnderline, GrItalic } from 'react-icons/gr'
-import { IoIosLink } from 'react-icons/io'
+import {
+  LuBold,
+  LuCheck,
+  LuItalic,
+  LuLink,
+  LuPencilLine,
+  LuSparkles,
+  LuUnderline,
+  LuX
+} from 'react-icons/lu'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 import { $isLinkNode, $toggleLink } from '@lexical/link'
 import { Input } from '@renderer/components/primitives/Input'
@@ -267,32 +274,33 @@ export const SelectionMenuPlugin = ({
           variant="default"
           onPress={() => handleFormat('bold')}
           className={cn(isBold && 'bg-muted-light')}
-          iconClassName={cn(!isBold && 'text-muted-foreground')}
-          Icon={GrBold}
-          iconProps={{ strokeWidth: 0.5 }}
+          iconClassName={cn('w-5 h-5', !isBold && 'text-muted-foreground')}
+          Icon={LuBold}
+          iconProps={{ strokeWidth: 2 }}
         />
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('italic')}
           className={cn(isItalic && 'bg-muted-light')}
-          iconClassName={cn(!isItalic && 'text-muted-foreground')}
-          Icon={GrItalic}
-          iconProps={{ strokeWidth: 0.5 }}
+          iconClassName={cn('w-5 h-5', !isItalic && 'text-muted-foreground')}
+          Icon={LuItalic}
+          iconProps={{ strokeWidth: 2 }}
         />
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('underline')}
           className={cn(isUnderline && 'bg-muted-light')}
-          iconClassName={cn(!isUnderline && 'text-muted-foreground')}
-          Icon={GrUnderline}
-          iconProps={{ strokeWidth: 0.5 }}
+          iconClassName={cn('w-5 h-5', !isUnderline && 'text-muted-foreground')}
+          Icon={LuUnderline}
+          iconProps={{ strokeWidth: 2 }}
         />
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={handleToggleLink}
           className={cn(linkUrl && 'bg-muted-light')}
-          iconClassName={cn(!linkUrl && 'text-muted-foreground')}
-          Icon={IoIosLink}
+          iconClassName={cn('w-5 h-5', !linkUrl && 'text-muted-foreground')}
+          Icon={LuLink}
+          iconProps={{ strokeWidth: 2 }}
         />
       </div>
     )

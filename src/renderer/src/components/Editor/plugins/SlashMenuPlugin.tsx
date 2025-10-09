@@ -18,11 +18,21 @@ import {
   INSERT_UNORDERED_LIST_COMMAND
 } from '@lexical/list'
 import { $setBlocksType } from '@lexical/selection'
-import { $createHeadingNode } from '@lexical/rich-text'
+import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@renderer/utils'
+import {
+  LuHeading1,
+  LuHeading2,
+  LuHeading3,
+  LuList,
+  LuListChecks,
+  LuListOrdered,
+  LuText,
+  LuTextQuote
+} from 'react-icons/lu'
 // import { INSERT_TABLE_COMMAND } from '@lexical/table'
 
 class ComponentPickerOption extends MenuOption {
@@ -51,6 +61,7 @@ class ComponentPickerOption extends MenuOption {
 const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => {
   return [
     new ComponentPickerOption('Paragraph', {
+      icon: <LuText />,
       keywords: ['normal', 'paragraph', 'p', 'text'],
       onSelect: () =>
         editor.update(() => {
@@ -64,6 +75,17 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
       (n) =>
         new ComponentPickerOption(`Heading ${n}`, {
           keywords: ['heading', 'header', `h${n}`],
+          icon: (() => {
+            switch (n) {
+              case 1:
+                return <LuHeading1 />
+              case 2:
+                return <LuHeading2 />
+              case 3:
+              default:
+                return <LuHeading3 />
+            }
+          })(),
           onSelect: () =>
             editor.update(() => {
               const selection = $getSelection()
@@ -78,16 +100,30 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
     //   onSelect: () => editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: '2', rows: '2' })
     // }),
     new ComponentPickerOption('Numbered List', {
+      icon: <LuListOrdered />,
       keywords: ['numbered list', 'ordered list', 'ol'],
       onSelect: () => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
     }),
     new ComponentPickerOption('Bulleted List', {
+      icon: <LuList />,
       keywords: ['bulleted list', 'unordered list', 'ul'],
       onSelect: () => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
     }),
     new ComponentPickerOption('Check List', {
+      icon: <LuListChecks />,
       keywords: ['check list', 'todo list'],
       onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
+    }),
+    new ComponentPickerOption('Quote', {
+      icon: <LuTextQuote />,
+      keywords: ['block quote'],
+      onSelect: () =>
+        editor.update(() => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection)) {
+            $setBlocksType(selection, () => $createQuoteNode())
+          }
+        })
     })
   ]
 }
@@ -123,11 +159,11 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
   ) => {
     if (!anchorElementRef.current) return null
     return createPortal(
-      <ul className="min-w-[150px] rounded-lg border border-muted bg-background">
+      <ul className="min-w-[180px] rounded-lg border border-muted bg-background">
         {menuOptions.map((option, i) => (
           <li
             className={cn(
-              `px-3 py-2`,
+              `px-3 py-2 flex flex-row gap-2 items-center`,
               selectedIndex === i && 'bg-muted-light',
               i !== 0 && 'border-t border-muted'
             )}
@@ -140,6 +176,7 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
               setHighlightedIndex(i)
             }}
           >
+            {option.icon}
             {option.title}
           </li>
         ))}
