@@ -161,7 +161,7 @@ export const generateImprovementSuggestions = async ({
     throw new Error('No model found')
   }
 
-  const result = await ai.generateObject({
+  const result = await ai.generateText({
     model,
     system: `You are an expert writing assistant specializing in text improvement and refinement. Your task is to analyze a selected piece of text within its broader context and provide 5 high-quality improvement suggestions.
 
@@ -182,7 +182,7 @@ OUTPUT FORMAT:
 - Return a JSON array of improvement suggestions
 - Return exactly 5 improvement suggestions
 - Each suggestion should be the complete replacement text for the selection
-- Do not include quotes, markdown, or any formatting
+- Do not include any additional formatting such as markdown or quotes around the JSON array
 - Ensure each suggestion is grammatically correct and contextually appropriate
 - Suggestions should be roughly the same length as the original selection
 
@@ -204,12 +204,14 @@ Output: [
     <content>${content}</content>
     <paragraph>${paragraph}</paragraph>
     <selection>${selection}</selection>
-    `,
-    output: 'array',
-    schema: z.string()
+    `
+    // output: 'array',
+    // schema: z.string()
   })
 
-  return result.object
+  console.log(result)
+
+  return JSON.parse(result.text)
 }
 
 export const generateResearch = async ({
