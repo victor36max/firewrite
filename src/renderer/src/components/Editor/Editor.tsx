@@ -80,12 +80,12 @@ export const Editor = (): React.JSX.Element | null => {
       <EditorRefPlugin editorRef={setEditor} />
       <RichTextPlugin
         contentEditable={
-          <div className="prose flex-1 relative" ref={setAnchorElement}>
+          <div className="prose relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
               className="focus:outline-none caret-primary"
               placeholder={() => (
-                <p className="text-muted-foreground absolute top-0 left-0 pointer-events-none">
+                <p className="text-muted-foreground absolute -top-4 left-0 pointer-events-none">
                   Start writing, or press &quot;/&quot; for formatting options.
                 </p>
               )}

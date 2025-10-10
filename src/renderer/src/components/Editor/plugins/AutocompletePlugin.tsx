@@ -7,7 +7,6 @@ import {
   $isRootNode,
   $setSelection,
   COMMAND_PRIORITY_LOW,
-  ElementNode,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_TAB_COMMAND,
   LexicalNode
@@ -17,7 +16,6 @@ import { mergeRegister } from '@lexical/utils'
 import { useMutation } from '@tanstack/react-query'
 import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
-import { $convertToMarkdownString, TRANSFORMERS } from '@lexical/markdown'
 
 const AUTOCOMPLETE_DELAY = 3000
 
@@ -49,9 +47,9 @@ const findTopLevelSiblingNodes = (node: LexicalNode) => {
       }
 
       return {
-        previous: previous as ElementNode,
-        current: current as ElementNode,
-        next: next as ElementNode
+        previous: prevTextContent,
+        current: current.getTextContent(),
+        next: nextTextContent
       }
     }
 
@@ -159,9 +157,9 @@ export const AutocompletePlugin = (): null => {
 
       genAutocomplete({
         title: note?.title || '',
-        previous: previous ? $convertToMarkdownString(TRANSFORMERS, previous) : null,
-        current: current ? $convertToMarkdownString(TRANSFORMERS, current) : null,
-        next: next ? $convertToMarkdownString(TRANSFORMERS, next) : null
+        previous,
+        current,
+        next
       })
     })
   }, [editor, genAutocomplete, note?.title])

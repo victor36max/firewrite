@@ -3,21 +3,30 @@ import { Editor } from './Editor'
 import { TitleInput } from './TitleInput'
 import { MoreMenu } from './MoreMenu'
 import { SavingStateIndicator } from './SavingStateIndicator'
+import { cn } from '@renderer/utils'
+
+const Container = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  return (
+    <div className={cn('px-6', className)}>
+      <div className="max-w-screen-sm mx-auto">{children}</div>
+    </div>
+  )
+}
 
 export const NoteEditor = (): React.JSX.Element | null => {
   const { currentNoteId } = useCurrentNoteIdStore()
   return (
-    <div className="flex-1 py-10 px-6 min-h-full flex">
-      <div className="max-w-screen-sm flex flex-col flex-1 mx-auto">
-        <div className="flex flex-col flex-1">
-          <div className="flex flex-row justify-between items-center gap-4">
-            <TitleInput key={'title-' + currentNoteId} />
-            <SavingStateIndicator />
-            <MoreMenu />
-          </div>
-          <Editor key={'editor-' + currentNoteId} />
+    <div className="min-h-full">
+      <Container className="pt-10 pb-2 -mb-2 bg-background/70 backdrop-blur-sm sticky top-0 z-10">
+        <div className="flex flex-row justify-between items-center gap-4">
+          <TitleInput key={'title-' + currentNoteId} />
+          <SavingStateIndicator />
+          <MoreMenu />
         </div>
-      </div>
+      </Container>
+      <Container className="pb-10">
+        <Editor key={'editor-' + currentNoteId} />
+      </Container>
     </div>
   )
 }

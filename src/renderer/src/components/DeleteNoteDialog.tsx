@@ -38,7 +38,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
       <ModalOverlay
         isDismissable
-        className="fixed inset-0 flex items-center justify-center bg-black/50"
+        className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
       >
         <Modal className="w-full max-w-screen-sm">
           <Dialog className="bg-background rounded-lg border border-muted outline-none">

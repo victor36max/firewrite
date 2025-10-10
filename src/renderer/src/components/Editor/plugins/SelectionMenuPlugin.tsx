@@ -160,7 +160,7 @@ export const SelectionMenuPlugin = ({
       improve({
         title: title || '',
         content: $convertToMarkdownString(TRANSFORMERS, rootNode),
-        paragraph: topLevelNode ? $convertToMarkdownString(TRANSFORMERS, topLevelNode) : '',
+        paragraph: topLevelNode ? topLevelNode.getTextContent() : '',
         selection: selectionText
       })
     })
