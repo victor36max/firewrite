@@ -12,6 +12,7 @@ import {
   $isRangeSelection,
   $isRootNode,
   $setSelection,
+  ElementNode,
   FORMAT_TEXT_COMMAND,
   getDOMSelection,
   LexicalNode,
@@ -36,6 +37,7 @@ import { $isLinkNode, $toggleLink } from '@lexical/link'
 import { Input } from '@renderer/components/primitives/Input'
 import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
 import { useToast } from '@renderer/hooks/useToast'
+import { $convertToMarkdownString, TRANSFORMERS } from '@lexical/markdown'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -46,7 +48,7 @@ const findTopLevelNode = (node: LexicalNode) => {
   while (current) {
     const parent = current.getParent()
     if ($isRootNode(parent)) {
-      return current
+      return current as ElementNode
     }
     current = parent
   }
@@ -151,14 +153,14 @@ export const SelectionMenuPlugin = ({
       if (!selection || !$isRangeSelection(selection)) {
         return
       }
-      const content = $getRoot().getTextContent()
-      const paragraph = findTopLevelNode(selection.anchor.getNode())?.getTextContent() || ''
+      const rootNode = $getRoot()
+      const topLevelNode = findTopLevelNode(selection.anchor.getNode())
       const selectionText = selection.getTextContent()
 
       improve({
         title: title || '',
-        content,
-        paragraph,
+        content: $convertToMarkdownString(TRANSFORMERS, rootNode),
+        paragraph: topLevelNode ? $convertToMarkdownString(TRANSFORMERS, topLevelNode) : '',
         selection: selectionText
       })
     })

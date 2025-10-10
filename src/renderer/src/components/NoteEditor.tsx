@@ -2,6 +2,7 @@ import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdSt
 import { Editor } from './Editor'
 import { TitleInput } from './TitleInput'
 import { MoreMenu } from './MoreMenu'
+import { SavingStateIndicator } from './SavingStateIndicator'
 
 export const NoteEditor = (): React.JSX.Element | null => {
   const { currentNoteId } = useCurrentNoteIdStore()
@@ -11,6 +12,7 @@ export const NoteEditor = (): React.JSX.Element | null => {
         <div className="flex flex-col flex-1">
           <div className="flex flex-row justify-between items-center gap-4">
             <TitleInput key={'title-' + currentNoteId} />
+            <SavingStateIndicator />
             <MoreMenu />
           </div>
           <Editor key={'editor-' + currentNoteId} />

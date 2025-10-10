@@ -7,6 +7,7 @@ import {
   $isRootNode,
   $setSelection,
   COMMAND_PRIORITY_LOW,
+  ElementNode,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_TAB_COMMAND,
   LexicalNode
@@ -16,6 +17,7 @@ import { mergeRegister } from '@lexical/utils'
 import { useMutation } from '@tanstack/react-query'
 import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
+import { $convertToMarkdownString, TRANSFORMERS } from '@lexical/markdown'
 
 const AUTOCOMPLETE_DELAY = 3000
 
@@ -24,9 +26,7 @@ const AUTOCOMPLETE_DELAY = 3000
 // eslint-disable-next-line react-refresh/only-export-components
 export const AUTOCOMPLETE_UUID = crypto.randomUUID()
 
-const findTopLevelSiblingNodes = (
-  node: LexicalNode
-): { previous: string | null; current: string | null; next: string | null } => {
+const findTopLevelSiblingNodes = (node: LexicalNode) => {
   let previous: LexicalNode | null = null
   let current: LexicalNode | null = node
   let next: LexicalNode | null = null
@@ -49,9 +49,9 @@ const findTopLevelSiblingNodes = (
       }
 
       return {
-        previous: prevTextContent,
-        current: current.getTextContent(),
-        next: nextTextContent
+        previous: previous as ElementNode,
+        current: current as ElementNode,
+        next: next as ElementNode
       }
     }
 
@@ -159,9 +159,9 @@ export const AutocompletePlugin = (): null => {
 
       genAutocomplete({
         title: note?.title || '',
-        previous,
-        current,
-        next
+        previous: previous ? $convertToMarkdownString(TRANSFORMERS, previous) : null,
+        current: current ? $convertToMarkdownString(TRANSFORMERS, current) : null,
+        next: next ? $convertToMarkdownString(TRANSFORMERS, next) : null
       })
     })
   }, [editor, genAutocomplete, note?.title])

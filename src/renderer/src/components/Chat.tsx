@@ -11,6 +11,7 @@ import { LoadingText } from './primitives/LoadingText'
 import { Form } from 'react-aria-components'
 import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
 import { useToast } from '@renderer/hooks/useToast'
+import rehypeExternalLinks from 'rehype-external-links'
 
 type ChatMessage = {
   id: string
@@ -116,7 +117,13 @@ export const Chat = (): React.JSX.Element => {
       return (
         <div key={message.id} className="px-6 flex flex-row justify-start">
           <div className="prose !font-sans">
-            <Markdown>{message.content}</Markdown>
+            <Markdown
+              rehypePlugins={[
+                [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
+              ]}
+            >
+              {message.content}
+            </Markdown>
           </div>
         </div>
       )

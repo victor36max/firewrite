@@ -53,7 +53,7 @@ export const SettingsDialog = () => {
               </Heading>
               <IconButton slot="close" Icon={LuX} />
             </div>
-            <div className="flex flex-row min-h-64">
+            <div className="flex flex-row">
               <GridList
                 className="outline-none w-48"
                 aria-label="Setting Categories"

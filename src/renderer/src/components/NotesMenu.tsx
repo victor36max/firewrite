@@ -68,8 +68,8 @@ export const NotesMenu = (): React.JSX.Element => {
   }, [])
 
   return (
-    <div className="py-4">
-      <div className="py-2 px-2 flex flex-row justify-between items-center">
+    <div className="pb-4">
+      <div className="pt-5 pb-2 px-2 flex flex-row justify-between items-center sticky top-0 bg-background">
         <SettingsDialog />
         <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={LuPlus} />
       </div>

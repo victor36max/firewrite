@@ -18,11 +18,7 @@ import { AutocompletePlugin } from './plugins/AutocompletePlugin'
 import { AutocompleteNode } from '@renderer/components/Editor/nodes/AutocompleteNode'
 // import TreeViewPlugin from './plugins/TreeViewPlugin'
 import { SlashMenuPlugin } from './plugins/SlashMenuPlugin'
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { useCurrentNoteContent } from '@renderer/hooks/useCurrentNoteContent'
-import { useUpdateCurrentNote } from '@renderer/hooks/useUpdateCurrentNote'
-import { useDebouncedCallback } from 'use-debounce'
-import { EditorState } from 'lexical'
 import { useState } from 'react'
 import { SelectionMenuPlugin } from './plugins/SelectionMenuPlugin'
 import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin'
@@ -30,15 +26,12 @@ import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorSt
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
-import { removeAutocompleteNodes } from '@renderer/utils'
+import { SavePlugin } from './plugins/SavePlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
   const { data: noteContent } = useCurrentNoteContent()
-  const updateNote = useUpdateCurrentNote()
-  const autoSave = useDebouncedCallback((editorState: EditorState) => {
-    updateNote({ content: JSON.stringify(removeAutocompleteNodes(editorState.toJSON())) })
-  }, 1000)
+
   const setEditor = useLexicalEditorStore((store) => store.setEditor)
 
   if (!noteContent) {
@@ -90,10 +83,10 @@ export const Editor = (): React.JSX.Element | null => {
           <div className="prose flex-1 relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
-              className="focus:outline-none"
+              className="focus:outline-none caret-primary"
               placeholder={() => (
                 <p className="text-muted-foreground absolute top-0 left-0 pointer-events-none">
-                  Start writing, or press "/" for formatting options.
+                  Start writing, or press &quot;/&quot; for formatting options.
                 </p>
               )}
             />
@@ -101,7 +94,7 @@ export const Editor = (): React.JSX.Element | null => {
         }
         ErrorBoundary={LexicalErrorBoundary}
       />
-      <OnChangePlugin onChange={autoSave} />
+      <SavePlugin />
       <HistoryPlugin />
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       <ListPlugin hasStrictIndent />
