@@ -67,6 +67,7 @@ export const LlmSettingsPanel = () => {
             className="flex-1"
             placeholder="Select LLM Provider"
             selectedKey={llmProviderFormState}
+            aria-label="LLM Provider"
             items={[
               { label: 'OpenAI', value: 'openai', icon: <SiOpenai /> },
               { label: 'xAI (Grok)', value: 'xai', icon: <XAI /> },

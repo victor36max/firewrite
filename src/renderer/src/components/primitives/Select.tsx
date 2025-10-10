@@ -7,7 +7,6 @@ import {
   ListBox,
   ListBoxItem
 } from 'react-aria-components'
-import { IconButton } from './IconButton'
 import { LuChevronDown } from 'react-icons/lu'
 import { cn } from '@renderer/utils'
 
@@ -24,7 +23,7 @@ export const Select = (props: SelectProps) => {
     <AriaSelect {...props}>
       <AriaButton
         className={
-          'w-full flex flex-row justify-between items-center p-2 border border-muted rounded-lg caret-primary outline-primary placeholder:text-muted-foreground'
+          'w-full flex flex-row justify-between items-center p-2 border border-muted rounded-lg outline-primary placeholder:text-muted-foreground cursor-pointer'
         }
       >
         <AriaSelectValue>
@@ -32,7 +31,7 @@ export const Select = (props: SelectProps) => {
             <span className={isPlaceholder ? 'text-muted-foreground' : ''}>{defaultChildren}</span>
           )}
         </AriaSelectValue>
-        <IconButton Icon={LuChevronDown} />
+        <LuChevronDown className="w-5 h-5" />
       </AriaButton>
       <Popover className="w-(--trigger-width)">
         <ListBox className="border border-muted rounded-lg bg-background">

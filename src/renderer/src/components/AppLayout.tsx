@@ -22,7 +22,9 @@ export const AppLayout = ({
 
   useHotkeys(
     ['ctrl+l', 'meta+l'],
-    () => {
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       setIsShowRightSideBar(!isShowRightSideBar)
     },
     {
@@ -33,7 +35,9 @@ export const AppLayout = ({
 
   useHotkeys(
     ['ctrl+b', 'meta+b'],
-    () => {
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       setIsShowLeftSideBar(!isShowLeftSideBar)
     },
     {

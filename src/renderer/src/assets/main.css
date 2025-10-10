@@ -25,8 +25,16 @@
 
 @utility prose {
   @apply font-serif;
-  /* Lists */
 
+  ::selection {
+    @apply bg-primary/10;
+  }
+
+  blockquote {
+    @apply border-l-4 border-muted pl-4 !italic text-muted-foreground;
+  }
+  
+  /* Lists */
   ol,
   ul {
     @apply my-4;

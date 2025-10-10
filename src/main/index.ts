@@ -54,7 +54,6 @@ app.whenReady().then(() => {
 
   // Handler for encrypting a string
   ipcMain.handle('encryptString', async (_event, plainText) => {
-    console.log('encryptString', plainText)
     if (!safeStorage.isEncryptionAvailable()) {
       throw new Error('Encryption is not available on this platform.')
     }
