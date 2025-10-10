@@ -12,7 +12,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <AriaInput
         ref={ref}
         className={cn(
-          'w-full p-2 border border-muted rounded-lg caret-primary outline-primary placeholder:text-muted-foreground',
+          'w-full p-2 border border-muted rounded-lg outline-primary placeholder:text-muted-foreground',
           isError && 'border-destructive',
           className
         )}

@@ -29,7 +29,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
       onOpenChange?.(false)
       showToast({
         title: 'Note deleted',
-        description: `Note ${title || 'Untitled'} deleted successfully`,
+        description: `Note ${title || 'New Note'} deleted successfully`,
         variant: 'success'
       })
     }
@@ -49,7 +49,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
               <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
             <div className="p-4 space-y-4">
-              <div>Are you sure you want to delete {title || 'Untitled'}?</div>
+              <div>Are you sure you want to delete {title || 'New Note'}?</div>
               <div className="flex flex-row gap-2 justify-end">
                 <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
                   Cancel

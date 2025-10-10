@@ -60,7 +60,7 @@ export const ChatTextArea = ({ className, onPressEnter, ...props }: ChatTextArea
     <TextArea
       ref={ref}
       className={cn(
-        'flex-1 p-2 rounded-lg border border-gray-300 caret-primary outline-primary placeholder:text-muted-foreground',
+        'flex-1 p-2 rounded-lg border border-gray-300 outline-primary placeholder:text-muted-foreground',
         inputClassName,
         className
       )}

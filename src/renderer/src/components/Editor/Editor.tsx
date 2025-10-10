@@ -90,10 +90,10 @@ export const Editor = (): React.JSX.Element | null => {
           <div className="prose flex-1 relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
-              className="focus:outline-none caret-primary"
+              className="focus:outline-none"
               placeholder={() => (
                 <p className="text-muted-foreground absolute top-0 left-0 pointer-events-none">
-                  Enter some text...
+                  Start writing, or press "/" for formatting options.
                 </p>
               )}
             />

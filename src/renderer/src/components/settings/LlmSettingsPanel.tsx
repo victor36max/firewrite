@@ -82,7 +82,7 @@ export const LlmSettingsPanel = () => {
           />
         </div>
         {llmProviderFormState && (
-          <Form onSubmit={handleLlmConfigFormSubmit} className="flex flex-col gap-2">
+          <Form onSubmit={handleLlmConfigFormSubmit} className="flex flex-col gap-4">
             <TextField
               name="apiKey"
               key={llmProviderFormState + 'apiKey'}

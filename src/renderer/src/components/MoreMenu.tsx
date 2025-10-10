@@ -30,7 +30,7 @@ export const MoreMenuItem = ({ className, children, ...props }: MenuItemProps) =
 export const MoreMenu = () => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
   const { currentNoteId } = useCurrentNoteIdStore()
-  const { data: title = 'Untitled' } = useCurrentNote({
+  const { data: title = 'New Note' } = useCurrentNote({
     select: (note) => note.title
   })
   const { getMarkdownContent } = useLexicalEditorStore()

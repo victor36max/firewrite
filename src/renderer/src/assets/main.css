@@ -23,12 +23,17 @@
   --color-info-foreground: #ffffff;
 }
 
+::selection {
+  @apply bg-primary/10;
+}
+
+input,
+textarea {
+  @apply caret-primary;
+}
+
 @utility prose {
   @apply font-serif;
-
-  ::selection {
-    @apply bg-primary/10;
-  }
 
   blockquote {
     @apply border-l-4 border-muted pl-4 !italic text-muted-foreground;

@@ -16,7 +16,7 @@ export const TitleInput = (): React.JSX.Element | null => {
   return (
     <Input
       type="text"
-      className="w-full h-10 text-2xl font-serif font-semibold outline-none placeholder:text-muted-foreground caret-primary"
+      className="w-full h-10 text-2xl font-serif font-semibold outline-none placeholder:text-muted-foreground"
       defaultValue={title}
       placeholder="Title"
       onBlur={(e) => updateNote({ title: e.target.value })}
