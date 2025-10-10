@@ -60,14 +60,10 @@ export const Chat = (): React.JSX.Element => {
   })
 
   const handleSubmit = useCallback(
-    (e?: React.FormEvent<HTMLFormElement>) => {
-      e?.preventDefault()
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
 
-      const formElement = e ? (e.target as HTMLFormElement) : formRef.current
-      if (!formElement) {
-        return
-      }
-
+      const formElement = e.target as HTMLFormElement
       const formData = new FormData(formElement)
       const message = formData.get('message')
       if (!message || typeof message !== 'string') {
@@ -147,7 +143,14 @@ export const Chat = (): React.JSX.Element => {
         className="py-4 px-6 flex flex-row gap-2 items-center bg-background border-t border-muted"
         onSubmit={handleSubmit}
       >
-        <ChatTextArea name="message" isRequired minLength={1} onPressEnter={handleSubmit} />
+        <ChatTextArea
+          name="message"
+          isRequired
+          minLength={1}
+          onPressEnter={() => {
+            formRef.current?.requestSubmit()
+          }}
+        />
         <IconButton
           type="submit"
           isDisabled={isResponding || !isLlmConfigured}
