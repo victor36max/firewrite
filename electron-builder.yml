@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: firewrite
+appId: app.firewrite
+productName: Firewrite
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: firewrite
+  executableName: Firewrite
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

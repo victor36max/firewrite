@@ -54,7 +54,7 @@ export const ChatTextArea = ({ className, onPressEnter, ...props }: ChatTextArea
     return () => {
       currentRef.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [onPressEnter])
 
   return (
     <TextArea
