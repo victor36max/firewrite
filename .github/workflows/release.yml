@@ -41,6 +41,9 @@ jobs:
 
       - name: build-mac
         if: matrix.os == 'macos-latest'
+        env:
+          CSC_LINK: ${{ secrets.MAC_CODE_SIGNING_CERT }}
+          CSC_KEY: ${{ secrets.MAC_CODE_SIGNING_CERT_PASSWORD }}
         run: pnpm build:mac
 
       - name: build-win

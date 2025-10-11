@@ -2,9 +2,9 @@ import { app, shell, BrowserWindow, ipcMain, safeStorage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import pkg from 'electron-updater'
+import electronUpdater from 'electron-updater'
 
-const { autoUpdater } = pkg
+const { autoUpdater } = electronUpdater
 
 function createWindow(): void {
   // Create the browser window.
@@ -96,5 +96,6 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 
 app.on('ready', () => {
+  autoUpdater.forceDevUpdateConfig = is.dev
   autoUpdater.checkForUpdatesAndNotify()
 })

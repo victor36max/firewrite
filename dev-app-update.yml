@@ -1,3 +1,4 @@
-provider: generic
-url: https://example.com/auto-updates
+owner: victor36max
+repo: firewrite
+provider: github
 updaterCacheDirName: firewrite-updater
