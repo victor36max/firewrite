@@ -2,7 +2,9 @@ import { app, shell, BrowserWindow, ipcMain, safeStorage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { autoUpdater } from 'electron-updater'
+import pkg from 'electron-updater'
+
+const { autoUpdater } = pkg
 
 function createWindow(): void {
   // Create the browser window.
