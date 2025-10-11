@@ -42,6 +42,9 @@ jobs:
       - name: build-mac
         if: matrix.os == 'macos-latest'
         env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           CSC_LINK: ${{ secrets.MAC_CODE_SIGNING_CERT }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CODE_SIGNING_CERT_PASSWORD }}
         run: pnpm build:mac
