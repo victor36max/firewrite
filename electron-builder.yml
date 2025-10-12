@@ -14,7 +14,7 @@ asarUnpack:
 win:
   target:
     - target: nsis
-      arch: [x64, arm64]
+      arch: [x64, arm64, universal]
   executableName: Firewrite
 nsis:
   artifactName: ${name}-${version}-${arch}-setup.${ext}
@@ -24,7 +24,7 @@ nsis:
 mac:
   target:
     - target: dmg
-      arch: [x64, arm64]
+      arch: [x64, arm64, universal]
   hardenedRuntime: true
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
