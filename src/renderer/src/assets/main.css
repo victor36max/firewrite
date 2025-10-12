@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-/* @plugin '@tailwindcss/typography'; */
 
 @theme {
   --font-sans: 'DM Sans', sans-serif;
@@ -27,16 +26,69 @@
   @apply bg-primary/10;
 }
 
+body {
+  @apply antialiased font-sans;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
 input,
 textarea {
   @apply caret-primary;
 }
 
+li.FWEditor__listItemChecked,
+li.FWEditor__listItemUnchecked {
+  @apply list-none relative ml-1 pl-6 outline-none;
+}
+
+li.FWEditor__listItemChecked {
+  text-decoration: line-through;
+}
+
+li.FWEditor__listItemChecked:not(:has(ul)):not(:has(ol)):before,
+li.FWEditor__listItemUnchecked:not(:has(ul)):not(:has(ol)):before {
+  @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
+}
+
+li.FWEditor__listItemChecked:before {
+  @apply bg-primary border-primary;
+}
+
+li.FWEditor__listItemChecked:after {
+  content: '';
+  cursor: pointer;
+  border-color: var(--color-primary-foreground);
+  border-style: solid;
+  position: absolute;
+  display: block;
+  top: 10px;
+  width: 5px;
+  left: 5px;
+  height: 10px;
+  transform: translateY(-50%) rotate(45deg);
+  border-width: 0 0.1em 0.1em 0;
+}
+
+.FWEditor__bold {
+  font-weight: bold;
+}
+
+.FWEditor__italic {
+  font-style: italic;
+}
+
+.FWEditor__underline {
+  text-decoration: underline;
+}
+
+
+
 @utility prose {
   @apply font-serif;
 
   blockquote {
-    @apply border-l-4 border-muted pl-4 !italic text-muted-foreground;
+    @apply my-4 border-l-4 border-muted pl-4 !italic text-muted-foreground;
   }
 
   /* Lists */
@@ -187,53 +239,4 @@ textarea {
   a {
     @apply text-primary underline;
   }
-}
-
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-li.FWEditor__listItemChecked,
-li.FWEditor__listItemUnchecked {
-  @apply list-none relative ml-1 pl-6 outline-none;
-}
-
-li.FWEditor__listItemChecked {
-  text-decoration: line-through;
-}
-
-li.FWEditor__listItemChecked:not(:has(ul)):not(:has(ol)):before,
-li.FWEditor__listItemUnchecked:not(:has(ul)):not(:has(ol)):before {
-  @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
-}
-
-li.FWEditor__listItemChecked:before {
-  @apply bg-primary border-primary;
-}
-
-li.FWEditor__listItemChecked:after {
-  content: '';
-  cursor: pointer;
-  border-color: var(--color-primary-foreground);
-  border-style: solid;
-  position: absolute;
-  display: block;
-  top: 10px;
-  width: 5px;
-  left: 5px;
-  height: 10px;
-  transform: translateY(-50%) rotate(45deg);
-  border-width: 0 0.1em 0.1em 0;
-}
-
-.FWEditor__bold {
-  font-weight: bold;
-}
-
-.FWEditor__italic {
-  font-style: italic;
-}
-
-.FWEditor__underline {
-  text-decoration: underline;
 }
