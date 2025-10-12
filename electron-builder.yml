@@ -12,6 +12,9 @@ files:
 asarUnpack:
   - resources/**
 win:
+  target:
+    - target: nsis
+      arch: [x64, arm64]
   executableName: Firewrite
 nsis:
   artifactName: ${name}-${version}-${arch}-setup.${ext}
@@ -19,6 +22,9 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
   hardenedRuntime: true
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
@@ -27,11 +33,14 @@ dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
 linux:
   target:
-    - AppImage
-    # - snap
-    - deb
+    - target: AppImage
+      arch: [x64, arm64]
+    - target: deb
+      arch: [x64, arm64]
   maintainer: electronjs.org
   category: Utility
+deb:
+  artifactName: ${name}-${version}-${arch}.${ext}
 appImage:
   artifactName: ${name}-${version}-${arch}.${ext}
 npmRebuild: false
