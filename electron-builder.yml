@@ -14,7 +14,7 @@ asarUnpack:
 win:
   target:
     - target: nsis
-      arch: [x64, arm64, universal]
+      arch: [x64, arm64]
   executableName: Firewrite
 nsis:
   artifactName: ${name}-${version}-${arch}-setup.${ext}
