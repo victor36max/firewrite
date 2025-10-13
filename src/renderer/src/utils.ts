@@ -41,3 +41,9 @@ export const removeAutocompleteNodes = (
 export const isElectron = () => {
   return window.api !== undefined && window.electron !== undefined
 }
+
+export const dictionaryToXmlString = (obj: Record<string, string | null>) => {
+  return Object.entries(obj)
+    .flatMap(([key, value]) => (value ? [`<${key}>${value}</${key}>`] : []))
+    .join('\n')
+}

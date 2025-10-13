@@ -17,6 +17,7 @@ export default defineConfig({
       }
     },
     envPrefix: ['PUBLIC_'],
-    plugins: [react(), tailwindcss()]
+    plugins: [react(), tailwindcss()],
+    assetsInclude: ['**/*.md']
   }
 })
