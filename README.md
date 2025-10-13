@@ -1,6 +1,10 @@
-# firewrite
+<img src="https://firewrite.app/images/icon.svg" width="32px" />
 
-An Electron application with React and TypeScript
+# Firewrite
+
+An electron application for writing and editing text files with a clean, minimalist interface with the assistance of AI.
+
+Homepage: [https://firewrite.app](https://firewrite.app)
 
 ## Recommended IDE Setup
 
