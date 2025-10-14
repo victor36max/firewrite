@@ -65,6 +65,8 @@ export const SavePlugin = () => {
 
   return (
     <OnChangePlugin
+      ignoreSelectionChange={true}
+      ignoreHistoryMergeTagChange={true}
       onChange={(editorState, _editor, tags) => {
         if (tags.has('autocomplete-suggest') || tags.has('autocomplete-cancel')) {
           return
