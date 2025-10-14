@@ -287,36 +287,32 @@ export const SelectionMenuPlugin = ({
         <IconButton
           variant="default"
           onPress={() => handleFormat('bold')}
-          className={cn('rounded-none', isBold && 'bg-muted-light')}
+          className={cn('rounded-none border-r border-muted', isBold && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isBold && 'text-muted-foreground')}
           Icon={LuBold}
           iconProps={{ strokeWidth: 2 }}
         />
-        <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('italic')}
-          className={cn('rounded-none', isItalic && 'bg-muted-light')}
+          className={cn('rounded-none border-r border-muted', isItalic && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isItalic && 'text-muted-foreground')}
           Icon={LuItalic}
           iconProps={{ strokeWidth: 2 }}
         />
-        <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('underline')}
-          className={cn('rounded-none', isUnderline && 'bg-muted-light')}
+          className={cn('rounded-none border-r border-muted', isUnderline && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isUnderline && 'text-muted-foreground')}
           Icon={LuUnderline}
           iconProps={{ strokeWidth: 2 }}
         />
-        <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={handleToggleLink}
-          className={cn('rounded-none', linkUrl && 'bg-muted-light')}
+          className={cn('rounded-none border-r border-muted', linkUrl && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !linkUrl && 'text-muted-foreground')}
           Icon={LuLink}
           iconProps={{ strokeWidth: 2 }}
         />
-        <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('code')}
           className={cn('rounded-none', isCode && 'bg-muted-light')}
@@ -384,7 +380,7 @@ export const SelectionMenuPlugin = ({
           />
         )}
         {improvementSuggestions.length === 0 && !isImproving && !isCreatingLink && (
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 items-center">
             {renderFormattingMenu()}
             <Button
               variant="primary"

@@ -1,16 +1,18 @@
-import type { DOMExportOutput, EditorConfig, NodeKey, SerializedTextNode, Spread } from 'lexical'
+import type { DOMExportOutput, NodeKey, SerializedLexicalNode, Spread } from 'lexical'
 
-import { TextNode } from 'lexical'
+import { DecoratorNode } from 'lexical'
 import { AUTOCOMPLETE_UUID } from '../plugins/AutocompletePlugin'
+import { Fragment } from 'react'
 
 export type SerializedAutocompleteNode = Spread<
   {
     uuid: string
+    text: string
   },
-  SerializedTextNode
+  SerializedLexicalNode
 >
 
-export class AutocompleteNode extends TextNode {
+export class AutocompleteNode extends DecoratorNode<React.JSX.Element> {
   /**
    * A unique uuid is generated for each session and assigned to the instance.
    * This helps to:
@@ -20,6 +22,7 @@ export class AutocompleteNode extends TextNode {
    * See https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/plugins/AutocompletePlugin/index.tsx
    */
   __uuid: string
+  __text: string
 
   static clone(node: AutocompleteNode): AutocompleteNode {
     return new AutocompleteNode(node.__text, node.__uuid, node.__key)
@@ -43,12 +46,14 @@ export class AutocompleteNode extends TextNode {
   exportJSON(): SerializedAutocompleteNode {
     return {
       ...super.exportJSON(),
-      uuid: this.__uuid
+      uuid: this.__uuid,
+      text: this.__text
     }
   }
 
   constructor(text: string, uuid: string, key?: NodeKey) {
-    super(text, key)
+    super(key)
+    this.__text = text
     this.__uuid = uuid
   }
 
@@ -64,16 +69,18 @@ export class AutocompleteNode extends TextNode {
     return true
   }
 
-  createDOM(config: EditorConfig): HTMLElement {
-    const dom = super.createDOM(config)
-    dom.classList.add(config.theme.autocomplete)
+  createDOM(): HTMLElement {
+    return document.createElement('span')
+  }
+
+  decorate(): React.JSX.Element {
     if (this.__uuid !== AUTOCOMPLETE_UUID) {
-      dom.style.display = 'none'
+      return <Fragment />
     }
-    return dom
+    return <span className="text-muted-foreground">{this.__text}</span>
   }
 }
 
 export function $createAutocompleteNode(text: string, uuid: string): AutocompleteNode {
-  return new AutocompleteNode(text, uuid).setMode('token')
+  return new AutocompleteNode(text, uuid)
 }

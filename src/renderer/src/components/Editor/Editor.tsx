@@ -62,7 +62,6 @@ export const Editor = (): React.JSX.Element | null => {
           CodeHighlightNode
         ],
         theme: {
-          autocomplete: 'text-muted-foreground',
           list: {
             listitemChecked: 'FWEditor__listItemChecked',
             listitemUnchecked: 'FWEditor__listItemUnchecked'

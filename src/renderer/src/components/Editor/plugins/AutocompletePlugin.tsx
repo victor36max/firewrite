@@ -1,5 +1,8 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { $createAutocompleteNode } from '@renderer/components/Editor/nodes/AutocompleteNode'
+import {
+  $createAutocompleteNode,
+  AutocompleteNode
+} from '@renderer/components/Editor/nodes/AutocompleteNode'
 import {
   $getNodeByKey,
   $getSelection,
@@ -123,11 +126,11 @@ export const AutocompletePlugin = (): null => {
         const selection = $getSelection()
         const node = $getNodeByKey(autocompleteNodeKeyRef.current)
         if (!node) return
-        const text = node.getTextContent()
+        if (!(node instanceof AutocompleteNode)) return
         node.remove()
         autocompleteNodeKeyRef.current = null
-        if (selection && text) {
-          selection.insertText(text)
+        if (selection) {
+          selection.insertText(node.__text)
         }
       },
       {
