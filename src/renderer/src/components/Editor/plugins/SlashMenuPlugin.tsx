@@ -24,6 +24,7 @@ import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@renderer/utils'
 import {
+  LuCode,
   LuHeading1,
   LuHeading2,
   LuHeading3,
@@ -33,7 +34,7 @@ import {
   LuText,
   LuTextQuote
 } from 'react-icons/lu'
-// import { INSERT_TABLE_COMMAND } from '@lexical/table'
+import { $createCodeNode } from '@lexical/code'
 
 class ComponentPickerOption extends MenuOption {
   title: string
@@ -124,6 +125,18 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
             $setBlocksType(selection, () => $createQuoteNode())
           }
         })
+    }),
+    new ComponentPickerOption('Code', {
+      icon: <LuCode />,
+      keywords: ['code'],
+      onSelect: () => {
+        editor.update(() => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection)) {
+            $setBlocksType(selection, () => $createCodeNode())
+          }
+        })
+      }
     })
   ]
 }

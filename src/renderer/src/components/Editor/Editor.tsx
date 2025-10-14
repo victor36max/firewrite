@@ -10,7 +10,7 @@ import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPl
 import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { ListNode, ListItemNode } from '@lexical/list'
 import { TableNode, TableCellNode, TableRowNode } from '@lexical/table'
-import { CodeNode } from '@lexical/code'
+import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
@@ -27,6 +27,7 @@ import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin'
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { SavePlugin } from './plugins/SavePlugin'
+import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -57,7 +58,8 @@ export const Editor = (): React.JSX.Element | null => {
           ListNode,
           ListItemNode,
           QuoteNode,
-          AutocompleteNode
+          AutocompleteNode,
+          CodeHighlightNode
         ],
         theme: {
           autocomplete: 'text-muted-foreground',
@@ -69,6 +71,44 @@ export const Editor = (): React.JSX.Element | null => {
             bold: 'FWEditor__bold',
             italic: 'FWEditor__italic',
             underline: 'FWEditor__underline'
+          },
+
+          code: 'FWEditor__code',
+
+          codeHighlight: {
+            atrule: 'FWEditor__tokenKeyword',
+            attr: 'FWEditor__tokenAttr',
+            'attr-name': 'FWEditor__tokenProperty',
+            'attr-value': 'FWEditor__tokenAttr',
+            boolean: 'FWEditor__tokenProperty',
+            builtin: 'FWEditor__tokenAttr',
+            cdata: 'FWEditor__tokenComment',
+            char: 'FWEditor__tokenAttr',
+            class: 'FWEditor__tokenFunction',
+            'class-name': 'FWEditor__tokenFunction',
+            comment: 'FWEditor__tokenComment',
+            constant: 'FWEditor__tokenProperty',
+            deleted: 'FWEditor__tokenProperty',
+            doctype: 'FWEditor__tokenComment',
+            entity: 'FWEditor__tokenOperator',
+            function: 'FWEditor__tokenFunction',
+            important: 'FWEditor__tokenVariable',
+            inserted: 'FWEditor__tokenAttr',
+            keyword: 'FWEditor__tokenKeyword',
+            namespace: 'FWEditor__tokenVariable',
+            number: 'FWEditor__tokenProperty',
+            operator: 'FWEditor__tokenOperator',
+            prolog: 'FWEditor__tokenComment',
+            property: 'FWEditor__tokenProperty',
+            punctuation: 'FWEditor__tokenPunctuation',
+            regex: 'FWEditor__tokenVariable',
+            selector: 'FWEditor__tokenSelector',
+            string: 'FWEditor__tokenAttr',
+            symbol: 'FWEditor__tokenProperty',
+            tag: 'FWEditor__tokenSelector',
+            url: 'FWEditor__tokenOperator',
+            variable: 'FWEditor__tokenVariable',
+            def: 'FWEditor__tokenProperty'
           }
         },
         editorState: noteContent.content || undefined,
@@ -106,6 +146,7 @@ export const Editor = (): React.JSX.Element | null => {
       <AutocompletePlugin />
       <SelectionMenuPlugin anchorElement={anchorElement} />
       <LinkPlugin />
+      <CodeHighlightPrismPlugin anchorElement={anchorElement} />
     </LexicalComposer>
   )
 }

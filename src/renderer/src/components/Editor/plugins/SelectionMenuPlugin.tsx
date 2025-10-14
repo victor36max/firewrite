@@ -25,6 +25,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import {
   LuBold,
   LuCheck,
+  LuCode,
   LuItalic,
   LuLink,
   LuPencilLine,
@@ -38,6 +39,7 @@ import { Input } from '@renderer/components/primitives/Input'
 import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
 import { useToast } from '@renderer/hooks/useToast'
 import { $convertToMarkdownString, TRANSFORMERS } from '@lexical/markdown'
+import { $isCodeHighlightNode, $isCodeNode } from '@lexical/code'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -122,6 +124,7 @@ export const SelectionMenuPlugin = ({
   const [isUnderline, setIsUnderline] = useState(false)
   const [linkUrl, setLinkUrl] = useState<string | null>(null)
   const [linkUrlError, setLinkUrlError] = useState<string | null>(null)
+  const [isCode, setIsCode] = useState(false)
   const [isCreatingLink, setIsCreatingLink] = useState(false)
   const [isEditingLink, setIsEditingLink] = useState(false)
 
@@ -227,6 +230,14 @@ export const SelectionMenuPlugin = ({
           }
 
           if (
+            $isCodeNode(selection.anchor.getNode()) ||
+            $isCodeHighlightNode(selection.anchor.getNode())
+          ) {
+            setIsOpen(false)
+            return
+          }
+
+          if (
             selection.anchor.key === selection.focus.key &&
             selection.anchor.offset === selection.focus.offset
           ) {
@@ -249,6 +260,7 @@ export const SelectionMenuPlugin = ({
           setIsBold(selection.hasFormat('bold'))
           setIsItalic(selection.hasFormat('italic'))
           setIsUnderline(selection.hasFormat('underline'))
+          setIsCode(selection.hasFormat('code'))
 
           const linkNode = $findMatchingParent(selection.anchor.getNode(), $isLinkNode)
 
@@ -275,7 +287,7 @@ export const SelectionMenuPlugin = ({
         <IconButton
           variant="default"
           onPress={() => handleFormat('bold')}
-          className={cn(isBold && 'bg-muted-light')}
+          className={cn('rounded-none', isBold && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isBold && 'text-muted-foreground')}
           Icon={LuBold}
           iconProps={{ strokeWidth: 2 }}
@@ -283,7 +295,7 @@ export const SelectionMenuPlugin = ({
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('italic')}
-          className={cn(isItalic && 'bg-muted-light')}
+          className={cn('rounded-none', isItalic && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isItalic && 'text-muted-foreground')}
           Icon={LuItalic}
           iconProps={{ strokeWidth: 2 }}
@@ -291,7 +303,7 @@ export const SelectionMenuPlugin = ({
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={() => handleFormat('underline')}
-          className={cn(isUnderline && 'bg-muted-light')}
+          className={cn('rounded-none', isUnderline && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !isUnderline && 'text-muted-foreground')}
           Icon={LuUnderline}
           iconProps={{ strokeWidth: 2 }}
@@ -299,9 +311,17 @@ export const SelectionMenuPlugin = ({
         <div className="w-px h-full bg-muted" />
         <IconButton
           onPress={handleToggleLink}
-          className={cn(linkUrl && 'bg-muted-light')}
+          className={cn('rounded-none', linkUrl && 'bg-muted-light')}
           iconClassName={cn('w-5 h-5', !linkUrl && 'text-muted-foreground')}
           Icon={LuLink}
+          iconProps={{ strokeWidth: 2 }}
+        />
+        <div className="w-px h-full bg-muted" />
+        <IconButton
+          onPress={() => handleFormat('code')}
+          className={cn('rounded-none', isCode && 'bg-muted-light')}
+          iconClassName={cn('w-5 h-5', !isCode && 'text-muted-foreground')}
+          Icon={LuCode}
           iconProps={{ strokeWidth: 2 }}
         />
       </div>

@@ -3,6 +3,7 @@
 @theme {
   --font-sans: 'DM Sans', sans-serif;
   --font-serif: 'Lora', serif;
+  --font-mono: 'JetBrains Mono', monospace;
   --color-background: #ffffff;
   --color-foreground: #1d1c1a;
   --color-muted: #dfddd6;
@@ -20,9 +21,11 @@
   --color-info: #0ea5e9;
   --color-info-dark: #0891b2;
   --color-info-foreground: #ffffff;
+  --color-code-background: #282c34;
+  --color-code-foreground: #ABB2BF;
 }
 
-::selection {
+body::selection {
   @apply bg-primary/10;
 }
 
@@ -82,7 +85,33 @@ li.FWEditor__listItemChecked:after {
   text-decoration: underline;
 }
 
-
+code .FWEditor__tokenAttr {
+  color: #98c379;
+}
+code .FWEditor__tokenProperty {
+  color: #d19a66;
+}
+code .FWEditor__tokenSelector {
+  color: #e06c75;
+}
+code .FWEditor__tokenFunction {
+  color: #61afef;
+}
+code .FWEditor__tokenComment {
+  color: #5C6370;
+}
+code .FWEditor__tokenVariable {
+  color: #c678dd;
+}
+code .FWEditor__tokenOperator {
+  color: #56b6c2;
+}
+code .FWEditor__tokenPunctuation {
+  color: #abb2bf;
+}
+code .FWEditor__tokenKeyword {
+  color: #c678dd;
+}
 
 @utility prose {
   @apply font-serif;
@@ -197,6 +226,14 @@ li.FWEditor__listItemChecked:after {
     }
   }
 
+  code {
+    @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
+  }
+
+  code::selection {
+    @apply bg-white/20;
+  }
+
   /* Typography */
 
   del {
@@ -230,6 +267,14 @@ li.FWEditor__listItemChecked:after {
 
   p {
     @apply my-4 empty:hidden leading-relaxed;
+
+    code {
+      @apply m-0 bg-primary/10 inline rounded-md px-1 py-0.5 text-primary caret-primary;
+    }
+
+    code::selection {
+      @apply bg-primary/10;
+    }
   }
 
   hr {

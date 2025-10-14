@@ -23,7 +23,7 @@ export const Select = (props: SelectProps) => {
     <AriaSelect {...props}>
       <AriaButton
         className={
-          'w-full flex flex-row justify-between items-center p-2 border border-muted rounded-lg outline-primary placeholder:text-muted-foreground cursor-pointer'
+          'w-full flex flex-row justify-between items-center p-2 border border-muted rounded-lg outline-primary placeholder:text-muted-foreground cursor-pointer bg-background'
         }
       >
         <AriaSelectValue>
@@ -34,7 +34,7 @@ export const Select = (props: SelectProps) => {
         <LuChevronDown className="w-5 h-5" />
       </AriaButton>
       <Popover className="w-(--trigger-width)">
-        <ListBox className="border border-muted rounded-lg bg-background">
+        <ListBox className="border border-muted rounded-lg bg-background max-h-60 overflow-y-auto">
           {props.items.map((item, index) => (
             <ListBoxItem
               className={({ isFocused, isHovered, isSelected }) =>
