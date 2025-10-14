@@ -1,4 +1,5 @@
 appId: app.firewrite
+artifactName: ${name}-${version}-${os}-${arch}.${ext}
 productName: Firewrite
 directories:
   buildResources: build
@@ -17,12 +18,11 @@ win:
       arch: [x64, arm64]
   executableName: Firewrite
 nsis:
-  artifactName: ${name}-${version}-${arch}-setup.${ext}
+  artifactName: ${name}-${version}-${os}-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
-  artifactName: ${name}-${version}-${arch}.${ext}
   target:
     - target: dmg
       arch: [x64, arm64, universal]
@@ -40,10 +40,6 @@ linux:
       arch: [x64, arm64]
   maintainer: electronjs.org
   category: Utility
-deb:
-  artifactName: ${name}-${version}-${arch}.${ext}
-appImage:
-  artifactName: ${name}-${version}-${arch}.${ext}
 npmRebuild: false
 publish:
   provider: github
