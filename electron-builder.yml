@@ -22,6 +22,7 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  artifactName: ${name}-${version}-${arch}.${ext}
   target:
     - target: dmg
       arch: [x64, arm64, universal]
@@ -31,10 +32,6 @@ mac:
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
   notarize: true
-dmg:
-  artifactName: ${name}-${version}-${arch}.${ext}
-zip:
-  artifactName: ${name}-${version}-mac-${arch}.${ext}
 linux:
   target:
     - target: AppImage
