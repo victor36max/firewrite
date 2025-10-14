@@ -16,6 +16,7 @@ import { mergeRegister } from '@lexical/utils'
 import { useMutation } from '@tanstack/react-query'
 import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
+import { $isCodeNode, $isCodeHighlightNode } from '@lexical/code'
 
 const AUTOCOMPLETE_DELAY = 3000
 
@@ -123,6 +124,8 @@ export const AutocompletePlugin = (): null => {
         const node = $getNodeByKey(autocompleteNodeKeyRef.current)
         if (!node) return
         const text = node.getTextContent()
+        node.remove()
+        autocompleteNodeKeyRef.current = null
         if (selection && text) {
           selection.insertText(text)
         }
@@ -140,6 +143,10 @@ export const AutocompletePlugin = (): null => {
       if (!selection || !$isRangeSelection(selection)) return
       const selectionNode = $getNodeByKey(selection.anchor.key)
       if (!selectionNode) return
+
+      if ($isCodeNode(selectionNode) || $isCodeHighlightNode(selectionNode)) {
+        return
+      }
 
       let selectionTextContent = ''
       // If the selection is not at the end of the text node, don't gen autocomplete

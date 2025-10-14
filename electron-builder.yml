@@ -25,6 +25,8 @@ mac:
   target:
     - target: dmg
       arch: [x64, arm64, universal]
+    - target: zip
+      arch: [x64, arm64]
   hardenedRuntime: true
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
