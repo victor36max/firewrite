@@ -36,7 +36,7 @@ import {
 } from 'react-icons/lu'
 import { $createCodeNode } from '@lexical/code'
 
-class ComponentPickerOption extends MenuOption {
+class SlashMenuOption extends MenuOption {
   title: string
   icon?: React.JSX.Element
   keywords: Array<string>
@@ -59,9 +59,9 @@ class ComponentPickerOption extends MenuOption {
   }
 }
 
-const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => {
+const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
   return [
-    new ComponentPickerOption('Paragraph', {
+    new SlashMenuOption('Paragraph', {
       icon: <LuText />,
       keywords: ['normal', 'paragraph', 'p', 'text'],
       onSelect: () =>
@@ -74,7 +74,7 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
     }),
     ...([1, 2, 3] as const).map(
       (n) =>
-        new ComponentPickerOption(`Heading ${n}`, {
+        new SlashMenuOption(`Heading ${n}`, {
           keywords: ['heading', 'header', `h${n}`],
           icon: (() => {
             switch (n) {
@@ -100,22 +100,22 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
     //   keywords: ['table'],
     //   onSelect: () => editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: '2', rows: '2' })
     // }),
-    new ComponentPickerOption('Numbered List', {
+    new SlashMenuOption('Numbered List', {
       icon: <LuListOrdered />,
       keywords: ['numbered list', 'ordered list', 'ol'],
       onSelect: () => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
     }),
-    new ComponentPickerOption('Bulleted List', {
+    new SlashMenuOption('Bulleted List', {
       icon: <LuList />,
       keywords: ['bulleted list', 'unordered list', 'ul'],
       onSelect: () => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
     }),
-    new ComponentPickerOption('Check List', {
+    new SlashMenuOption('Check List', {
       icon: <LuListChecks />,
       keywords: ['check list', 'todo list'],
       onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
     }),
-    new ComponentPickerOption('Quote', {
+    new SlashMenuOption('Quote', {
       icon: <LuTextQuote />,
       keywords: ['block quote'],
       onSelect: () =>
@@ -126,7 +126,7 @@ const getMenuOptions = (editor: LexicalEditor): Array<ComponentPickerOption> => 
           }
         })
     }),
-    new ComponentPickerOption('Code', {
+    new SlashMenuOption('Code', {
       icon: <LuCode />,
       keywords: ['code'],
       onSelect: () => {
@@ -152,7 +152,7 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
 
   const handleSelectOption = useCallback(
     (
-      selectedOption: ComponentPickerOption,
+      selectedOption: SlashMenuOption,
       nodeToRemove: TextNode | null,
       closeMenu: () => void,
       matchingString: string
@@ -166,7 +166,7 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
     [editor]
   )
 
-  const renderMenu: MenuRenderFn<ComponentPickerOption> = (
+  const renderMenu: MenuRenderFn<SlashMenuOption> = (
     anchorElementRef,
     { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
   ) => {

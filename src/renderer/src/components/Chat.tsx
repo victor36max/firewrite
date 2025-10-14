@@ -12,6 +12,8 @@ import { Form } from 'react-aria-components'
 import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
 import { useToast } from '@renderer/hooks/useToast'
 import rehypeExternalLinks from 'rehype-external-links'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 type ChatMessage = {
   id: string
@@ -117,6 +119,26 @@ export const Chat = (): React.JSX.Element => {
               rehypePlugins={[
                 [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
               ]}
+              components={{
+                code: ({ className, children, ...props }) => {
+                  const match = /language-(\w+)/.exec(className || '')
+                  const language = match ? match[1] : ''
+                  return match ? (
+                    <SyntaxHighlighter
+                      className="rounded-md text-sm FWSyntaxHighlighter"
+                      PreTag="div"
+                      language={language}
+                      style={oneDark}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code {...props} className={className}>
+                      {children}
+                    </code>
+                  )
+                }
+              }}
             >
               {message.content}
             </Markdown>

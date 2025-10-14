@@ -21,8 +21,8 @@
   --color-info: #0ea5e9;
   --color-info-dark: #0891b2;
   --color-info-foreground: #ffffff;
-  --color-code-background: #282c34;
-  --color-code-foreground: #ABB2BF;
+  --color-code-background: rgb(40, 44, 52);
+  --color-code-foreground: rgb(171, 178, 191);
 }
 
 body::selection {
@@ -86,31 +86,31 @@ li.FWEditor__listItemChecked:after {
 }
 
 code .FWEditor__tokenAttr {
-  color: #98c379;
+  color: rgb(152, 195, 121);
 }
 code .FWEditor__tokenProperty {
-  color: #d19a66;
+  color: rgb(209, 154, 102);
 }
 code .FWEditor__tokenSelector {
-  color: #e06c75;
+  color: rgb(224, 108, 117);
 }
 code .FWEditor__tokenFunction {
-  color: #61afef;
+  color: rgb(97, 175, 239);
 }
 code .FWEditor__tokenComment {
-  color: #5C6370;
+  color: rgb(92, 99, 112);
 }
 code .FWEditor__tokenVariable {
-  color: #c678dd;
+  color: rgb(198, 120, 221);
 }
 code .FWEditor__tokenOperator {
-  color: #56b6c2;
+  color: rgb(97, 175, 239);
 }
 code .FWEditor__tokenPunctuation {
-  color: #abb2bf;
+  color: rgb(171, 178, 191);
 }
 code .FWEditor__tokenKeyword {
-  color: #c678dd;
+  color: rgb(198, 120, 221);
 }
 
 @utility prose {
@@ -226,7 +226,7 @@ code .FWEditor__tokenKeyword {
     }
   }
 
-  code {
+  :not(.FWSyntaxHighlighter) > code {
     @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
   }
 
