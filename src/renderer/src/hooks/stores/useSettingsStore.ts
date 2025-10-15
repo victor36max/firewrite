@@ -1,11 +1,16 @@
 import { LlmProvider } from '@renderer/services/ai'
+import {
+  deleteValueFromKeyValueStore,
+  getValueFromKeyValueStore,
+  setValueToKeyValueStore
+} from '@renderer/services/idb'
 import { isElectron } from '@renderer/utils'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 const encryptedLocalStorage = {
-  getItem: (key) => {
-    const encryptedValue = localStorage.getItem(key)
+  getItem: async (key) => {
+    const encryptedValue = await getValueFromKeyValueStore<string>(key)
     if (!encryptedValue) {
       return null
     }
@@ -13,10 +18,10 @@ const encryptedLocalStorage = {
   },
   setItem: async (key, value) => {
     const encryptedValue = await window.api.encryptString(value)
-    localStorage.setItem(key, encryptedValue)
+    await setValueToKeyValueStore(key, encryptedValue)
   },
-  removeItem: (key) => {
-    localStorage.removeItem(key)
+  removeItem: async (key) => {
+    await deleteValueFromKeyValueStore(key)
   }
 }
 

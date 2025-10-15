@@ -32,23 +32,37 @@ interface FirewriteDB extends DBSchema {
     key: string
     value: NoteContent
   }
+  'key-value-store': {
+    key: string
+    value: unknown
+  }
 }
 
 const migrations = [
-  (db: IDBPDatabase<FirewriteDB>) => {
-    const notesStore = db.createObjectStore('notes', { keyPath: 'id' })
-    notesStore.createIndex('by-updated', 'updatedAt')
-    db.createObjectStore('note-contents', { keyPath: 'noteId' })
+  {
+    version: 2,
+    func: (db: IDBPDatabase<FirewriteDB>) => {
+      const notesStore = db.createObjectStore('notes', { keyPath: 'id' })
+      notesStore.createIndex('by-updated', 'updatedAt')
+      db.createObjectStore('note-contents', { keyPath: 'noteId' })
+    }
+  },
+  {
+    version: 3,
+    func: (db: IDBPDatabase<FirewriteDB>) => {
+      db.createObjectStore('key-value-store')
+    }
   }
 ]
 
 export const getDb = async (): Promise<IDBPDatabase<FirewriteDB>> => {
-  return openDB<FirewriteDB>('firewrite', 2, {
+  return openDB<FirewriteDB>('firewrite', 3, {
     upgrade(db, oldVersion) {
-      const migrationStartIndex = oldVersion || 0
-      for (let i = migrationStartIndex; i < migrations.length; i++) {
-        migrations[i](db)
-      }
+      migrations.forEach((migration) => {
+        if (migration.version > (oldVersion || 0)) {
+          migration.func(db)
+        }
+      })
     }
   })
 }
@@ -150,4 +164,20 @@ export const getNote = async (noteId: string): Promise<Note> => {
     throw new Error('Note not found')
   }
   return note
+}
+
+export const getValueFromKeyValueStore = async <T>(key: string): Promise<T | null> => {
+  const db = await getDb()
+  const value = await db.get('key-value-store', key)
+  return (value as T) || null
+}
+
+export const setValueToKeyValueStore = async (key: string, value: unknown) => {
+  const db = await getDb()
+  await db.put('key-value-store', value, key)
+}
+
+export const deleteValueFromKeyValueStore = async (key: string) => {
+  const db = await getDb()
+  await db.delete('key-value-store', key)
 }
