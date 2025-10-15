@@ -17,6 +17,9 @@ importers:
       electron-updater:
         specifier: ^6.3.9
         version: 6.6.2
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
     devDependencies:
       '@ai-sdk/anthropic':
         specifier: ^2.0.23

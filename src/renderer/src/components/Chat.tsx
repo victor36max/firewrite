@@ -14,6 +14,7 @@ import { useToast } from '@renderer/hooks/useToast'
 import rehypeExternalLinks from 'rehype-external-links'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import remarkGfm from 'remark-gfm'
 
 type ChatMessage = {
   id: string
@@ -116,6 +117,7 @@ export const Chat = (): React.JSX.Element => {
         <div key={message.id} className="px-6 flex flex-row justify-start">
           <div className="prose !font-sans">
             <Markdown
+              remarkPlugins={[remarkGfm]}
               rehypePlugins={[
                 [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
               ]}

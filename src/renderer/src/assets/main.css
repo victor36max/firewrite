@@ -188,22 +188,22 @@ code .FWEditor__tokenKeyword {
   /* Tables */
 
   table {
-    @apply my-4 w-full table-auto border-collapse text-left text-sm/6;
+    @apply my-4 w-full table-auto border-collapse text-left text-sm;
 
     caption {
       @apply mt-2 caption-bottom text-left text-sm/6;
     }
 
     thead {
-      @apply border-b border-neutral-200;
+      @apply border-b border-muted bg-muted-light;
     }
 
     tfoot {
-      @apply border-t border-neutral-200;
+      @apply border-t border-muted;
     }
 
     tr {
-      @apply border-y border-neutral-200 first:border-t-0 last:border-b-0;
+      @apply border-y border-muted first:border-t-0 last:border-b-0;
     }
 
     th {
@@ -212,7 +212,7 @@ code .FWEditor__tokenKeyword {
 
     td,
     th {
-      @apply p-2 first:pl-0 last:pr-0;
+      @apply p-2;
 
       h1,
       h2,
