@@ -1,3 +1,4 @@
+import { keyValueStore } from '@renderer/services/idb'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
@@ -12,7 +13,7 @@ export const useCurrentNoteIdStore = create<{
     }),
     {
       name: 'current-note-id',
-      storage: createJSONStorage(() => localStorage)
+      storage: createJSONStorage(() => keyValueStore)
     }
   )
 )

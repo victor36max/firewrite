@@ -1,29 +1,8 @@
 import { LlmProvider } from '@renderer/services/ai'
-import {
-  deleteValueFromKeyValueStore,
-  getValueFromKeyValueStore,
-  setValueToKeyValueStore
-} from '@renderer/services/idb'
+import { encryptedKeyValueStore, keyValueStore } from '@renderer/services/idb'
 import { isElectron } from '@renderer/utils'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-
-const encryptedLocalStorage = {
-  getItem: async (key) => {
-    const encryptedValue = await getValueFromKeyValueStore<string>(key)
-    if (!encryptedValue) {
-      return null
-    }
-    return window.api.decryptString(encryptedValue)
-  },
-  setItem: async (key, value) => {
-    const encryptedValue = await window.api.encryptString(value)
-    await setValueToKeyValueStore(key, encryptedValue)
-  },
-  removeItem: async (key) => {
-    await deleteValueFromKeyValueStore(key)
-  }
-}
 
 type SettingsStore = {
   llmProvider: LlmProvider | null
@@ -47,7 +26,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: 'settings',
-      storage: createJSONStorage(() => (isElectron() ? encryptedLocalStorage : localStorage))
+      storage: createJSONStorage(() => (isElectron() ? encryptedKeyValueStore : keyValueStore))
     }
   )
 )

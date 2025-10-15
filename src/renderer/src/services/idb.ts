@@ -166,18 +166,41 @@ export const getNote = async (noteId: string): Promise<Note> => {
   return note
 }
 
-export const getValueFromKeyValueStore = async <T>(key: string): Promise<T | null> => {
+const getValueFromKeyValueStore = async <T>(key: string): Promise<T | null> => {
   const db = await getDb()
   const value = await db.get('key-value-store', key)
   return (value as T) || null
 }
 
-export const setValueToKeyValueStore = async (key: string, value: unknown) => {
+const setValueToKeyValueStore = async (key: string, value: unknown) => {
   const db = await getDb()
   await db.put('key-value-store', value, key)
 }
 
-export const deleteValueFromKeyValueStore = async (key: string) => {
+const deleteValueFromKeyValueStore = async (key: string) => {
   const db = await getDb()
   await db.delete('key-value-store', key)
+}
+
+export const keyValueStore = {
+  getItem: getValueFromKeyValueStore,
+  setItem: setValueToKeyValueStore,
+  removeItem: deleteValueFromKeyValueStore
+}
+
+export const encryptedKeyValueStore = {
+  getItem: async (key) => {
+    const encryptedValue = await getValueFromKeyValueStore<string>(key)
+    if (!encryptedValue) {
+      return null
+    }
+    return window.api.decryptString(encryptedValue)
+  },
+  setItem: async (key, value) => {
+    const encryptedValue = await window.api.encryptString(value)
+    await setValueToKeyValueStore(key, encryptedValue)
+  },
+  removeItem: async (key) => {
+    await deleteValueFromKeyValueStore(key)
+  }
 }
