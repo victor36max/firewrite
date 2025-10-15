@@ -115,7 +115,7 @@ export const Chat = (): React.JSX.Element => {
     if (message.role === 'assistant') {
       return (
         <div key={message.id} className="px-6 flex flex-row justify-start">
-          <div className="prose !font-sans">
+          <div className="prose !font-sans max-w-full">
             <Markdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[

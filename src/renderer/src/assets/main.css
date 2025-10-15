@@ -281,4 +281,8 @@ code .FWEditor__tokenKeyword {
   a {
     @apply text-primary underline;
   }
+
+  pre {
+    @apply my-4 whitespace-pre;
+  }
 }
