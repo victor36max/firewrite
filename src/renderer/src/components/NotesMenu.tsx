@@ -13,6 +13,7 @@ import { DeleteNoteDialog } from './DeleteNoteDialog'
 
 export const NotesMenu = (): React.JSX.Element => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
+  const [isShowSettingsDialog, setIsShowSettingsDialog] = useState(false)
   const { data: notes } = useNotesQuery()
   const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
   const { mutate: createNote } = useCreateNoteMutation({
@@ -36,7 +37,23 @@ export const NotesMenu = (): React.JSX.Element => {
     () => {
       createNote({ title: '', content: '' })
     },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
+    },
     [createNote]
+  )
+
+  useHotkeys(
+    ['ctrl+comma', 'meta+comma'],
+    () => {
+      setIsShowSettingsDialog(true)
+    },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
+    },
+    [setIsShowSettingsDialog]
   )
 
   useEffect(() => {
@@ -70,7 +87,7 @@ export const NotesMenu = (): React.JSX.Element => {
   return (
     <div className="pb-4">
       <div className="pt-5 pb-2 px-2 flex flex-row justify-between items-center sticky top-0 bg-background">
-        <SettingsDialog />
+        <SettingsDialog isOpen={isShowSettingsDialog} onOpenChange={setIsShowSettingsDialog} />
         <IconButton onClick={() => createNote({ title: '', content: '' })} Icon={LuPlus} />
       </div>
       <GridList

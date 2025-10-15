@@ -35,11 +35,16 @@ const SettingCategoryMenuItem = ({ id, title }: { id: string; title: string }) =
   )
 }
 
-export const SettingsDialog = () => {
+interface SettingsDialogProps {
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+}
+
+export const SettingsDialog = ({ isOpen, onOpenChange }: SettingsDialogProps) => {
   const [settingCategoryId, setSettingCategoryId] = useState<string>('llm')
 
   return (
-    <DialogTrigger>
+    <DialogTrigger isOpen={isOpen} onOpenChange={onOpenChange}>
       <IconButton Icon={LuSettings} />
       <ModalOverlay
         isDismissable
