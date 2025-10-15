@@ -226,11 +226,15 @@ code .FWEditor__tokenKeyword {
     }
   }
 
-  :not(.FWSyntaxHighlighter) > code {
+  code {
+    @apply text-sm bg-primary/10 inline rounded-md px-1 py-0.5 text-primary;
+  }
+
+  div:not(.FWSyntaxHighlighter) > code {
     @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
   }
 
-  code::selection {
+  div > code::selection {
     @apply bg-white/20;
   }
 
@@ -267,14 +271,6 @@ code .FWEditor__tokenKeyword {
 
   p {
     @apply my-4 empty:hidden leading-relaxed;
-
-    code {
-      @apply m-0 bg-primary/10 inline rounded-md px-1 py-0.5 text-primary caret-primary;
-    }
-
-    code::selection {
-      @apply bg-primary/10;
-    }
   }
 
   hr {
