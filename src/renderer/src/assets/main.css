@@ -6,6 +6,7 @@
   --font-mono: 'JetBrains Mono', monospace;
   --color-background: #ffffff;
   --color-foreground: #1d1c1a;
+  --color-foreground-light: #4a4946;
   --color-muted: #dfddd6;
   --color-muted-light: #f8f7f5;
   --color-muted-foreground: #888680;
@@ -117,7 +118,7 @@ code .FWEditor__tokenKeyword {
   @apply font-serif;
 
   blockquote {
-    @apply my-4 border-l-4 border-muted pl-4 !italic text-muted-foreground;
+    @apply my-4 border-l-4 border-muted pl-4 !italic text-foreground-light;
   }
 
   /* Lists */
