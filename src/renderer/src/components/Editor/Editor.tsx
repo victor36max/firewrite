@@ -122,7 +122,7 @@ export const Editor = (): React.JSX.Element | null => {
           <div className="prose relative" ref={setAnchorElement}>
             <ContentEditable
               aria-placeholder="Enter some text..."
-              className="focus:outline-none caret-primary fw-content-root"
+              className="fw-content-root"
               placeholder={() => (
                 <p className="text-muted-foreground absolute -top-4 left-0 pointer-events-none">
                   Start writing, or press &quot;/&quot; for formatting options.

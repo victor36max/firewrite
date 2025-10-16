@@ -69,8 +69,13 @@ body {
 }
 
 input,
-textarea {
+textarea,
+div[contenteditable] {
   @apply caret-primary;
+}
+
+div[contenteditable] {
+  @apply outline-none;
 }
 
 @utility prose {
