@@ -5,7 +5,7 @@ export const AppearanceSettingsPanel = () => {
   const queryClient = useQueryClient()
   const { data: theme } = useQuery({
     queryKey: ['theme'],
-    queryFn: () => window.api.getTheme()
+    queryFn: window.api.getTheme
   })
 
   const { mutate: setTheme } = useMutation({

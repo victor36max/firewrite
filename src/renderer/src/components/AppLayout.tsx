@@ -1,6 +1,6 @@
-import { cn } from '@renderer/utils'
-import { useCallback, useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { DraggableHandle } from './DraggableHandle'
 
 interface AppLayoutProps {
   leftSideBar: React.JSX.Element
@@ -13,12 +13,10 @@ export const AppLayout = ({
   rightSideBar,
   children
 }: AppLayoutProps): React.JSX.Element => {
+  const leftSideBarRef = useRef<HTMLDivElement>(null)
+  const rightSideBarRef = useRef<HTMLDivElement>(null)
   const [isShowLeftSideBar, setIsShowLeftSideBar] = useState(true)
   const [isShowRightSideBar, setIsShowRightSideBar] = useState(true)
-  const [sideMenuWidth, setSideMenuWidth] = useState(300)
-  const [chatWidth, setChatWidth] = useState(300)
-  const [isDraggingSideMenuHandle, setIsDraggingSideMenuHandle] = useState(false)
-  const [isDraggingChatHandle, setIsDraggingChatHandle] = useState(false)
 
   useHotkeys(
     ['ctrl+l', 'meta+l'],
@@ -46,121 +44,21 @@ export const AppLayout = ({
     [isShowLeftSideBar]
   )
 
-  const renderSideMenuHandle = useCallback((): React.JSX.Element => {
-    return (
-      <div
-        className={cn(
-          'w-px h-screen bg-muted relative',
-          isDraggingSideMenuHandle && 'w-1 bg-primary/10'
-        )}
-      >
-        <div
-          className="absolute top-0 left-0 w-4 h-full cursor-col-resize -translate-x-1/2"
-          onMouseDown={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setIsDraggingSideMenuHandle(true)
-          }}
-        />
-      </div>
-    )
-  }, [isDraggingSideMenuHandle])
-
-  const renderChatHandle = useCallback((): React.JSX.Element => {
-    return (
-      <div
-        className={cn(
-          'w-px h-screen bg-muted relative',
-          isDraggingChatHandle && 'w-1 bg-primary/10'
-        )}
-      >
-        <div
-          className="absolute top-0 left-0 w-4 h-full cursor-col-resize -translate-x-1/2"
-          onMouseDown={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setIsDraggingChatHandle(true)
-          }}
-        />
-      </div>
-    )
-  }, [isDraggingChatHandle])
-
-  useEffect(() => {
-    if (!isDraggingSideMenuHandle) {
-      return
-    }
-
-    const handleMouseMove = (e: MouseEvent): void => {
-      e.preventDefault()
-      e.stopPropagation()
-      const minWidth = 150
-      const maxWidth = window.innerWidth - 640
-      setSideMenuWidth(Math.min(maxWidth, Math.max(minWidth, e.clientX)))
-    }
-
-    const handleMouseUp = (): void => {
-      setIsDraggingSideMenuHandle(false)
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [isDraggingSideMenuHandle])
-
-  useEffect(() => {
-    if (!isDraggingChatHandle) {
-      return
-    }
-
-    const handleMouseMove = (e: MouseEvent): void => {
-      e.preventDefault()
-      e.stopPropagation()
-      const minWidth = 150
-      const maxWidth = window.innerWidth - 640
-      setChatWidth(Math.min(maxWidth, Math.max(minWidth, window.innerWidth - e.clientX)))
-    }
-
-    const handleMouseUp = (): void => {
-      setIsDraggingChatHandle(false)
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [isDraggingChatHandle])
-
   return (
     <div className="flex flex-row w-screen h-screen">
       {isShowLeftSideBar && (
         <>
-          <div
-            style={{
-              width: `${sideMenuWidth}px`
-            }}
-            className="sticky top-0 bottom-0 overflow-y-auto"
-          >
+          <div ref={leftSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[300px]">
             {leftSideBar}
           </div>
-          {renderSideMenuHandle()}
+          <DraggableHandle targetRef={leftSideBarRef} align="left" />
         </>
       )}
       <div className="flex-1 h-full overflow-y-auto">{children}</div>
       {isShowRightSideBar && (
         <>
-          {renderChatHandle()}
-          <div
-            style={{
-              width: `${chatWidth}px`
-            }}
-            className="sticky top-0 bottom-0 overflow-y-auto"
-          >
+          <DraggableHandle targetRef={rightSideBarRef} align="right" />
+          <div ref={rightSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[300px]">
             {rightSideBar}
           </div>
         </>
