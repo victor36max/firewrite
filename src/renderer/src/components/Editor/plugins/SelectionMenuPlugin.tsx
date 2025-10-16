@@ -18,7 +18,7 @@ import {
   LexicalNode,
   TextFormatType
 } from 'lexical'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Form, Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -108,6 +108,7 @@ const ImprovementSuggestionMenu = ({
 export const SelectionMenuPlugin = ({
   anchorElement
 }: SelectionMenuPluginProps): React.JSX.Element | null => {
+  const selectionMenuRef = useRef<HTMLDivElement>(null)
   const { data: title } = useCurrentNote({
     select: (note) => note.title
   })
@@ -269,7 +270,10 @@ export const SelectionMenuPlugin = ({
 
           setPosition({
             top: selectionRect.y + selectionRect.height - anchorRect.y,
-            left: selectionRect.x - anchorRect.x
+            left: Math.min(
+              selectionRect.x - anchorRect.x,
+              anchorRect.width - (selectionMenuRef.current?.clientWidth || 0)
+            )
           })
 
           setIsOpen(true)
@@ -278,7 +282,7 @@ export const SelectionMenuPlugin = ({
     )
   }, [anchorElement, editor])
 
-  if (!anchorElement || !isOpen) {
+  if (!anchorElement) {
     return null
   }
 
@@ -326,7 +330,11 @@ export const SelectionMenuPlugin = ({
   }
 
   return createPortal(
-    <div style={{ position: 'absolute', top: position?.top, left: position?.left }}>
+    <div
+      style={{ position: 'absolute', top: position?.top, left: position?.left }}
+      className={cn(!isOpen && 'invisible pointer-events-none')}
+      ref={selectionMenuRef}
+    >
       <div className="mt-2 font-sans flex flex-col gap-2">
         {linkUrl && !isEditingLink && (
           <div className="flex flex-row gap-2 items-center bg-background border border-muted rounded-lg px-4 py-3">
