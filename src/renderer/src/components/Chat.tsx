@@ -127,7 +127,7 @@ export const Chat = (): React.JSX.Element => {
                   const language = match ? match[1] : ''
                   return match ? (
                     <SyntaxHighlighter
-                      className="rounded-md text-sm FWSyntaxHighlighter"
+                      className="rounded-md text-sm !font-mono"
                       PreTag="div"
                       language={language}
                       style={oneDark}

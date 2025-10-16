@@ -41,79 +41,6 @@ textarea {
   @apply caret-primary;
 }
 
-li.FWEditor__listItemChecked,
-li.FWEditor__listItemUnchecked {
-  @apply list-none relative ml-1 pl-6 outline-none;
-}
-
-li.FWEditor__listItemChecked {
-  text-decoration: line-through;
-}
-
-li.FWEditor__listItemChecked:not(:has(ul)):not(:has(ol)):before,
-li.FWEditor__listItemUnchecked:not(:has(ul)):not(:has(ol)):before {
-  @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
-}
-
-li.FWEditor__listItemChecked:before {
-  @apply bg-primary border-primary;
-}
-
-li.FWEditor__listItemChecked:after {
-  content: '';
-  cursor: pointer;
-  border-color: var(--color-primary-foreground);
-  border-style: solid;
-  position: absolute;
-  display: block;
-  top: 10px;
-  width: 5px;
-  left: 5px;
-  height: 10px;
-  transform: translateY(-50%) rotate(45deg);
-  border-width: 0 0.1em 0.1em 0;
-}
-
-.FWEditor__bold {
-  font-weight: bold;
-}
-
-.FWEditor__italic {
-  font-style: italic;
-}
-
-.FWEditor__underline {
-  text-decoration: underline;
-}
-
-code .FWEditor__tokenAttr {
-  color: rgb(152, 195, 121);
-}
-code .FWEditor__tokenProperty {
-  color: rgb(209, 154, 102);
-}
-code .FWEditor__tokenSelector {
-  color: rgb(224, 108, 117);
-}
-code .FWEditor__tokenFunction {
-  color: rgb(97, 175, 239);
-}
-code .FWEditor__tokenComment {
-  color: rgb(92, 99, 112);
-}
-code .FWEditor__tokenVariable {
-  color: rgb(198, 120, 221);
-}
-code .FWEditor__tokenOperator {
-  color: rgb(97, 175, 239);
-}
-code .FWEditor__tokenPunctuation {
-  color: rgb(171, 178, 191);
-}
-code .FWEditor__tokenKeyword {
-  color: rgb(198, 120, 221);
-}
-
 @utility prose {
   @apply font-serif;
 
@@ -184,8 +111,43 @@ code .FWEditor__tokenKeyword {
         list-style-type: square;
       }
     }
+
+    /* Checklist items */
+    li {
+      &.fw-checklist-item {
+        @apply list-none relative ml-1 pl-6 outline-none;
+    
+        &:not(:has(ul)):not(:has(ol)):before {
+          @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
+        }
+    
+        &.fw-checked {
+          @apply line-through;
+    
+          &:before {
+            @apply bg-primary border-primary;
+          }
+    
+          &:after {
+            content: '';
+            cursor: pointer;
+            border-color: var(--color-primary-foreground);
+            border-style: solid;
+            position: absolute;
+            display: block;
+            top: 10px;
+            width: 5px;
+            left: 5px;
+            height: 10px;
+            transform: translateY(-50%) rotate(45deg);
+            border-width: 0 0.1em 0.1em 0;
+          }
+        }
+      }
+    }
   }
 
+  
   /* Tables */
 
   table {
@@ -227,16 +189,46 @@ code .FWEditor__tokenKeyword {
     }
   }
 
+  /* Inline code */
   code {
     @apply text-sm bg-primary/10 inline rounded-md px-1 py-0.5 text-primary;
   }
 
-  div:not(.FWSyntaxHighlighter) > code {
+  /* Code blocks */
+  .fw-content-root > code {
     @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
-  }
 
-  div > code::selection {
-    @apply bg-white/20;
+    .fw-attr {
+      color: rgb(152, 195, 121);
+    }
+    .fw-property {
+      color: rgb(209, 154, 102);
+    }
+    .fw-selector {
+      color: rgb(224, 108, 117);
+    }
+    .fw-function {
+      color: rgb(97, 175, 239);
+    }
+    .fw-comment {
+      color: rgb(92, 99, 112);
+    }
+    .fw-variable {
+      color: rgb(198, 120, 221);
+    }
+    .fw-operator {
+      color: rgb(97, 175, 239);
+    }
+    .fw-punctuation {
+      color: rgb(171, 178, 191);
+    }
+    .fw-keyword {
+      color: rgb(198, 120, 221);
+    }
+
+    &::selection {
+      @apply bg-white/20;
+    }
   }
 
   /* Typography */
