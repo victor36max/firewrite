@@ -5,8 +5,10 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
-import { TRANSFORMERS } from '@lexical/markdown'
-import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin'
+import {
+  MarkdownShortcutPlugin,
+  DEFAULT_TRANSFORMERS
+} from '@lexical/react/LexicalMarkdownShortcutPlugin'
 import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { ListNode, ListItemNode } from '@lexical/list'
 import { TableNode, TableCellNode, TableRowNode } from '@lexical/table'
@@ -28,6 +30,7 @@ import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { SavePlugin } from './plugins/SavePlugin'
 import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -135,7 +138,7 @@ export const Editor = (): React.JSX.Element | null => {
       />
       <SavePlugin />
       <HistoryPlugin />
-      <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+      <MarkdownShortcutPlugin transformers={DEFAULT_TRANSFORMERS} />
       <ListPlugin hasStrictIndent />
       <CheckListPlugin />
       <TablePlugin />
@@ -146,6 +149,7 @@ export const Editor = (): React.JSX.Element | null => {
       <SelectionMenuPlugin anchorElement={anchorElement} />
       <LinkPlugin />
       <CodeHighlightPrismPlugin anchorElement={anchorElement} />
+      <HorizontalRulePlugin />
     </LexicalComposer>
   )
 }

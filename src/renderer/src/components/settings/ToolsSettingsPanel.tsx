@@ -5,12 +5,15 @@ import { useToast } from '@renderer/hooks/useToast'
 import { Form, TextField } from 'react-aria-components'
 import { Button } from '../primitives/Button'
 import { FieldError } from '../primitives/FieldError'
+import { useRerender } from '@renderer/hooks/useRerender'
 
 export const ToolsSettingsPanel = () => {
+  const [key, rerender] = useRerender()
   const { tavilyApiKey, setTavilyApiKey } = useSettingsStore()
   const { showToast } = useToast()
   const handleClearTavilyApiKey = () => {
     setTavilyApiKey(null)
+    rerender()
     showToast({
       title: 'Success',
       description: 'Tavily API key reset successfully',
@@ -40,6 +43,7 @@ export const ToolsSettingsPanel = () => {
             <TextField
               name="apiKey"
               defaultValue={tavilyApiKey || ''}
+              key={key}
               isRequired
               type="password"
               className="flex flex-col gap-2"

@@ -31,10 +31,12 @@ import {
   LuList,
   LuListChecks,
   LuListOrdered,
+  LuSeparatorHorizontal,
   LuText,
   LuTextQuote
 } from 'react-icons/lu'
 import { $createCodeNode } from '@lexical/code'
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
 
 class SlashMenuOption extends MenuOption {
   title: string
@@ -137,6 +139,11 @@ const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
           }
         })
       }
+    }),
+    new SlashMenuOption('Horizontal Rule', {
+      icon: <LuSeparatorHorizontal />,
+      keywords: ['horizontal rule', 'hr', 'separator'],
+      onSelect: () => editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
     })
   ]
 }

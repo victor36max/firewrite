@@ -38,8 +38,9 @@ import { $isLinkNode, $toggleLink } from '@lexical/link'
 import { Input } from '@renderer/components/primitives/Input'
 import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/useSettingsStore'
 import { useToast } from '@renderer/hooks/useToast'
-import { $convertToMarkdownString, TRANSFORMERS } from '@lexical/markdown'
+import { $convertToMarkdownString } from '@lexical/markdown'
 import { $isCodeHighlightNode, $isCodeNode } from '@lexical/code'
+import { DEFAULT_TRANSFORMERS } from '@lexical/react/LexicalMarkdownShortcutPlugin'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -162,7 +163,7 @@ export const SelectionMenuPlugin = ({
 
       improve({
         title: title || '',
-        content: $convertToMarkdownString(TRANSFORMERS, rootNode),
+        content: $convertToMarkdownString(DEFAULT_TRANSFORMERS, rootNode),
         paragraph: topLevelNode ? topLevelNode.getTextContent() : '',
         selection: selectionText
       })
