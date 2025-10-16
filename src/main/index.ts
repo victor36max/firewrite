@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, safeStorage } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, safeStorage, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -72,6 +72,14 @@ app.whenReady().then(() => {
     }
     const encryptedBuffer = Buffer.from(encryptedBase64, 'base64')
     return safeStorage.decryptString(encryptedBuffer)
+  })
+
+  ipcMain.handle('getTheme', async () => {
+    return nativeTheme.themeSource
+  })
+
+  ipcMain.handle('setTheme', async (_event, theme: 'system' | 'light' | 'dark') => {
+    nativeTheme.themeSource = theme
   })
 
   createWindow()

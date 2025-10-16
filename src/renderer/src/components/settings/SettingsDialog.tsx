@@ -13,6 +13,7 @@ import { cn } from '@renderer/utils'
 import { useState } from 'react'
 import { LlmSettingsPanel } from './LlmSettingsPanel'
 import { ToolsSettingsPanel } from './ToolsSettingsPanel'
+import { AppearanceSettingsPanel } from './AppearanceSettingsPanel'
 
 const SettingCategoryMenuItem = ({ id, title }: { id: string; title: string }) => {
   return (
@@ -51,14 +52,14 @@ export const SettingsDialog = ({ isOpen, onOpenChange }: SettingsDialogProps) =>
         className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
       >
         <Modal className="w-full max-w-screen-lg p-4">
-          <Dialog className="bg-background rounded-lg border border-muted">
+          <Dialog className="bg-background rounded-lg border border-muted flex flex-col">
             <div className="flex flex-row justify-between items-center p-4 border-b border-muted">
               <Heading slot="title" className="text-lg font-semibold">
                 Settings
               </Heading>
               <IconButton slot="close" Icon={LuX} />
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-row flex-1 max-h-[50vh] min-h-[50vh]">
               <GridList
                 className="outline-none w-48"
                 aria-label="Setting Categories"
@@ -73,8 +74,10 @@ export const SettingsDialog = ({ isOpen, onOpenChange }: SettingsDialogProps) =>
               >
                 <SettingCategoryMenuItem id="llm" title="LLM" />
                 <SettingCategoryMenuItem id="tools" title="Tools" />
+                <SettingCategoryMenuItem id="appearance" title="Appearance" />
               </GridList>
-              <div className="flex-1 border-l border-muted">
+              <div className="flex-1 border-l border-muted overflow-y-auto">
+                {settingCategoryId === 'appearance' && <AppearanceSettingsPanel />}
                 {settingCategoryId === 'llm' && <LlmSettingsPanel />}
                 {settingCategoryId === 'tools' && <ToolsSettingsPanel />}
               </div>

@@ -4,7 +4,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   encryptString: (plainText) => ipcRenderer.invoke('encryptString', plainText),
-  decryptString: (encryptedBase64) => ipcRenderer.invoke('decryptString', encryptedBase64)
+  decryptString: (encryptedBase64) => ipcRenderer.invoke('decryptString', encryptedBase64),
+  getTheme: () => ipcRenderer.invoke('getTheme'),
+  setTheme: (theme: 'system' | 'light' | 'dark') => ipcRenderer.invoke('setTheme', theme)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
