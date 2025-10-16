@@ -38,9 +38,6 @@ export const AppLayout = ({
       e.stopPropagation()
       setIsShowLeftSideBar(!isShowLeftSideBar)
     },
-    {
-      enableOnContentEditable: true
-    },
     [isShowLeftSideBar]
   )
 

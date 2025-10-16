@@ -8,7 +8,6 @@
   --color-muted-light: #f8f7f5;
   --color-muted-foreground: #888680;
   --color-primary: #d14424;
-  --color-primary-dark: #c13e20;
   --color-primary-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-dark: #d13e3e;
@@ -43,7 +42,6 @@
   --color-muted-light: var(--color-muted-light);
   --color-muted-foreground: var(--color-muted-foreground);
   --color-primary: var(--color-primary);
-  --color-primary-dark: var(--color-primary-dark);
   --color-primary-foreground: var(--color-primary-foreground);
   --color-destructive: var(--color-destructive);
   --color-destructive-dark: var(--color-destructive-dark);
@@ -56,6 +54,22 @@
   --color-info-foreground: var(--color-info-foreground);
   --color-code-background: var(--color-code-background);
   --color-code-foreground: var(--color-code-foreground);
+}
+
+::-webkit-scrollbar {
+  @apply w-2.5 bg-background;
+}
+ 
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+ 
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-t-full rounded-b-full border-r-2 border-background;
+}
+
+::-webkit-scrollbar-button {
+  @apply hidden;
 }
 
 body::selection {

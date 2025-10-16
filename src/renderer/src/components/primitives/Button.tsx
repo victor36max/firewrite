@@ -20,7 +20,7 @@ export const Button = ({
     variants: {
       variant: {
         default: 'hover:bg-muted-light',
-        primary: 'bg-primary text-primary-foreground hover:bg-primary-dark',
+        primary: 'bg-primary text-primary-foreground hover:brightness-90',
         secondary: 'border border-muted bg-background hover:bg-muted-light',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive-dark'
       },

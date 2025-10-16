@@ -33,7 +33,7 @@ export const IconButton = ({
           icon: 'text-foreground'
         },
         primary: {
-          button: 'bg-primary text-primary-foreground hover:bg-primary-dark',
+          button: 'bg-primary text-primary-foreground hover:brightness-90',
           icon: 'text-primary-foreground'
         },
         secondary: {
