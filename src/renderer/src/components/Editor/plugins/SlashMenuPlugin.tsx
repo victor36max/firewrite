@@ -114,7 +114,7 @@ const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
     }),
     new SlashMenuOption('Check List', {
       icon: <LuListChecks />,
-      keywords: ['check list', 'todo list'],
+      keywords: ['check list', 'todo list', 'task list'],
       onSelect: () => editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
     }),
     new SlashMenuOption('Quote', {

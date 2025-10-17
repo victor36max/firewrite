@@ -45,7 +45,7 @@ export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging, targetRef])
+  }, [isDragging, targetRef, align])
 
   return (
     <div

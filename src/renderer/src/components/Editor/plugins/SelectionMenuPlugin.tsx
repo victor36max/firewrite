@@ -105,6 +105,8 @@ const ImprovementSuggestionMenu = ({
   )
 }
 
+const DEFAULT_PREFILLED_URL = 'https://'
+
 export const SelectionMenuPlugin = ({
   anchorElement
 }: SelectionMenuPluginProps): React.JSX.Element | null => {
@@ -125,6 +127,7 @@ export const SelectionMenuPlugin = ({
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
   const [linkUrl, setLinkUrl] = useState<string | null>(null)
+  const [prefilledUrl, setPrefilledUrl] = useState<string>(DEFAULT_PREFILLED_URL)
   const [linkUrlError, setLinkUrlError] = useState<string | null>(null)
   const [isCode, setIsCode] = useState(false)
   const [isCreatingLink, setIsCreatingLink] = useState(false)
@@ -195,7 +198,20 @@ export const SelectionMenuPlugin = ({
         $toggleLink(null)
       })
     } else {
-      setIsCreatingLink(true)
+      editor.read(() => {
+        const selection = $getSelection()
+        if (!selection || !$isRangeSelection(selection)) {
+          return
+        }
+        const selectionText = selection.getTextContent()
+        if (isValidUrl(selectionText)) {
+          setPrefilledUrl(selectionText)
+        } else {
+          setPrefilledUrl(DEFAULT_PREFILLED_URL)
+        }
+
+        setIsCreatingLink(true)
+      })
     }
   }, [editor, linkUrl])
 
@@ -360,7 +376,7 @@ export const SelectionMenuPlugin = ({
                 name="link"
                 placeholder="Enter link"
                 autoFocus={isCreatingLink}
-                defaultValue={linkUrl || 'https://'}
+                defaultValue={linkUrl || prefilledUrl}
                 onChange={() => {
                   setLinkUrlError(null)
                 }}
