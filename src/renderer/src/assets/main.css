@@ -25,8 +25,8 @@
     --color-background: #1f1f1f;
     --color-foreground: #e8e8e8;
     --color-foreground-light: #a8a6a1;
-    --color-muted: #2d2c2a;
-    --color-muted-light: #3d3c3a;
+    --color-muted: #3d3c3a;
+    --color-muted-light: #2d2c2a;
     --color-muted-foreground: #a8a6a1;
   }
 }
