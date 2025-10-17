@@ -57,7 +57,7 @@
 }
 
 ::-webkit-scrollbar {
-  @apply w-3 bg-background;
+  @apply w-2.5 bg-background;
 }
  
 ::-webkit-scrollbar-track {
