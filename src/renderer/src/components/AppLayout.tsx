@@ -45,7 +45,7 @@ export const AppLayout = ({
     <div className="flex flex-row w-screen h-screen">
       {isShowLeftSideBar && (
         <>
-          <div ref={leftSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[300px]">
+          <div ref={leftSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[250px]">
             {leftSideBar}
           </div>
           <DraggableHandle targetRef={leftSideBarRef} align="left" />
@@ -55,7 +55,7 @@ export const AppLayout = ({
       {isShowRightSideBar && (
         <>
           <DraggableHandle targetRef={rightSideBarRef} align="right" />
-          <div ref={rightSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[300px]">
+          <div ref={rightSideBarRef} className="sticky top-0 bottom-0 overflow-y-auto w-[250px]">
             {rightSideBar}
           </div>
         </>

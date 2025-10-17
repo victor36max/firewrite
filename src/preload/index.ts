@@ -6,7 +6,8 @@ const api = {
   encryptString: (plainText) => ipcRenderer.invoke('encryptString', plainText),
   decryptString: (encryptedBase64) => ipcRenderer.invoke('decryptString', encryptedBase64),
   getTheme: () => ipcRenderer.invoke('getTheme'),
-  setTheme: (theme: 'system' | 'light' | 'dark') => ipcRenderer.invoke('setTheme', theme)
+  setTheme: (theme: 'system' | 'light' | 'dark') => ipcRenderer.invoke('setTheme', theme),
+  getPlatform: () => ipcRenderer.invoke('getPlatform')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -10,10 +10,12 @@ import {
 } from 'react-aria-components'
 import { IconButton } from '../primitives/IconButton'
 import { cn } from '@renderer/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LlmSettingsPanel } from './LlmSettingsPanel'
 import { ToolsSettingsPanel } from './ToolsSettingsPanel'
 import { AppearanceSettingsPanel } from './AppearanceSettingsPanel'
+import { usePlatformQuery } from '@renderer/hooks/queries/usePlatformQuery'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 const SettingCategoryMenuItem = ({ id, title }: { id: string; title: string }) => {
   return (
@@ -36,23 +38,46 @@ const SettingCategoryMenuItem = ({ id, title }: { id: string; title: string }) =
   )
 }
 
-interface SettingsDialogProps {
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-}
-
-export const SettingsDialog = ({ isOpen, onOpenChange }: SettingsDialogProps) => {
+export const SettingsDialog = () => {
+  const { data: platform } = usePlatformQuery()
   const [settingCategoryId, setSettingCategoryId] = useState<string>('llm')
+  const [isOpen, setIsOpen] = useState(false)
 
+  useEffect(() => {
+    if (platform !== 'darwin') {
+      return
+    }
+
+    // On macOS, the Settings menu item is in the main menu, so we rely on its shortcut to open the settings dialog
+    window.electron.ipcRenderer.on('open-settings', () => {
+      setIsOpen(true)
+    })
+  }, [platform])
+
+  useHotkeys(
+    ['ctrl+comma', 'meta+comma'],
+    () => {
+      // On macOS, the Settings menu item is in the main menu, so we rely on its shortcut to open the settings dialog
+      if (platform === 'darwin') {
+        return
+      }
+      setIsOpen(true)
+    },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
+    },
+    [setIsOpen, platform]
+  )
   return (
-    <DialogTrigger isOpen={isOpen} onOpenChange={onOpenChange}>
+    <DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <IconButton Icon={LuSettings} />
       <ModalOverlay
         isDismissable
         className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
       >
         <Modal className="w-full max-w-screen-lg p-4">
-          <Dialog className="bg-background rounded-lg border border-muted flex flex-col">
+          <Dialog className="bg-background rounded-lg border border-muted flex flex-col outline-none">
             <div className="flex flex-row justify-between items-center p-4 border-b border-muted">
               <Heading slot="title" className="text-lg font-semibold">
                 Settings

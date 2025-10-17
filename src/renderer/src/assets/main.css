@@ -57,7 +57,7 @@
 }
 
 ::-webkit-scrollbar {
-  @apply w-2.5 bg-background;
+  @apply w-3 bg-background;
 }
  
 ::-webkit-scrollbar-track {
@@ -70,6 +70,10 @@
 
 ::-webkit-scrollbar-button {
   @apply hidden;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-background;
 }
 
 body::selection {

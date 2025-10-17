@@ -1,4 +1,13 @@
-import { app, shell, BrowserWindow, ipcMain, safeStorage, nativeTheme } from 'electron'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  safeStorage,
+  nativeTheme,
+  Menu,
+  MenuItem
+} from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -6,9 +15,11 @@ import electronUpdater from 'electron-updater'
 
 const { autoUpdater } = electronUpdater
 
-function createWindow(): void {
+let mainWindow: BrowserWindow | null = null
+
+function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -22,7 +33,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -39,10 +50,37 @@ function createWindow(): void {
   }
 }
 
+const customizeMenu = () => {
+  const currentMenu = Menu.getApplicationMenu()
+
+  if (process.platform !== 'darwin') {
+    return
+  }
+
+  // Add Settings menu item to Firewrite mac menu
+  const appMenu = currentMenu?.items.find((item) => item.label === 'Firewrite')
+  if (appMenu) {
+    appMenu.submenu?.insert(
+      2,
+      new MenuItem({
+        label: 'Settings',
+        click: () => {
+          mainWindow?.webContents.send('open-settings')
+        },
+        accelerator: 'CommandOrControl+,'
+      })
+    )
+    appMenu.submenu?.insert(3, new MenuItem({ type: 'separator' }))
+  }
+
+  Menu.setApplicationMenu(currentMenu)
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  customizeMenu()
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -78,6 +116,10 @@ app.whenReady().then(() => {
     return nativeTheme.themeSource
   })
 
+  ipcMain.handle('getPlatform', async () => {
+    return process.platform
+  })
+
   ipcMain.handle('setTheme', async (_event, theme: 'system' | 'light' | 'dark') => {
     nativeTheme.themeSource = theme
   })
@@ -87,7 +129,9 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
   })
 })
 

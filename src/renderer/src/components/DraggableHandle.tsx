@@ -32,6 +32,9 @@ export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
             ? Math.min(maxWidth, Math.max(minWidth, e.clientX))
             : Math.min(maxWidth, Math.max(minWidth, window.innerWidth - e.clientX))
         target.style.width = `${newWidth}px`
+
+        // TODO: Hacky way to trigger textarea resize
+        window.dispatchEvent(new Event('resize'))
       }
     }
 

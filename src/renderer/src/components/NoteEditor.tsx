@@ -21,10 +21,12 @@ export const NoteEditor = (): React.JSX.Element | null => {
         contentEditable={false}
         className="pt-10 pb-2 -mb-2 bg-background/70 backdrop-blur-sm sticky top-0 z-10"
       >
-        <div contentEditable={false} className="flex flex-row justify-between items-center gap-4">
+        <div contentEditable={false} className="flex flex-row items-start gap-4">
           <TitleInput key={'title-' + currentNoteId} />
-          <SavingStateIndicator />
-          <MoreMenu />
+          <div className="flex flex-row items-center gap-4">
+            <SavingStateIndicator />
+            <MoreMenu />
+          </div>
         </div>
       </Container>
       <Container contentEditable={false} className="pb-10">
