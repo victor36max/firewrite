@@ -1,6 +1,6 @@
 {
   "name": "Firewrite",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "An Electron application with React and TypeScript",
   "homepage": "https://firewrite.app",
   "author": "victor36max@gmail.com",
