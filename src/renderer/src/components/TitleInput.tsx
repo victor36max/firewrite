@@ -57,6 +57,11 @@ export const TitleInput = (): React.JSX.Element | null => {
         return
       }
       const currentTitle = (e.target as HTMLDivElement).textContent || ''
+
+      if (currentTitle === title) {
+        return
+      }
+
       updateNote({ title: currentTitle })
     }
 
@@ -67,7 +72,7 @@ export const TitleInput = (): React.JSX.Element | null => {
       currentRef.removeEventListener('input', handleInput)
       currentRef.removeEventListener('focusout', handleBlur)
     }
-  }, [updateNote])
+  }, [title, updateNote])
 
   if (title === undefined) {
     return null
