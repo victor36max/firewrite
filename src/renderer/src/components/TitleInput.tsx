@@ -85,9 +85,7 @@ export const TitleInput = (): React.JSX.Element | null => {
           Title
         </div>
       )}
-      <div ref={ref} contentEditable className="">
-        {title}
-      </div>
+      <div ref={ref} contentEditable className="" dangerouslySetInnerHTML={{ __html: title }} />
     </div>
   )
 }

@@ -27,8 +27,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.3.9",
-    "remark-gfm": "^4.0.1"
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "@ai-sdk/anthropic": "^2.0.23",
@@ -64,6 +63,7 @@
     "idb": "^8.0.3",
     "lexical": "^0.33.1",
     "mustache": "^4.2.0",
+    "ollama-ai-provider-v2": "^1.5.0",
     "prettier": "^3.6.2",
     "react": "^19.1.0",
     "react-aria": "^3.42.0",
@@ -76,6 +76,7 @@
     "react-syntax-highlighter": "^15.6.6",
     "react-textarea-autosize": "^8.5.9",
     "rehype-external-links": "^3.0.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.3.1",
     "tailwind-variants": "^2.1.0",
     "tailwindcss": "^4.1.11",

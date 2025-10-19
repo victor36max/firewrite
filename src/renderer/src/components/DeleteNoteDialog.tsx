@@ -1,7 +1,7 @@
 import { Dialog, DialogTrigger, Modal, ModalOverlay, Heading } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
 import { useDeleteNoteMutation } from '@renderer/hooks/mutations/useDeleteNoteMutation'
-import { LuX } from 'react-icons/lu'
+import { LuTrash, LuX } from 'react-icons/lu'
 import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
 import { Button } from './primitives/Button'
@@ -36,6 +36,8 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
   })
   return (
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
+      {/* Add this hidden button just to hide warnings */}
+      <IconButton Icon={LuTrash} className="hidden" />
       <ModalOverlay
         isDismissable
         className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"

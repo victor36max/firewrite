@@ -16,7 +16,7 @@ const Container = ({ children, className, ...props }: React.HTMLAttributes<HTMLD
 export const NoteEditor = (): React.JSX.Element | null => {
   const { currentNoteId } = useCurrentNoteIdStore()
   return (
-    <div className="min-h-full" contentEditable>
+    <div className="min-h-full" contentEditable suppressContentEditableWarning>
       <Container
         contentEditable={false}
         className="pt-10 pb-2 -mb-2 bg-background/70 backdrop-blur-sm sticky top-0 z-10"

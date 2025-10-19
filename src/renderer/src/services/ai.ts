@@ -13,6 +13,7 @@ import improveSystemPrompt from '@renderer/prompts/improve-system.md?raw'
 import autocompleteSystemPrompt from '@renderer/prompts/autocomplete-system.md?raw'
 import mustache from 'mustache'
 import { dictionaryToXmlString } from '@renderer/utils'
+import { createOllama } from 'ollama-ai-provider-v2'
 
 type BaseLlmParams = {
   model: string
@@ -24,8 +25,7 @@ export type CloudLlmParams = BaseLlmParams & {
   apiKey: string
 }
 
-export type CustomLlmParams = BaseLlmParams & {
-  name: string
+export type LocalLlmParams = BaseLlmParams & {
   baseUrl: string
   apiKey: string
 }
@@ -36,7 +36,8 @@ export type LlmConfig = {
   anthropic: CloudLlmParams
   google: CloudLlmParams
   deepseek: CloudLlmParams
-  openaiCompatible: CustomLlmParams
+  lmStudio: LocalLlmParams
+  ollama: LocalLlmParams
 }
 
 export type LlmProvider = keyof LlmConfig
@@ -83,12 +84,19 @@ const getModel = () => {
         apiKey: params.apiKey
       })(params.model)
     }
-    case 'openaiCompatible': {
-      const params = llmConfig[llmProvider] as LlmConfig['openaiCompatible']
+    case 'lmStudio': {
+      const params = llmConfig[llmProvider] as LlmConfig['lmStudio']
       return createOpenAICompatible({
         apiKey: params.apiKey,
         baseURL: params.baseUrl,
-        name: params.name,
+        name: 'lmstudio',
+        headers: params.headers
+      })(params.model)
+    }
+    case 'ollama': {
+      const params = llmConfig[llmProvider] as LlmConfig['ollama']
+      return createOllama({
+        baseURL: params.baseUrl,
         headers: params.headers
       })(params.model)
     }

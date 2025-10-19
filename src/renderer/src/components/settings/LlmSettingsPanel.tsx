@@ -3,13 +3,48 @@ import { Label } from '@renderer/components/primitives/Label'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { Select } from '@renderer/components/primitives/Select'
 import { CloudLlmParams, LlmProvider } from '@renderer/services/ai'
-import { SiAnthropic, SiGooglegemini, SiOpenai } from 'react-icons/si'
-import { XAI, DeepSeek } from '@lobehub/icons'
+import { SiAnthropic, SiGooglegemini, SiOllama, SiOpenai } from 'react-icons/si'
+import { XAI, DeepSeek, LmStudio } from '@lobehub/icons'
 import { Form, TextField } from 'react-aria-components'
 import { Button } from '../primitives/Button'
 import { FieldError } from '../primitives/FieldError'
 import { useToast } from '@renderer/hooks/useToast'
 import { useState } from 'react'
+import { HeadersField } from '../HeadersField'
+import { isValidUrl } from '@renderer/utils'
+
+const isLocalLlmProvider = (provider: LlmProvider): boolean => {
+  return ['ollama', 'lmStudio'].includes(provider)
+}
+
+const isHeadersEmpty = (obj?: Record<string, string | null>): boolean => {
+  if (!obj) return true
+  if (Object.keys(obj).length === 0) return true
+  return Object.values(obj).every((value) => value === null || value === '')
+}
+
+const getHeadersFromFormData = (formData: FormData) => {
+  const headers = Object.fromEntries(
+    formData
+      .entries()
+      .reduce(
+        (acc, [key, value]) => {
+          const matches = key.match(/^headers\[(\d+)\]\.(name|value)$/)
+          if (!matches) return acc
+          const index = matches[1]
+          const field = matches[2]
+          if (!acc[index]) acc[index] = []
+          if (field === 'name') acc[index][0] = value
+          else if (field === 'value') acc[index][1] = value
+          return acc
+        },
+        [] as [string, string][]
+      )
+      .filter(([name, value]) => !!name && !!value)
+  )
+
+  return isHeadersEmpty(headers) ? undefined : headers
+}
 
 export const LlmSettingsPanel = () => {
   const { showToast } = useToast()
@@ -43,12 +78,16 @@ export const LlmSettingsPanel = () => {
     if (!llmProviderFormState) return
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const apiKey = formData.get('apiKey')
-    const model = formData.get('model')
-    if (!apiKey || !model) return
+    const apiKey = (formData.get('apiKey') || undefined) as string | undefined
+    const model = (formData.get('model') || undefined) as string | undefined
+    const baseUrl = (formData.get('baseUrl') || undefined) as string | undefined
+    const headers = getHeadersFromFormData(formData)
+
     setLlmConfig(llmProviderFormState as LlmProvider, {
-      apiKey: apiKey as string,
-      model: model as string
+      apiKey,
+      model,
+      headers,
+      baseUrl
     })
     showToast({
       title: 'Success',
@@ -73,7 +112,9 @@ export const LlmSettingsPanel = () => {
               { label: 'xAI (Grok)', value: 'xai', icon: <XAI /> },
               { label: 'Anthropic', value: 'anthropic', icon: <SiAnthropic /> },
               { label: 'Google Gemini', value: 'google', icon: <SiGooglegemini /> },
-              { label: 'DeepSeek', value: 'deepseek', icon: <DeepSeek /> }
+              { label: 'DeepSeek', value: 'deepseek', icon: <DeepSeek /> },
+              { label: 'Ollama', value: 'ollama', icon: <SiOllama /> },
+              { label: 'LM Studio', value: 'lmStudio', icon: <LmStudio /> }
             ]}
             onSelectionChange={(key) => {
               if (!key) return
@@ -83,18 +124,43 @@ export const LlmSettingsPanel = () => {
         </div>
         {llmProviderFormState && (
           <Form onSubmit={handleLlmConfigFormSubmit} className="flex flex-col gap-4">
-            <TextField
-              name="apiKey"
-              key={llmProviderFormState + 'apiKey'}
-              className="flex flex-col gap-2"
-              isRequired
-              defaultValue={currentLlmParams.apiKey}
-              type="password"
-            >
-              <Label>API Key</Label>
-              <Input placeholder="Enter LLM API Key" />
-              <FieldError />
-            </TextField>
+            {!isLocalLlmProvider(llmProviderFormState) && (
+              <>
+                <TextField
+                  name="apiKey"
+                  key={llmProviderFormState + 'apiKey'}
+                  className="flex flex-col gap-2"
+                  isRequired
+                  defaultValue={currentLlmParams.apiKey}
+                  type="password"
+                >
+                  <Label>API Key</Label>
+                  <Input placeholder="Enter LLM API Key" />
+                  <FieldError />
+                </TextField>
+              </>
+            )}
+            {isLocalLlmProvider(llmProviderFormState) && (
+              <>
+                <TextField
+                  name="baseUrl"
+                  key={llmProviderFormState + 'baseUrl'}
+                  className="flex flex-col gap-2"
+                  defaultValue={currentLlmParams.baseUrl}
+                  validate={(value) => (isValidUrl(value, true) ? undefined : 'Invalid URL')}
+                >
+                  <Label>Base URL</Label>
+                  <Input placeholder="Enter LLM Base URL" />
+                  <FieldError />
+                </TextField>
+                <HeadersField
+                  defaultValue={
+                    isHeadersEmpty(currentLlmParams.headers) ? { '': '' } : currentLlmParams.headers
+                  }
+                  key={llmProviderFormState + 'headers'}
+                />
+              </>
+            )}
             <TextField
               name="model"
               key={llmProviderFormState + 'model'}
