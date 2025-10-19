@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { Select } from '../primitives/Select'
+import { trackEvent } from '@renderer/services/tracking'
+import { Theme } from '@renderer/types'
 
 export const AppearanceSettingsPanel = () => {
   const queryClient = useQueryClient()
@@ -9,7 +11,12 @@ export const AppearanceSettingsPanel = () => {
   })
 
   const { mutate: setTheme } = useMutation({
-    mutationFn: window.api.setTheme,
+    mutationFn: async (theme: Theme) => {
+      trackEvent('theme-updated', {
+        theme
+      })
+      await window.api.setTheme(theme)
+    },
     onSettled: () => {
       queryClient.refetchQueries({ queryKey: ['theme'] })
     }
@@ -26,7 +33,7 @@ export const AppearanceSettingsPanel = () => {
             aria-label="Theme"
             onSelectionChange={(key) => {
               if (!key) return
-              setTheme(key as 'system' | 'light' | 'dark')
+              setTheme(key as Theme)
             }}
             items={[
               { label: 'System', value: 'system' },

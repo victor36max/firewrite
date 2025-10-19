@@ -41,6 +41,7 @@ import { useToast } from '@renderer/hooks/useToast'
 import { $convertToMarkdownString } from '@lexical/markdown'
 import { $isCodeHighlightNode, $isCodeNode } from '@lexical/code'
 import { DEFAULT_TRANSFORMERS } from '@lexical/react/LexicalMarkdownShortcutPlugin'
+import { trackEvent } from '@renderer/services/tracking'
 
 interface SelectionMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -165,6 +166,8 @@ export const SelectionMenuPlugin = ({
       const topLevelNode = findTopLevelNode(selection.anchor.getNode())
       const selectionText = selection.getTextContent()
 
+      trackEvent('improvement-triggered')
+
       improve({
         title: title || '',
         content: $convertToMarkdownString(DEFAULT_TRANSFORMERS, rootNode),
@@ -179,6 +182,7 @@ export const SelectionMenuPlugin = ({
       editor.update(() => {
         const selection = $getSelection()
         if (!selection) return
+        trackEvent('improvement-accepted')
         selection.insertText(suggestion)
       })
     },

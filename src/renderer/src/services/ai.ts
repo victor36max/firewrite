@@ -15,27 +15,23 @@ import mustache from 'mustache'
 import { dictionaryToXmlString } from '@renderer/utils'
 import { createOllama } from 'ollama-ai-provider-v2'
 
-type BaseLlmParams = {
+export type ThirdPartyLlmParams = {
   model: string
   headers?: Record<string, string>
-}
-
-export type CloudLlmParams = BaseLlmParams & {
   baseUrl?: string
   apiKey: string
 }
 
-export type LocalLlmParams = BaseLlmParams & {
+export type LocalLlmParams = ThirdPartyLlmParams & {
   baseUrl: string
-  apiKey: string
 }
 
 export type LlmConfig = {
-  xai: CloudLlmParams
-  openai: CloudLlmParams
-  anthropic: CloudLlmParams
-  google: CloudLlmParams
-  deepseek: CloudLlmParams
+  xai: ThirdPartyLlmParams
+  openai: ThirdPartyLlmParams
+  anthropic: ThirdPartyLlmParams
+  google: ThirdPartyLlmParams
+  deepseek: ThirdPartyLlmParams
   lmStudio: LocalLlmParams
   ollama: LocalLlmParams
 }
@@ -75,13 +71,17 @@ const getModel = () => {
     case 'google': {
       const params = llmConfig[llmProvider] as LlmConfig['google']
       return createGoogleGenerativeAI({
-        apiKey: params.apiKey
+        baseURL: params.baseUrl,
+        apiKey: params.apiKey,
+        headers: params.headers
       })(params.model)
     }
     case 'deepseek': {
       const params = llmConfig[llmProvider] as LlmConfig['deepseek']
       return createDeepSeek({
-        apiKey: params.apiKey
+        baseURL: params.baseUrl,
+        apiKey: params.apiKey,
+        headers: params.headers
       })(params.model)
     }
     case 'lmStudio': {

@@ -16,7 +16,6 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    envPrefix: ['PUBLIC_'],
     plugins: [react(), tailwindcss()],
     assetsInclude: ['**/*.md']
   }

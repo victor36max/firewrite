@@ -20,6 +20,7 @@ import { useMutation } from '@tanstack/react-query'
 import { generateAutocompleteSuggestion } from '@renderer/services/ai'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { $isCodeNode, $isCodeHighlightNode } from '@lexical/code'
+import { trackEvent } from '@renderer/services/tracking'
 
 const AUTOCOMPLETE_DELAY = 3000
 
@@ -87,6 +88,8 @@ export const AutocompletePlugin = (): null => {
           const selectionNode = $getNodeByKey(selection.anchor.key)
           if (!selectionNode) return
 
+          trackEvent('autocomplete-triggered')
+
           const selectionClone = selection.clone()
           const node = $createAutocompleteNode(text, AUTOCOMPLETE_UUID)
           const nodeKey = node.getKey()
@@ -127,6 +130,7 @@ export const AutocompletePlugin = (): null => {
         const node = $getNodeByKey(autocompleteNodeKeyRef.current)
         if (!node) return
         if (!(node instanceof AutocompleteNode)) return
+        trackEvent('autocomplete-accepted')
         node.remove()
         autocompleteNodeKeyRef.current = null
         if (selection) {

@@ -2,7 +2,7 @@ import { Input } from '@renderer/components/primitives/Input'
 import { Label } from '@renderer/components/primitives/Label'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { Select } from '@renderer/components/primitives/Select'
-import { CloudLlmParams, LlmProvider } from '@renderer/services/ai'
+import { LlmProvider, LocalLlmParams, ThirdPartyLlmParams } from '@renderer/services/ai'
 import { SiAnthropic, SiGooglegemini, SiOllama, SiOpenai } from 'react-icons/si'
 import { XAI, DeepSeek, LmStudio } from '@lobehub/icons'
 import { Form, TextField } from 'react-aria-components'
@@ -12,6 +12,7 @@ import { useToast } from '@renderer/hooks/useToast'
 import { useState } from 'react'
 import { HeadersField } from '../HeadersField'
 import { isValidUrl } from '@renderer/utils'
+import { trackEvent } from '@renderer/services/tracking'
 
 const isLocalLlmProvider = (provider: LlmProvider): boolean => {
   return ['ollama', 'lmStudio'].includes(provider)
@@ -59,12 +60,17 @@ export const LlmSettingsPanel = () => {
   )
 
   const currentLlmParams = (() => {
-    if (!llmProviderFormState || !llmConfig[llmProviderFormState]) return { apiKey: '', model: '' }
-    return llmConfig[llmProviderFormState] as CloudLlmParams
+    if (!llmProviderFormState) return null
+    return llmConfig[llmProviderFormState] as ThirdPartyLlmParams | LocalLlmParams | undefined
   })()
 
   const handleClearLlmConfig = () => {
-    setLlmConfig(llmProviderFormState as LlmProvider, undefined)
+    if (!llmProviderFormState) return
+    trackEvent('llm-removed', {
+      provider: llmProviderFormState,
+      model: currentLlmParams?.model || ''
+    })
+    setLlmConfig(llmProviderFormState, undefined)
     setLlmProviderFormState(null)
     setLlmProvider(null)
     showToast({
@@ -82,6 +88,15 @@ export const LlmSettingsPanel = () => {
     const model = (formData.get('model') || undefined) as string | undefined
     const baseUrl = (formData.get('baseUrl') || undefined) as string | undefined
     const headers = getHeadersFromFormData(formData)
+
+    if (!model) {
+      return
+    }
+
+    trackEvent(currentLlmParams ? 'llm-updated' : 'llm-added', {
+      provider: llmProviderFormState,
+      model
+    })
 
     setLlmConfig(llmProviderFormState as LlmProvider, {
       apiKey,
@@ -131,7 +146,7 @@ export const LlmSettingsPanel = () => {
                   key={llmProviderFormState + 'apiKey'}
                   className="flex flex-col gap-2"
                   isRequired
-                  defaultValue={currentLlmParams.apiKey}
+                  defaultValue={currentLlmParams?.apiKey}
                   type="password"
                 >
                   <Label>API Key</Label>
@@ -146,7 +161,7 @@ export const LlmSettingsPanel = () => {
                   name="baseUrl"
                   key={llmProviderFormState + 'baseUrl'}
                   className="flex flex-col gap-2"
-                  defaultValue={currentLlmParams.baseUrl}
+                  defaultValue={currentLlmParams?.baseUrl}
                   validate={(value) => (isValidUrl(value, true) ? undefined : 'Invalid URL')}
                 >
                   <Label>Base URL</Label>
@@ -155,7 +170,9 @@ export const LlmSettingsPanel = () => {
                 </TextField>
                 <HeadersField
                   defaultValue={
-                    isHeadersEmpty(currentLlmParams.headers) ? { '': '' } : currentLlmParams.headers
+                    isHeadersEmpty(currentLlmParams?.headers)
+                      ? undefined
+                      : currentLlmParams?.headers
                   }
                   key={llmProviderFormState + 'headers'}
                 />
@@ -166,7 +183,7 @@ export const LlmSettingsPanel = () => {
               key={llmProviderFormState + 'model'}
               className="flex flex-col gap-2"
               isRequired
-              defaultValue={currentLlmParams.model}
+              defaultValue={currentLlmParams?.model}
             >
               <Label>Model</Label>
               <Input placeholder="Enter LLM Model" />

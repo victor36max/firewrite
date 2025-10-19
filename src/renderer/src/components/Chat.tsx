@@ -15,6 +15,7 @@ import rehypeExternalLinks from 'rehype-external-links'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import remarkGfm from 'remark-gfm'
+import { trackEvent } from '@renderer/services/tracking'
 
 type ChatMessage = {
   id: string
@@ -78,6 +79,8 @@ export const Chat = (): React.JSX.Element => {
       if (normalizedMessage.length === 0) {
         return
       }
+
+      trackEvent('chat-message-sent')
 
       const newMessages = [
         ...messages,

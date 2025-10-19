@@ -5,6 +5,7 @@ import {
   useQueryClient
 } from '@tanstack/react-query'
 import { createNote, CreateNotePayload } from '../../services/idb'
+import { trackEvent } from '@renderer/services/tracking'
 
 export const useCreateNoteMutation = (
   options?: Omit<UseMutationOptions<string, Error, CreateNotePayload>, 'mutationFn'>
@@ -14,6 +15,7 @@ export const useCreateNoteMutation = (
   return useMutation({
     mutationFn: createNote,
     onSuccess: async (...args) => {
+      trackEvent('note-created')
       await queryClient.refetchQueries({ queryKey: ['notes'] })
       onSuccess?.(...args)
     },

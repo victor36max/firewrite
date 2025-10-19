@@ -9,7 +9,7 @@ export default defineConfig({
       '@renderer': resolve('src/renderer/src')
     }
   },
-  envPrefix: ['PUBLIC_'],
+  envPrefix: ['RENDERER_VITE_'],
   plugins: [react(), tailwindcss()],
   root: resolve('src/renderer'),
   envDir: resolve('.'),

@@ -6,12 +6,17 @@ import { Form, TextField } from 'react-aria-components'
 import { Button } from '../primitives/Button'
 import { FieldError } from '../primitives/FieldError'
 import { useRerender } from '@renderer/hooks/useRerender'
+import { trackEvent } from '@renderer/services/tracking'
 
 export const ToolsSettingsPanel = () => {
   const [key, rerender] = useRerender()
   const { tavilyApiKey, setTavilyApiKey } = useSettingsStore()
   const { showToast } = useToast()
   const handleClearTavilyApiKey = () => {
+    trackEvent('tool-removed', {
+      tool: 'web-search',
+      provider: 'tavily'
+    })
     setTavilyApiKey(null)
     rerender()
     showToast({
@@ -26,6 +31,12 @@ export const ToolsSettingsPanel = () => {
     const formData = new FormData(e.target as HTMLFormElement)
     const apiKey = formData.get('apiKey')
     if (!apiKey) return
+
+    trackEvent('tool-added', {
+      tool: 'web-search',
+      provider: 'tavily'
+    })
+
     setTavilyApiKey(apiKey as string)
     showToast({
       title: 'Success',

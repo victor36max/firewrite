@@ -47,3 +47,7 @@ export const dictionaryToXmlString = (obj: Record<string, string | null>) => {
     .flatMap(([key, value]) => (value ? [`<${key}>${value}</${key}>`] : []))
     .join('\n')
 }
+
+export const isDev = () => {
+  return import.meta.env.DEV
+}

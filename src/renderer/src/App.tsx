@@ -4,9 +4,16 @@ import { NoteEditor } from './components/NoteEditor'
 import { AppLayout } from './components/AppLayout'
 import { Chat } from './components/Chat'
 import { ToastProvider } from './components/ToastProvider'
+import { initTracking } from './services/tracking'
+import { useEffect } from 'react'
 
 const queryClient = new QueryClient()
+
 function App(): React.JSX.Element {
+  useEffect(() => {
+    initTracking()
+  }, [])
+
   return (
     <ToastProvider>
       <QueryClientProvider client={queryClient}>
