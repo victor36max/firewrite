@@ -31,6 +31,7 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { SavePlugin } from './plugins/SavePlugin'
 import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -147,6 +148,7 @@ export const Editor = (): React.JSX.Element | null => {
       <LinkPlugin />
       <CodeHighlightPrismPlugin anchorElement={anchorElement} />
       <HorizontalRulePlugin />
+      <ClickableLinkPlugin />
     </LexicalComposer>
   )
 }
