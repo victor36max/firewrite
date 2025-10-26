@@ -47,6 +47,8 @@ export const TitleInput = (): React.JSX.Element | null => {
 
     const currentRef = ref.current
 
+    currentRef.innerHTML = title || ''
+
     const handleInput = (e: Event) => {
       const currentTitle = (e.target as HTMLDivElement).textContent || ''
       setShowPlaceholder(!currentTitle)
@@ -85,7 +87,7 @@ export const TitleInput = (): React.JSX.Element | null => {
           Title
         </div>
       )}
-      <div ref={ref} contentEditable className="" dangerouslySetInnerHTML={{ __html: title }} />
+      <div ref={ref} contentEditable />
     </div>
   )
 }
