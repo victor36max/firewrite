@@ -1,6 +1,6 @@
 {
   "name": "Firewrite",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "An electron application for writing and editing text with a clean, minimalist interface with the assistance of AI.",
   "homepage": "https://firewrite.app",
   "author": "victor36max@gmail.com",
