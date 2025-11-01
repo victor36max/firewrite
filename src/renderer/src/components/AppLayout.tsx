@@ -32,7 +32,7 @@ export const AppLayout = ({
   )
 
   useHotkeys(
-    ['ctrl+b', 'meta+b'],
+    ['ctrl+h', 'meta+h'],
     (e) => {
       e.preventDefault()
       e.stopPropagation()
