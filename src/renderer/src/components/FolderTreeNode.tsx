@@ -148,7 +148,7 @@ export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: numbe
           <IconButton
             aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
             Icon={isExpanded ? LuChevronDown : LuChevronRight}
-            className="bg-transparent -mx-1"
+            className="bg-transparent hover:bg-muted -mx-1"
             size="sm"
             onMouseDown={(e) => {
               e.preventDefault()
