@@ -32,6 +32,7 @@ import { SavePlugin } from './plugins/SavePlugin'
 import CodeHighlightPrismPlugin from './plugins/CodeHighlightPrismPlugin'
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
 import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin'
+import { WordCharacterCounterPlugin } from './plugins/WordCharacterCounterPlugin'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -149,6 +150,7 @@ export const Editor = (): React.JSX.Element | null => {
       <CodeHighlightPrismPlugin anchorElement={anchorElement} />
       <HorizontalRulePlugin />
       <ClickableLinkPlugin />
+      <WordCharacterCounterPlugin />
     </LexicalComposer>
   )
 }
