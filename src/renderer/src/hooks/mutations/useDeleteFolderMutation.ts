@@ -1,16 +1,15 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
-import { deleteNote } from '../../services/idb'
-import { trackEvent } from '@renderer/services/tracking'
+import { deleteFolder } from '@renderer/services/idb'
 
-export const useDeleteNoteMutation = (
+export const useDeleteFolderMutation = (
   options?: Omit<UseMutationOptions<string, Error, string>, 'mutationFn'>
 ) => {
   const { onSuccess, ...rest } = options || {}
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: deleteNote,
+    mutationFn: deleteFolder,
     onSuccess: async (...args) => {
-      trackEvent('note-deleted')
+      await queryClient.invalidateQueries({ queryKey: ['folders'] })
       await queryClient.invalidateQueries({ queryKey: ['notes'] })
       await queryClient.invalidateQueries({ queryKey: ['folder'] })
       await queryClient.invalidateQueries({ queryKey: ['note-count'] })

@@ -2,9 +2,11 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { Select } from '../primitives/Select'
 import { trackEvent } from '@renderer/services/tracking'
 import { Theme } from '@renderer/types'
+import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 
 export const AppearanceSettingsPanel = () => {
   const queryClient = useQueryClient()
+  const { folderSortMode, setFolderSortMode } = useSettingsStore()
   const { data: theme } = useQuery({
     queryKey: ['theme'],
     queryFn: window.api.getTheme
@@ -39,6 +41,24 @@ export const AppearanceSettingsPanel = () => {
               { label: 'System', value: 'system' },
               { label: 'Light', value: 'light' },
               { label: 'Dark', value: 'dark' }
+            ]}
+          />
+        </div>
+
+        <div className="border border-muted rounded-lg p-4 space-y-4">
+          <div className="font-semibold">Folders</div>
+          <Select
+            name="folderSortMode"
+            selectedKey={folderSortMode}
+            aria-label="Folder sort order"
+            onSelectionChange={(key) => {
+              if (!key) return
+              const mode = key as 'updated' | 'alpha'
+              setFolderSortMode(mode)
+            }}
+            items={[
+              { label: 'Sort by: Last updated', value: 'updated' },
+              { label: 'Sort by: Alphabetical', value: 'alpha' }
             ]}
           />
         </div>

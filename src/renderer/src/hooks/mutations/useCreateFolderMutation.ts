@@ -4,22 +4,18 @@ import {
   UseMutationResult,
   useQueryClient
 } from '@tanstack/react-query'
-import { createNote, CreateNotePayload } from '../../services/idb'
-import { trackEvent } from '@renderer/services/tracking'
+import { createFolder, CreateFolderPayload } from '@renderer/services/idb'
 
-export const useCreateNoteMutation = (
-  options?: Omit<UseMutationOptions<string, Error, CreateNotePayload>, 'mutationFn'>
-): UseMutationResult<string, Error, CreateNotePayload> => {
+export const useCreateFolderMutation = (
+  options?: Omit<UseMutationOptions<string, Error, CreateFolderPayload>, 'mutationFn'>
+): UseMutationResult<string, Error, CreateFolderPayload> => {
   const { onSuccess, ...rest } = options || {}
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: createNote,
+    mutationFn: createFolder,
     onSuccess: async (...args) => {
-      trackEvent('note-created')
-      await queryClient.invalidateQueries({ queryKey: ['notes'] })
       await queryClient.invalidateQueries({ queryKey: ['folders'] })
       await queryClient.invalidateQueries({ queryKey: ['folder'] })
-      await queryClient.invalidateQueries({ queryKey: ['note-count'] })
       await queryClient.invalidateQueries({ queryKey: ['folder-delete-stats'] })
       onSuccess?.(...args)
     },
