@@ -21,6 +21,7 @@ export const NoteTreeRow = ({
   const clearAllDragState = useTreeDragStateStore((s) => s.clear)
 
   const title = note.title || 'New Note'
+  const listKey = `${note.id}:${note.folderId ?? 'root'}`
 
   return (
     <GridListItem
@@ -37,7 +38,7 @@ export const NoteTreeRow = ({
           (currentFolderId !== null || currentNoteId !== note.id) && 'hover:bg-muted-light'
         )
       }
-      id={`note:${note.id}`}
+      id={`note:${listKey}`}
       aria-label={title}
       onAction={() => {
         setCurrentFolderId(null)

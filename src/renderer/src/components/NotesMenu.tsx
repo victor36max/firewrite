@@ -85,7 +85,9 @@ export const NotesMenu = (): React.JSX.Element => {
   }, [currentNoteId, setCurrentNoteId])
 
   const renderRootNote = useCallback((note: Note) => {
-    return <NoteTreeRow key={note.id} note={note} depth={0} isRoot />
+    return (
+      <NoteTreeRow key={`${note.id}:${note.folderId ?? 'root'}`} note={note} depth={0} isRoot />
+    )
   }, [])
 
   useEffect(() => {
@@ -208,7 +210,13 @@ export const NotesMenu = (): React.JSX.Element => {
               const entries = getSortedEntries(subfolders, notes)
               return entries.map((entry) => {
                 if (entry.type === 'note') return renderRootNote(entry.note)
-                return <FolderTreeNode key={entry.folder.id} folder={entry.folder} depth={0} />
+                return (
+                  <FolderTreeNode
+                    key={`${entry.folder.id}:${entry.folder.parentId ?? 'root'}`}
+                    folder={entry.folder}
+                    depth={0}
+                  />
+                )
               })
             })()}
           </GridList>

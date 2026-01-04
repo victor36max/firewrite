@@ -17,6 +17,7 @@ import { IconButton } from './primitives/IconButton'
 type TreeEntry = { type: 'folder'; folder: Folder } | { type: 'note'; note: Note }
 
 export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: number }) => {
+  const listKey = `${folder.id}:${folder.parentId ?? 'root'}`
   const folderSortMode = useSettingsStore((s) => s.folderSortMode)
   const { expandedFolderIds, toggleFolderExpanded, ensureExpanded } = useFolderTreeStateStore()
   const expandedFolderIdSet = new Set(expandedFolderIds)
@@ -88,7 +89,7 @@ export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: numbe
             dragOverFolderId === folder.id && 'ring-2 ring-primary/40'
           )
         }
-        id={`folder:${folder.id}`}
+        id={`folder:${listKey}`}
         aria-label={folder.name}
         onAction={() => setCurrentFolderId(folder.id)}
       >
@@ -175,9 +176,21 @@ export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: numbe
       {isExpanded &&
         entries.map((entry) => {
           if (entry.type === 'note') {
-            return <NoteTreeRow key={entry.note.id} note={entry.note} depth={depth} />
+            return (
+              <NoteTreeRow
+                key={`${entry.note.id}:${entry.note.folderId ?? 'root'}`}
+                note={entry.note}
+                depth={depth}
+              />
+            )
           }
-          return <FolderTreeNode key={entry.folder.id} folder={entry.folder} depth={depth + 1} />
+          return (
+            <FolderTreeNode
+              key={`${entry.folder.id}:${entry.folder.parentId ?? 'root'}`}
+              folder={entry.folder}
+              depth={depth + 1}
+            />
+          )
         })}
     </>
   )
