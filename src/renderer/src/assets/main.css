@@ -59,11 +59,11 @@
 ::-webkit-scrollbar {
   @apply w-2.5 bg-background;
 }
- 
+
 ::-webkit-scrollbar-track {
   @apply bg-background;
 }
- 
+
 ::-webkit-scrollbar-thumb {
   @apply bg-muted rounded-t-full rounded-b-full border-r-2 border-background;
 }
@@ -171,18 +171,18 @@ div[contenteditable] {
     li {
       &.fw-checklist-item {
         @apply list-none relative ml-1 pl-6 outline-none;
-    
+
         &:not(:has(ul)):not(:has(ol)):before {
           @apply content-[''] w-4 h-4 border border-muted rounded-sm absolute -left-0 top-1 cursor-pointer;
         }
-    
+
         &.fw-checked {
           @apply line-through;
-    
+
           &:before {
             @apply bg-primary border-primary;
           }
-    
+
           &:after {
             content: '';
             cursor: pointer;
@@ -202,7 +202,6 @@ div[contenteditable] {
     }
   }
 
-  
   /* Tables */
 
   table {
