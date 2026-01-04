@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { getAllNotesSortedByUpdated, Note } from '../../services/idb'
+import { getNotesByFolderSortedByUpdated, Note } from '../../services/idb'
 
 export type UseNotesQueryOptions<T = Note[]> = Omit<
   UseQueryOptions<Note[], Error>,
@@ -8,10 +8,16 @@ export type UseNotesQueryOptions<T = Note[]> = Omit<
   select?: (notes: Note[]) => T
 }
 
-export const useNotesQuery = <T = Note[]>(options?: UseNotesQueryOptions<T>) => {
+export const useNotesQuery = <T = Note[]>(
+  folderId?: string | null,
+  options?: UseNotesQueryOptions<T>
+) => {
   return useQuery({
-    queryKey: ['notes'],
-    queryFn: getAllNotesSortedByUpdated,
+    queryKey: ['notes', folderId ?? null],
+    queryFn: async () => {
+      // Indexed query works for root as well (folderId null) due to folderKey normalization.
+      return await getNotesByFolderSortedByUpdated(folderId ?? null)
+    },
     ...options
   })
 }

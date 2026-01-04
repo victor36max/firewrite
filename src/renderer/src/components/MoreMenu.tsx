@@ -8,6 +8,7 @@ import { DeleteNoteDialog } from './DeleteNoteDialog'
 import { useLexicalEditorStore } from '@renderer/hooks/stores/useLexicalEditorStore'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { useToast } from '@renderer/hooks/useToast'
+import { MoveNoteDialog } from './MoveNoteDialog'
 
 export const MoreMenuItem = ({ className, children, ...props }: MenuItemProps) => {
   return (
@@ -29,9 +30,13 @@ export const MoreMenuItem = ({ className, children, ...props }: MenuItemProps) =
 
 export const MoreMenu = () => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
+  const [isMoveNoteDialogOpen, setIsMoveNoteDialogOpen] = useState(false)
   const { currentNoteId } = useCurrentNoteIdStore()
   const { data: title = 'New Note' } = useCurrentNote({
     select: (note) => note.title
+  })
+  const { data: currentFolderId } = useCurrentNote({
+    select: (note) => note.folderId
   })
   const { getMarkdownContent } = useLexicalEditorStore()
   const { showToast } = useToast()
@@ -62,6 +67,9 @@ export const MoreMenu = () => {
         <Popover placement="bottom right">
           <Menu className="outline-none rounded-lg border border-muted min-w-24">
             <MoreMenuItem onAction={exportMarkdown}>Export Markdown</MoreMenuItem>
+            <MoreMenuItem onAction={() => setIsMoveNoteDialogOpen(true)}>
+              Move to folder
+            </MoreMenuItem>
             <MoreMenuItem
               className="text-destructive"
               onAction={() => setIsDeleteNoteDialogOpen(true)}
@@ -71,6 +79,14 @@ export const MoreMenu = () => {
           </Menu>
         </Popover>
       </MenuTrigger>{' '}
+      {currentNoteId && (
+        <MoveNoteDialog
+          noteId={currentNoteId}
+          currentFolderId={currentFolderId ?? null}
+          isOpen={isMoveNoteDialogOpen}
+          onOpenChange={setIsMoveNoteDialogOpen}
+        />
+      )}
       {currentNoteId && (
         <DeleteNoteDialog
           noteId={currentNoteId}

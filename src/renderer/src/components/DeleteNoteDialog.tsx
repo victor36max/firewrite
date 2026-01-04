@@ -2,11 +2,11 @@ import { Dialog, DialogTrigger, Modal, ModalOverlay, Heading } from 'react-aria-
 import { IconButton } from './primitives/IconButton'
 import { useDeleteNoteMutation } from '@renderer/hooks/mutations/useDeleteNoteMutation'
 import { LuTrash, LuX } from 'react-icons/lu'
-import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
 import { Button } from './primitives/Button'
 import { useCurrentNote } from '@renderer/hooks/useCurrentNote'
 import { useToast } from '@renderer/hooks/useToast'
+import { useNotesQuery } from '@renderer/hooks/queries/useNotesQuery'
 
 interface DeleteNoteDialogProps {
   noteId: string
@@ -16,7 +16,10 @@ interface DeleteNoteDialogProps {
 }
 
 export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDialogProps) => {
-  const { data: notes } = useNotesQuery()
+  const { data: noteFolderId } = useCurrentNote({
+    select: (note) => note.folderId
+  })
+  const { data: notes } = useNotesQuery(noteFolderId ?? null, { enabled: !!isOpen })
   const { setCurrentNoteId } = useCurrentNoteIdStore()
   const { showToast } = useToast()
   const { data: title } = useCurrentNote({

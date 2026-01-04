@@ -11,6 +11,8 @@ type SettingsStore = {
   setLlmConfig: (provider: LlmProvider, config: unknown | undefined) => void
   tavilyApiKey: string | null
   setTavilyApiKey: (key: string | null) => void
+  folderSortMode: 'updated' | 'alpha'
+  setFolderSortMode: (mode: 'updated' | 'alpha') => void
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -22,7 +24,9 @@ export const useSettingsStore = create<SettingsStore>()(
       setLlmConfig: (provider, config) =>
         set(({ llmConfig }) => ({ llmConfig: { ...llmConfig, [provider]: config } })),
       tavilyApiKey: null,
-      setTavilyApiKey: (key) => set({ tavilyApiKey: key })
+      setTavilyApiKey: (key) => set({ tavilyApiKey: key }),
+      folderSortMode: 'updated',
+      setFolderSortMode: (mode) => set({ folderSortMode: mode })
     }),
     {
       name: 'settings',
