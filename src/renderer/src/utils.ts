@@ -51,3 +51,15 @@ export const dictionaryToXmlString = (obj: Record<string, string | null>) => {
 export const isDev = () => {
   return import.meta.env.DEV
 }
+
+export const countWords = (text: string) => {
+  const allCharacters = text.length
+  const excludeNonLatinCharactersMatches = (text.match(/[\p{Script=Latin}\p{Script=Common}]+/gu) ||
+    []) as RegExpMatchArray
+  const nonLatinCharacters = allCharacters - excludeNonLatinCharactersMatches.join('').length
+  const latinWords = excludeNonLatinCharactersMatches
+    .flatMap((match) => match.split(/\s+/))
+    .map((match) => match.replace(/[\p{Script=Common}]+/gu, ''))
+    .filter(Boolean).length
+  return { words: nonLatinCharacters + latinWords, characters: allCharacters }
+}
