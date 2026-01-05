@@ -26,11 +26,11 @@ export const useUpdateNoteMutation = ({
         queryClient.invalidateQueries({ queryKey: ['folders'] }),
         queryClient.invalidateQueries({ queryKey: ['folder'] })
       ])
-      if (payload.title) {
+      if (payload.title !== undefined) {
         fireAndForget(queryClient.refetchQueries({ queryKey: ['note', payload.id] }))
       }
 
-      if (payload.content) {
+      if (payload.content !== undefined) {
         fireAndForget(queryClient.refetchQueries({ queryKey: ['note-content', payload.id] }))
       }
 

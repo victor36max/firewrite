@@ -34,9 +34,13 @@ export const RenameNoteDialog = ({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const title = (formData.get('title') as string).trim()
-    if (!title) return
-    updateNote({ id: noteId, title })
+    const nextTitle = (formData.get('title') as string).trim()
+    if (!nextTitle) return
+    if (nextTitle === initialTitle) {
+      onOpenChange?.(false)
+      return
+    }
+    updateNote({ id: noteId, title: nextTitle })
   }
 
   return (
@@ -67,7 +71,11 @@ export const RenameNoteDialog = ({
                 <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
-                <Button variant="primary" type="submit" isDisabled={isPending}>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  isDisabled={isPending || !title.trim() || title.trim() === initialTitle}
+                >
                   Rename
                 </Button>
               </div>

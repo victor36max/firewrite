@@ -34,9 +34,13 @@ export const RenameFolderDialog = ({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const name = (formData.get('name') as string).trim()
-    if (!name) return
-    updateFolder({ id: folderId, name })
+    const nextName = (formData.get('name') as string).trim()
+    if (!nextName) return
+    if (nextName === initialName) {
+      onOpenChange?.(false)
+      return
+    }
+    updateFolder({ id: folderId, name: nextName })
   }
 
   return (
@@ -67,7 +71,11 @@ export const RenameFolderDialog = ({
                 <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" isDisabled={isPending || !name.trim()}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isDisabled={isPending || !name.trim() || name.trim() === initialName}
+                >
                   Rename
                 </Button>
               </div>
