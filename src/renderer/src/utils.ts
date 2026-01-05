@@ -51,3 +51,11 @@ export const dictionaryToXmlString = (obj: Record<string, string | null>) => {
 export const isDev = () => {
   return import.meta.env.DEV
 }
+
+export const fireAndForget = (promise: Promise<unknown> | Promise<unknown>[]): void => {
+  if (Array.isArray(promise)) {
+    void Promise.allSettled(promise).catch(() => {})
+    return
+  }
+  void promise.catch(() => {})
+}

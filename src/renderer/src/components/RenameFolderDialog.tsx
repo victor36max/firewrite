@@ -1,4 +1,4 @@
-import { Dialog, DialogTrigger, Heading, Modal, ModalOverlay } from 'react-aria-components'
+import { Dialog, DialogTrigger, Form, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
 import { LuPencil, LuX } from 'react-icons/lu'
 import { Input } from './primitives/Input'
@@ -31,6 +31,14 @@ export const RenameFolderDialog = ({
     }
   })
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const name = (formData.get('name') as string).trim()
+    if (!name) return
+    updateFolder({ id: folderId, name })
+  }
+
   return (
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
       {/* hidden trigger to satisfy react-aria */}
@@ -47,34 +55,23 @@ export const RenameFolderDialog = ({
               </Heading>
               <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
-            <div className="p-4 space-y-4">
+            <Form onSubmit={handleFormSubmit} className="p-4 space-y-4">
               <Input
+                name="name"
                 autoFocus
                 placeholder="Folder name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <div className="flex flex-row gap-2 justify-end">
-                <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
+                <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    const trimmed = name.trim()
-                    if (!trimmed) return
-                    if (trimmed === initialName) {
-                      onOpenChange?.(false)
-                      return
-                    }
-                    updateFolder({ id: folderId, name: trimmed })
-                  }}
-                  isDisabled={isPending || !name.trim()}
-                >
+                <Button type="submit" variant="primary" isDisabled={isPending || !name.trim()}>
                   Rename
                 </Button>
               </div>
-            </div>
+            </Form>
           </Dialog>
         </Modal>
       </ModalOverlay>

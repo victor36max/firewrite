@@ -3,9 +3,8 @@ import { useFolderQuery } from '@renderer/hooks/queries/useFolderQuery'
 import { useNoteCountQuery } from '@renderer/hooks/queries/useNoteCountQuery'
 import { useCurrentFolderIdStore } from '@renderer/hooks/stores/useCurrentFolderIdStore'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
-import { Note } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SettingsDialog } from './settings/SettingsDialog'
 import { IconButton } from './primitives/IconButton'
 import { LuFolderPlus, LuPlus } from 'react-icons/lu'
@@ -17,11 +16,10 @@ import { FolderTreeNode } from './FolderTreeNode'
 import { useUpdateNoteMutation } from '@renderer/hooks/mutations/useUpdateNoteMutation'
 import { useUpdateFolderMutation } from '@renderer/hooks/mutations/useUpdateFolderMutation'
 import { useFolderTreeStateStore } from '@renderer/hooks/stores/useFolderTreeStateStore'
-import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
-import { Folder } from '@renderer/services/idb'
 import { NoteTreeRow } from './NoteTreeRow'
 import { useTreeDragStateStore } from '@renderer/hooks/stores/useTreeDragStateStore'
 import { GridList } from 'react-aria-components'
+import { useSortedFolderEntries } from '@renderer/hooks/useSortedFolderEntries'
 
 export const NotesMenu = (): React.JSX.Element => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
@@ -29,7 +27,6 @@ export const NotesMenu = (): React.JSX.Element => {
   const [isDeleteFolderDialogOpen, setIsDeleteFolderDialogOpen] = useState(false)
   const { currentFolderId, setCurrentFolderId } = useCurrentFolderIdStore()
   const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
-  const folderSortMode = useSettingsStore((s) => s.folderSortMode)
   const { expandedFolderIds, ensureExpanded, setExpandedFolderIds } = useFolderTreeStateStore()
   const {
     dragOverFolderId,
@@ -71,24 +68,24 @@ export const NotesMenu = (): React.JSX.Element => {
     [createNote, currentFolderId]
   )
 
+  useHotkeys(
+    ['ctrl+shift+n', 'meta+shift+n'],
+    () => {
+      setIsCreateFolderDialogOpen(true)
+    },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
+    },
+    [createNote, currentFolderId]
+  )
+
   useEffect(() => {
     // Ensure the app always has at least one note on first run.
     if (noteCount === 0) {
       createNote({ title: '', content: '', folderId: null })
     }
   }, [createNote, noteCount])
-
-  useEffect(() => {
-    // Keep note selection valid, but don't force it to follow selected folders.
-    // If the selected note no longer exists (e.g. deleted), fall back to the most-recent note.
-    // With lazy loading we can't cheaply validate existence here; leave as-is.
-  }, [currentNoteId, setCurrentNoteId])
-
-  const renderRootNote = useCallback((note: Note) => {
-    return (
-      <NoteTreeRow key={`${note.id}:${note.folderId ?? 'root'}`} note={note} depth={0} isRoot />
-    )
-  }, [])
 
   useEffect(() => {
     // If the drag is cancelled (Esc) or dropped outside the sidebar, dragleave/drop may not fire here.
@@ -102,34 +99,7 @@ export const NotesMenu = (): React.JSX.Element => {
     }
   }, [clearAllDragState])
 
-  type TreeEntry = { type: 'folder'; folder: Folder } | { type: 'note'; note: Note }
-
-  const getSortedEntries = useCallback(
-    (subfolders: Folder[], notes: Note[]): TreeEntry[] => {
-      const entries: TreeEntry[] = [
-        ...subfolders.map((folder) => ({ type: 'folder' as const, folder })),
-        ...notes.map((note) => ({ type: 'note' as const, note }))
-      ]
-
-      const labelFor = (entry: TreeEntry) =>
-        entry.type === 'folder' ? entry.folder.name : entry.note.title || 'New Note'
-      const updatedFor = (entry: TreeEntry) =>
-        entry.type === 'folder' ? entry.folder.updatedAt : entry.note.updatedAt
-
-      return entries.sort((a, b) => {
-        if (folderSortMode === 'updated') {
-          const delta = updatedFor(b) - updatedFor(a)
-          if (delta !== 0) return delta
-        }
-        const labelDelta = labelFor(a).localeCompare(labelFor(b))
-        if (labelDelta !== 0) return labelDelta
-        // Prefer folders before notes when labels match.
-        if (a.type !== b.type) return a.type === 'folder' ? -1 : 1
-        return 0
-      })
-    },
-    [folderSortMode]
-  )
+  const entries = useSortedFolderEntries(rootData)
 
   return (
     <div className="h-full flex flex-col">
@@ -144,7 +114,7 @@ export const NotesMenu = (): React.JSX.Element => {
         </div>
       </div>
 
-      <div className="px-2 pt-2 flex-1">
+      <div className="px-2 py-2 flex-1">
         <div
           className={cn(
             'outline-none flex flex-col min-h-full rounded-md',
@@ -204,21 +174,24 @@ export const NotesMenu = (): React.JSX.Element => {
             className="outline-none flex flex-col"
           >
             {/* Root folder is an internal container; don't render it as a visible folder. */}
-            {(() => {
-              const subfolders = rootData?.subfolders || []
-              const notes = rootData?.notes || []
-              const entries = getSortedEntries(subfolders, notes)
-              return entries.map((entry) => {
-                if (entry.type === 'note') return renderRootNote(entry.note)
+            {entries.map((entry) => {
+              if (entry.type === 'note')
                 return (
-                  <FolderTreeNode
-                    key={`${entry.folder.id}:${entry.folder.parentId ?? 'root'}`}
-                    folder={entry.folder}
+                  <NoteTreeRow
+                    key={`${entry.note.id}:${entry.note.folderId ?? 'root'}`}
+                    note={entry.note}
                     depth={0}
+                    isRoot
                   />
                 )
-              })
-            })()}
+              return (
+                <FolderTreeNode
+                  key={`${entry.folder.id}:${entry.folder.parentId ?? 'root'}`}
+                  folder={entry.folder}
+                  depth={0}
+                />
+              )
+            })}
           </GridList>
           {/* Spacer to make the "drop to root" zone fill the sidebar even when the tree is short. */}
           <div

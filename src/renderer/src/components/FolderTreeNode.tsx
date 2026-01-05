@@ -1,9 +1,8 @@
-import { Folder, Note } from '@renderer/services/idb'
+import { Folder } from '@renderer/services/idb'
 import { cn } from '@renderer/utils'
 import { LuChevronDown, LuChevronRight, LuFolder } from 'react-icons/lu'
 import { useFolderQuery } from '@renderer/hooks/queries/useFolderQuery'
 import { useFolderTreeStateStore } from '@renderer/hooks/stores/useFolderTreeStateStore'
-import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { useTreeDragStateStore } from '@renderer/hooks/stores/useTreeDragStateStore'
 import { useCurrentFolderIdStore } from '@renderer/hooks/stores/useCurrentFolderIdStore'
 import { useCurrentNoteIdStore } from '@renderer/hooks/stores/useCurrentNodeIdStore'
@@ -13,12 +12,10 @@ import { NoteTreeRow } from './NoteTreeRow'
 import { FolderRowMenu } from './FolderRowMenu'
 import { GridListItem } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
-
-type TreeEntry = { type: 'folder'; folder: Folder } | { type: 'note'; note: Note }
+import { useSortedFolderEntries } from '@renderer/hooks/useSortedFolderEntries'
 
 export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: number }) => {
   const listKey = `${folder.id}:${folder.parentId ?? 'root'}`
-  const folderSortMode = useSettingsStore((s) => s.folderSortMode)
   const { expandedFolderIds, toggleFolderExpanded, ensureExpanded } = useFolderTreeStateStore()
   const expandedFolderIdSet = new Set(expandedFolderIds)
   const isExpanded = expandedFolderIdSet.has(folder.id)
@@ -43,36 +40,10 @@ export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: numbe
     return false
   }
 
-  const getSortedEntries = (subfolders: Folder[], notes: Note[]): TreeEntry[] => {
-    const entries: TreeEntry[] = [
-      ...subfolders.map((folder) => ({ type: 'folder' as const, folder })),
-      ...notes.map((note) => ({ type: 'note' as const, note }))
-    ]
-
-    const labelFor = (entry: TreeEntry) =>
-      entry.type === 'folder' ? entry.folder.name : entry.note.title || 'New Note'
-    const updatedFor = (entry: TreeEntry) =>
-      entry.type === 'folder' ? entry.folder.updatedAt : entry.note.updatedAt
-
-    return entries.sort((a, b) => {
-      if (folderSortMode === 'updated') {
-        const delta = updatedFor(b) - updatedFor(a)
-        if (delta !== 0) return delta
-      }
-      const labelDelta = labelFor(a).localeCompare(labelFor(b))
-      if (labelDelta !== 0) return labelDelta
-      if (a.type !== b.type) return a.type === 'folder' ? -1 : 1
-      return 0
-    })
-  }
-
   // Lazy-load: only fetch folder contents if expanded.
   const { data } = useFolderQuery(folder.id, { enabled: isExpanded })
 
-  const subfolders = data?.subfolders || []
-  const notes = data?.notes || []
-
-  const entries = isExpanded ? getSortedEntries(subfolders, notes) : []
+  const entries = useSortedFolderEntries(data)
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { Dialog, DialogTrigger, Heading, Modal, ModalOverlay } from 'react-aria-components'
+import { Dialog, DialogTrigger, Form, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
 import { LuPencil, LuX } from 'react-icons/lu'
 import { Input } from './primitives/Input'
@@ -25,7 +25,19 @@ export const RenameNoteDialog = ({
     if (isOpen) setTitle(initialTitle)
   }, [initialTitle, isOpen])
 
-  const { mutate: updateNote, isPending } = useUpdateNoteMutation()
+  const { mutate: updateNote, isPending } = useUpdateNoteMutation({
+    onSuccess: () => {
+      onOpenChange?.(false)
+    }
+  })
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const title = (formData.get('title') as string).trim()
+    if (!title) return
+    updateNote({ id: noteId, title })
+  }
 
   return (
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
@@ -43,40 +55,23 @@ export const RenameNoteDialog = ({
               </Heading>
               <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
-            <div className="p-4 space-y-4">
+            <Form onSubmit={handleFormSubmit} className="p-4 space-y-4">
               <Input
+                name="title"
                 autoFocus
                 placeholder="Note title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
               <div className="flex flex-row gap-2 justify-end">
-                <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
+                <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    const nextTitle = title.trim()
-                    if (nextTitle === initialTitle) {
-                      onOpenChange?.(false)
-                      return
-                    }
-                    updateNote(
-                      { id: noteId, title: nextTitle },
-                      {
-                        onSuccess: () => {
-                          onOpenChange?.(false)
-                        }
-                      }
-                    )
-                  }}
-                  isDisabled={isPending}
-                >
+                <Button variant="primary" type="submit" isDisabled={isPending}>
                   Rename
                 </Button>
               </div>
-            </div>
+            </Form>
           </Dialog>
         </Modal>
       </ModalOverlay>
