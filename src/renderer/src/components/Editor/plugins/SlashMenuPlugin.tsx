@@ -20,7 +20,7 @@ import {
 import { $setBlocksType } from '@lexical/selection'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@renderer/utils'
 import {
@@ -32,11 +32,13 @@ import {
   LuListChecks,
   LuListOrdered,
   LuSeparatorHorizontal,
+  LuTable,
   LuText,
   LuTextQuote
 } from 'react-icons/lu'
 import { $createCodeNode } from '@lexical/code'
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
+import { OPEN_INSERT_TABLE_MENU_COMMAND } from '@renderer/components/Editor/plugins/table-commands'
 
 class SlashMenuOption extends MenuOption {
   title: string
@@ -61,7 +63,12 @@ class SlashMenuOption extends MenuOption {
   }
 }
 
-const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
+const getMenuOptions = (
+  editor: LexicalEditor,
+  actions: {
+    openInsertTableMenu: () => void
+  }
+): Array<SlashMenuOption> => {
   return [
     new SlashMenuOption('Paragraph', {
       icon: <LuText />,
@@ -98,10 +105,6 @@ const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
             })
         })
     ),
-    // new ComponentPickerOption('Table', {
-    //   keywords: ['table'],
-    //   onSelect: () => editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: '2', rows: '2' })
-    // }),
     new SlashMenuOption('Numbered List', {
       icon: <LuListOrdered />,
       keywords: ['numbered list', 'ordered list', 'ol'],
@@ -128,6 +131,11 @@ const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
           }
         })
     }),
+    new SlashMenuOption('Table', {
+      icon: <LuTable />,
+      keywords: ['table', 'grid'],
+      onSelect: () => actions.openInsertTableMenu()
+    }),
     new SlashMenuOption('Code', {
       icon: <LuCode />,
       keywords: ['code'],
@@ -150,12 +158,21 @@ const getMenuOptions = (editor: LexicalEditor): Array<SlashMenuOption> => {
 
 export const SlashMenuPlugin = (): React.JSX.Element => {
   const [editor] = useLexicalComposerContext()
+
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     allowWhitespace: true,
     minLength: 0
   })
 
-  const menuOptions = getMenuOptions(editor)
+  const menuOptions = useMemo(
+    () =>
+      getMenuOptions(editor, {
+        openInsertTableMenu: () => {
+          editor.dispatchCommand(OPEN_INSERT_TABLE_MENU_COMMAND, undefined)
+        }
+      }),
+    [editor]
+  )
 
   const handleSelectOption = useCallback(
     (

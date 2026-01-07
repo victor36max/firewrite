@@ -205,31 +205,49 @@ div[contenteditable] {
   /* Tables */
 
   table {
-    @apply my-4 w-full table-auto border-collapse text-left text-sm;
+    @apply my-4 w-full table-auto border-collapse text-left text-sm border border-muted bg-background;
 
     caption {
       @apply mt-2 caption-bottom text-left text-sm/6;
     }
 
-    thead {
-      @apply border-b border-muted bg-muted-light;
-    }
-
-    tfoot {
-      @apply border-t border-muted;
-    }
-
-    tr {
-      @apply border-y border-muted first:border-t-0 last:border-b-0;
+    /* Don't rely on thead/tbody/tfoot existing (Lexical may omit them, or insert colgroup). */
+    tr:first-of-type > th,
+    tr:first-of-type > td {
+      @apply bg-muted-light text-sm font-semibold text-foreground;
     }
 
     th {
-      @apply align-bottom font-semibold;
+      @apply align-bottom;
     }
 
     td,
     th {
-      @apply p-2;
+      @apply p-2 border border-muted relative align-top;
+
+      .fw-table-cell-action {
+        @apply absolute top-1 right-1 pointer-events-auto;
+      }
+
+      .fw-table-cell-action-button {
+        @apply w-5 h-5 rounded-md border border-muted bg-background text-muted-foreground;
+        @apply flex items-center justify-center;
+        @apply hover:bg-muted-light;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &:hover .fw-table-cell-action-button {
+        opacity: 1;
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      &:focus-within .fw-table-cell-action-button {
+        opacity: 1;
+        pointer-events: auto;
+        cursor: pointer;
+      }
 
       h1,
       h2,
@@ -237,8 +255,11 @@ div[contenteditable] {
       h4,
       h5,
       h6,
-      p {
-        @apply my-2 first:mt-0 last:mb-0;
+      p,
+      ul,
+      ol,
+      pre {
+        @apply my-0;
       }
     }
   }
