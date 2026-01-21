@@ -130,7 +130,8 @@ export const Editor = (): React.JSX.Element | null => {
               aria-placeholder="Enter some text..."
               className="fw-content-root"
               placeholder={() => (
-                <p className="text-muted-foreground absolute -top-4 left-0 pointer-events-none">
+                // -z-10 is needed to prevent the placeholder showing up on top of the floating menus of the editor
+                <p className="text-muted-foreground absolute -top-4 left-0 pointer-events-none -z-10">
                   Start writing, or press &quot;/&quot; for formatting options.
                 </p>
               )}

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Menu, MenuItem } from 'react-aria-components'
 import { createPortal } from 'react-dom'
 import { OPEN_TABLE_ACTION_MENU_COMMAND } from '@renderer/components/Editor/plugins/table-commands'
+import { LuColumns2, LuMinus, LuPlus, LuRows2, LuTrash } from 'react-icons/lu'
 
 type ActionMenuItemProps = {
   id: string
@@ -34,7 +35,7 @@ const ActionMenuItem = ({
       id={id}
       className={({ isFocused, isHovered }) =>
         cn(
-          'p-2 px-3 text-left block w-full cursor-pointer outline-none text-sm',
+          'p-2 px-3 text-left flex flex-row items-center gap-3 w-full cursor-pointer outline-none text-sm',
           hasTopBorder && 'border-t border-muted',
           tone === 'destructive' && 'text-destructive',
           (isFocused || isHovered) && 'bg-muted-light'
@@ -44,6 +45,34 @@ const ActionMenuItem = ({
     >
       {children}
     </MenuItem>
+  )
+}
+
+const ActionMenuIcon = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <span className="relative inline-flex items-center justify-center w-4 h-4 shrink-0">
+      {children}
+    </span>
+  )
+}
+
+const RowIcon = ({ type }: { type: 'add' | 'remove' }) => {
+  const Overlay = type === 'add' ? LuPlus : LuMinus
+  return (
+    <ActionMenuIcon>
+      <LuRows2 className="w-3.5 h-3.5" />
+      <Overlay className="w-2.5 h-2.5 absolute -right-1.5 -bottom-1.5" />
+    </ActionMenuIcon>
+  )
+}
+
+const ColIcon = ({ type }: { type: 'add' | 'remove' }) => {
+  const Overlay = type === 'add' ? LuPlus : LuMinus
+  return (
+    <ActionMenuIcon>
+      <LuColumns2 className="w-3.5 h-3.5" />
+      <Overlay className="w-2.5 h-2.5 absolute -right-1.5 -bottom-1.5" />
+    </ActionMenuIcon>
   )
 }
 
@@ -199,9 +228,11 @@ export const TableActionMenuPlugin = ({
         onAction={() => setIsOpen(false)}
       >
         <ActionMenuItem id="add-row-below" onAction={() => runTableAction('addRowBelow')}>
+          <RowIcon type="add" />
           Add row below
         </ActionMenuItem>
         <ActionMenuItem id="remove-row" hasTopBorder onAction={() => runTableAction('removeRow')}>
+          <RowIcon type="remove" />
           Remove row
         </ActionMenuItem>
         <ActionMenuItem
@@ -209,12 +240,17 @@ export const TableActionMenuPlugin = ({
           hasTopBorder
           onAction={() => runTableAction('addColRight')}
         >
+          <ColIcon type="add" />
           Add column right
         </ActionMenuItem>
         <ActionMenuItem id="remove-col" hasTopBorder onAction={() => runTableAction('removeCol')}>
+          <ColIcon type="remove" />
           Remove column
         </ActionMenuItem>
         <ActionMenuItem id="remove-table" hasTopBorder tone="destructive" onAction={removeTable}>
+          <ActionMenuIcon>
+            <LuTrash className="w-4 h-4" />
+          </ActionMenuIcon>
           Remove table
         </ActionMenuItem>
       </Menu>
