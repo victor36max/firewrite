@@ -1,7 +1,7 @@
-import { Dialog, DialogTrigger, Heading, Modal, ModalOverlay } from 'react-aria-components'
+import { Dialog, DialogTrigger, Form, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
 import { LuFolder, LuMoveRight, LuX } from 'react-icons/lu'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from './primitives/Button'
 import { Select } from './primitives/Select'
 import { useFoldersQuery } from '@renderer/hooks/queries/useFoldersQuery'
@@ -24,8 +24,13 @@ export const MoveNoteDialog = ({
   const { data: folders } = useFoldersQuery()
   const ensureExpanded = useFolderTreeStateStore((s) => s.ensureExpanded)
   const ROOT_KEY = '__root__'
-  const [selectedFolderId, setSelectedFolderId] = useState<string>(currentFolderId ?? ROOT_KEY)
+  const defaultFolderId = useMemo(() => currentFolderId ?? ROOT_KEY, [currentFolderId])
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(defaultFolderId)
   const { mutate: updateNote, isPending } = useUpdateNoteMutation()
+
+  useEffect(() => {
+    if (isOpen) setSelectedFolderId(defaultFolderId)
+  }, [defaultFolderId, isOpen])
 
   const folderItems = useMemo(() => {
     return [
@@ -40,7 +45,29 @@ export const MoveNoteDialog = ({
         icon: <LuFolder className="w-4 h-4 text-muted-foreground" />
       }))
     ]
-  }, [folders])
+  }, [ROOT_KEY, folders])
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const destFolderId = selectedFolderId === ROOT_KEY ? null : selectedFolderId
+
+    if (destFolderId === currentFolderId) {
+      onOpenChange?.(false)
+      return
+    }
+
+    updateNote(
+      { id: noteId, folderId: destFolderId },
+      {
+        onSuccess: () => {
+          if (destFolderId) {
+            ensureExpanded([destFolderId])
+          }
+          onOpenChange?.(false)
+        }
+      }
+    )
+  }
 
   return (
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
@@ -58,7 +85,7 @@ export const MoveNoteDialog = ({
               </Heading>
               <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
-            <div className="p-4 space-y-4">
+            <Form onSubmit={handleFormSubmit} className="p-4 space-y-4">
               <Select
                 aria-label="Destination folder"
                 placeholder="Select folder"
@@ -67,27 +94,14 @@ export const MoveNoteDialog = ({
                 items={folderItems}
               />
               <div className="flex flex-row gap-2 justify-end">
-                <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
+                <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
                 <Button
-                  onClick={() => {
-                    const destFolderId = selectedFolderId === ROOT_KEY ? null : selectedFolderId
-                    updateNote(
-                      { id: noteId, folderId: destFolderId },
-                      {
-                        onSuccess: () => {
-                          if (destFolderId) {
-                            ensureExpanded([destFolderId])
-                          }
-                          onOpenChange?.(false)
-                        }
-                      }
-                    )
-                  }}
+                  type="submit"
+                  variant="primary"
                   isDisabled={
                     isPending ||
-                    !selectedFolderId ||
                     (selectedFolderId === ROOT_KEY ? null : selectedFolderId) === currentFolderId
                   }
                   autoFocus
@@ -95,7 +109,7 @@ export const MoveNoteDialog = ({
                   Move
                 </Button>
               </div>
-            </div>
+            </Form>
           </Dialog>
         </Modal>
       </ModalOverlay>

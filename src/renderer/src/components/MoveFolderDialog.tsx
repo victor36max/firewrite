@@ -1,7 +1,7 @@
-import { Dialog, DialogTrigger, Heading, Modal, ModalOverlay } from 'react-aria-components'
+import { Dialog, DialogTrigger, Form, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { IconButton } from './primitives/IconButton'
 import { LuFolder, LuMoveRight, LuX } from 'react-icons/lu'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from './primitives/Button'
 import { Select } from './primitives/Select'
 import { useFoldersQuery } from '@renderer/hooks/queries/useFoldersQuery'
@@ -24,9 +24,13 @@ export const MoveFolderDialog = ({
   const { data: folders } = useFoldersQuery()
   const ensureExpanded = useFolderTreeStateStore((s) => s.ensureExpanded)
   const ROOT_KEY = '__root__'
-
-  const [selectedParentId, setSelectedParentId] = useState<string>(currentParentId ?? ROOT_KEY)
+  const defaultParentId = useMemo(() => currentParentId ?? ROOT_KEY, [currentParentId])
+  const [selectedParentId, setSelectedParentId] = useState<string>(defaultParentId)
   const { mutate: updateFolder, isPending } = useUpdateFolderMutation()
+
+  useEffect(() => {
+    if (isOpen) setSelectedParentId(defaultParentId)
+  }, [defaultParentId, isOpen])
 
   const folderItems = useMemo(() => {
     return [
@@ -43,7 +47,27 @@ export const MoveFolderDialog = ({
           icon: <LuFolder className="w-4 h-4 text-muted-foreground" />
         }))
     ]
-  }, [folders, folderId])
+  }, [ROOT_KEY, folders, folderId])
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const destParentId = selectedParentId === ROOT_KEY ? null : selectedParentId
+
+    if (destParentId === currentParentId) {
+      onOpenChange?.(false)
+      return
+    }
+
+    updateFolder(
+      { id: folderId, parentId: destParentId },
+      {
+        onSuccess: () => {
+          if (destParentId) ensureExpanded([destParentId])
+          onOpenChange?.(false)
+        }
+      }
+    )
+  }
 
   return (
     <DialogTrigger onOpenChange={onOpenChange} isOpen={isOpen}>
@@ -61,7 +85,7 @@ export const MoveFolderDialog = ({
               </Heading>
               <IconButton slot="close" Icon={LuX} excludeFromTabOrder />
             </div>
-            <div className="p-4 space-y-4">
+            <Form onSubmit={handleFormSubmit} className="p-4 space-y-4">
               <Select
                 aria-label="Destination folder"
                 placeholder="Select folder"
@@ -70,25 +94,14 @@ export const MoveFolderDialog = ({
                 items={folderItems}
               />
               <div className="flex flex-row gap-2 justify-end">
-                <Button variant="secondary" onClick={() => onOpenChange?.(false)}>
+                <Button variant="secondary" type="button" onClick={() => onOpenChange?.(false)}>
                   Cancel
                 </Button>
                 <Button
-                  onClick={() => {
-                    const destParentId = selectedParentId === ROOT_KEY ? null : selectedParentId
-                    updateFolder(
-                      { id: folderId, parentId: destParentId },
-                      {
-                        onSuccess: () => {
-                          if (destParentId) ensureExpanded([destParentId])
-                          onOpenChange?.(false)
-                        }
-                      }
-                    )
-                  }}
+                  type="submit"
+                  variant="primary"
                   isDisabled={
                     isPending ||
-                    !selectedParentId ||
                     (selectedParentId === ROOT_KEY ? null : selectedParentId) === currentParentId
                   }
                   autoFocus
@@ -96,7 +109,7 @@ export const MoveFolderDialog = ({
                   Move
                 </Button>
               </div>
-            </div>
+            </Form>
           </Dialog>
         </Modal>
       </ModalOverlay>
