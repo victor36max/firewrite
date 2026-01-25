@@ -15,6 +15,10 @@ import mustache from 'mustache'
 import { dictionaryToXmlString } from '@renderer/utils'
 import { createOllama } from 'ollama-ai-provider-v2'
 
+export type ChatStreamResponse = {
+  textStream: AsyncIterable<string>
+}
+
 export type ThirdPartyLlmParams = {
   model: string
   headers?: Record<string, string>
@@ -172,7 +176,7 @@ export const streamChatResponse = async ({
     role: 'user' | 'assistant'
     content: string
   }[]
-}) => {
+}): Promise<ChatStreamResponse> => {
   const { tavilyApiKey } = useSettingsStore.getState()
   const model = getModel()
   if (!model) {
