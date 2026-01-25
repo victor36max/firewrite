@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { Select } from '../primitives/Select'
 import { trackEvent } from '@renderer/services/tracking'
 import { ColorTheme, Theme } from '@renderer/types'
@@ -6,12 +5,8 @@ import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { LuMonitor, LuMoon, LuSun } from 'react-icons/lu'
 
 export const AppearanceSettingsPanel = () => {
-  const queryClient = useQueryClient()
-  const { folderSortMode, setFolderSortMode, colorTheme, setColorTheme } = useSettingsStore()
-  const { data: theme } = useQuery({
-    queryKey: ['theme'],
-    queryFn: window.api.getTheme
-  })
+  const { theme, setTheme, folderSortMode, setFolderSortMode, colorTheme, setColorTheme } =
+    useSettingsStore()
 
   const colorThemeHex: Record<ColorTheme, string> = {
     ember: '#b85a44',
@@ -30,18 +25,6 @@ export const AppearanceSettingsPanel = () => {
     )
   }
 
-  const { mutate: setTheme } = useMutation({
-    mutationFn: async (theme: Theme) => {
-      trackEvent('theme-updated', {
-        theme
-      })
-      await window.api.setTheme(theme)
-    },
-    onSettled: () => {
-      queryClient.refetchQueries({ queryKey: ['theme'] })
-    }
-  })
-
   return (
     <div className="p-4 w-full">
       <div className="flex flex-col gap-4">
@@ -53,7 +36,9 @@ export const AppearanceSettingsPanel = () => {
             aria-label="Theme"
             onSelectionChange={(key) => {
               if (!key) return
-              setTheme(key as Theme)
+              const next = key as Theme
+              trackEvent('theme-updated', { theme: next })
+              setTheme(next)
             }}
             items={[
               {

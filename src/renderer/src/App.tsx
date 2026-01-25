@@ -11,11 +11,16 @@ import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 const queryClient = new QueryClient()
 
 function App(): React.JSX.Element {
+  const theme = useSettingsStore((s) => s.theme)
   const colorTheme = useSettingsStore((s) => s.colorTheme)
 
   useEffect(() => {
     initTracking()
   }, [])
+
+  useEffect(() => {
+    void window.api.setTheme(theme)
+  }, [theme])
 
   useEffect(() => {
     document.documentElement.dataset.colorTheme = colorTheme

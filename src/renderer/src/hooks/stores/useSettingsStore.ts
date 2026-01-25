@@ -1,11 +1,13 @@
 import { LlmProvider } from '@renderer/services/ai'
 import { encryptedKeyValueStore, keyValueStore } from '@renderer/services/idb'
-import { ColorTheme } from '@renderer/types'
+import { ColorTheme, Theme } from '@renderer/types'
 import { isElectron } from '@renderer/utils'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 type SettingsStore = {
+  theme: Theme
+  setTheme: (theme: Theme) => void
   llmProvider: LlmProvider | null
   setLlmProvider: (provider: LlmProvider | null) => void
   llmConfig: Record<LlmProvider, unknown>
@@ -21,6 +23,8 @@ type SettingsStore = {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
       llmProvider: null,
       setLlmProvider: (provider) => set({ llmProvider: provider }),
       llmConfig: {} as Record<LlmProvider, unknown>,
