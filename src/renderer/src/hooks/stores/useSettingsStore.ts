@@ -1,5 +1,6 @@
 import { LlmProvider } from '@renderer/services/ai'
 import { encryptedKeyValueStore, keyValueStore } from '@renderer/services/idb'
+import { ColorTheme } from '@renderer/types'
 import { isElectron } from '@renderer/utils'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
@@ -13,6 +14,8 @@ type SettingsStore = {
   setTavilyApiKey: (key: string | null) => void
   folderSortMode: 'updated' | 'alpha'
   setFolderSortMode: (mode: 'updated' | 'alpha') => void
+  colorTheme: ColorTheme
+  setColorTheme: (theme: ColorTheme) => void
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -26,7 +29,9 @@ export const useSettingsStore = create<SettingsStore>()(
       tavilyApiKey: null,
       setTavilyApiKey: (key) => set({ tavilyApiKey: key }),
       folderSortMode: 'updated',
-      setFolderSortMode: (mode) => set({ folderSortMode: mode })
+      setFolderSortMode: (mode) => set({ folderSortMode: mode }),
+      colorTheme: 'ember',
+      setColorTheme: (theme) => set({ colorTheme: theme })
     }),
     {
       name: 'settings',

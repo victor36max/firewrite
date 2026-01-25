@@ -60,7 +60,7 @@ export const ToolsSettingsPanel = () => {
               className="flex flex-col gap-2"
             >
               <Label>Tavily API Key</Label>
-              <Input />
+              <Input placeholder="Enter Tavily API Key" />
               <FieldError />
             </TextField>
             <div className="flex flex-row gap-2 justify-end">

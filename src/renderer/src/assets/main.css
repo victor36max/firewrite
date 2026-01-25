@@ -1,11 +1,13 @@
 @import 'tailwindcss';
 
 :root {
-  --color-background: #ffffff;
+  /* Light mode background: warm beige (less bright than pure white). */
+  --color-background: #f8f6f2;
   --color-foreground: #1d1c1a;
   --color-foreground-light: #4a4946;
   --color-muted: #dfddd6;
-  --color-muted-light: #f8f7f5;
+  /* Light surfaces (cards/hover): slightly darker beige for contrast. */
+  --color-muted-light: #f1eeea;
   --color-muted-foreground: #888680;
   --color-primary: #d14424;
   --color-primary-foreground: #ffffff;
@@ -29,6 +31,32 @@
     --color-muted-light: #2d2c2a;
     --color-muted-foreground: #a8a6a1;
   }
+}
+
+/* Accent palettes (color themes). Keep scheme (light/dark) separate. */
+:root[data-color-theme='ember'] {
+  --color-primary: #d14424;
+  --color-primary-foreground: #ffffff;
+}
+
+:root[data-color-theme='ocean'] {
+  --color-primary: #0077b6;
+  --color-primary-foreground: #ffffff;
+}
+
+:root[data-color-theme='forest'] {
+  --color-primary: #1f7a72;
+  --color-primary-foreground: #ffffff;
+}
+
+:root[data-color-theme='violet'] {
+  --color-primary: #6d28d9;
+  --color-primary-foreground: #ffffff;
+}
+
+:root[data-color-theme='rose'] {
+  --color-primary: #c84b6b;
+  --color-primary-foreground: #ffffff;
 }
 
 @theme inline {
@@ -212,8 +240,8 @@ div[contenteditable] {
     }
 
     /* Don't rely on thead/tbody/tfoot existing (Lexical may omit them, or insert colgroup). */
-    tr:first-of-type > th,
-    tr:first-of-type > td {
+    tr:first-of-type>th,
+    tr:first-of-type>td {
       @apply bg-muted-light text-sm font-semibold text-foreground;
     }
 
@@ -270,33 +298,41 @@ div[contenteditable] {
   }
 
   /* Code blocks */
-  .fw-content-root > code {
+  .fw-content-root>code {
     @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
 
     .fw-attr {
       color: rgb(152, 195, 121);
     }
+
     .fw-property {
       color: rgb(209, 154, 102);
     }
+
     .fw-selector {
       color: rgb(224, 108, 117);
     }
+
     .fw-function {
       color: rgb(97, 175, 239);
     }
+
     .fw-comment {
       color: rgb(92, 99, 112);
     }
+
     .fw-variable {
       color: rgb(198, 120, 221);
     }
+
     .fw-operator {
       color: rgb(97, 175, 239);
     }
+
     .fw-punctuation {
       color: rgb(171, 178, 191);
     }
+
     .fw-keyword {
       color: rgb(198, 120, 221);
     }
@@ -324,15 +360,19 @@ div[contenteditable] {
   h1 {
     @apply text-2xl;
   }
+
   h2 {
     @apply text-xl;
   }
+
   h3 {
     @apply text-lg;
   }
+
   h4 {
     @apply text-base;
   }
+
   h5 {
     @apply text-sm;
   }

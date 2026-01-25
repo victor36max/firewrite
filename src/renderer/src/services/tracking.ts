@@ -1,7 +1,7 @@
 import mixpanel from 'mixpanel-browser'
 import { isDev } from '../utils'
 import { LlmProvider } from './ai'
-import { Theme } from '@renderer/types'
+import { ColorTheme, Theme } from '@renderer/types'
 
 export const initTracking = () => {
   const mixpanelProjectToken = import.meta.env.RENDERER_VITE_MIXPANEL_PROJECT_TOKEN
@@ -54,6 +54,9 @@ type TrackEvents = {
   'autocomplete-accepted': undefined
   'theme-updated': {
     theme: Theme
+  }
+  'color-palette-updated': {
+    theme: ColorTheme
   }
 }
 

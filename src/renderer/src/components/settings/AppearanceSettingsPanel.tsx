@@ -1,16 +1,34 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { Select } from '../primitives/Select'
 import { trackEvent } from '@renderer/services/tracking'
-import { Theme } from '@renderer/types'
+import { ColorTheme, Theme } from '@renderer/types'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
+import { LuMonitor, LuMoon, LuSun } from 'react-icons/lu'
 
 export const AppearanceSettingsPanel = () => {
   const queryClient = useQueryClient()
-  const { folderSortMode, setFolderSortMode } = useSettingsStore()
+  const { folderSortMode, setFolderSortMode, colorTheme, setColorTheme } = useSettingsStore()
   const { data: theme } = useQuery({
     queryKey: ['theme'],
     queryFn: window.api.getTheme
   })
+
+  const colorThemeHex: Record<ColorTheme, string> = {
+    ember: '#b85a44',
+    ocean: '#0077b6',
+    forest: '#1f7a72',
+    violet: '#6d28d9',
+    rose: '#c84b6b'
+  }
+
+  const ColorSwatch = ({ theme }: { theme: ColorTheme }) => {
+    return (
+      <span
+        className="w-3 h-3 rounded-full border border-muted shrink-0"
+        style={{ backgroundColor: colorThemeHex[theme] }}
+      />
+    )
+  }
 
   const { mutate: setTheme } = useMutation({
     mutationFn: async (theme: Theme) => {
@@ -38,9 +56,43 @@ export const AppearanceSettingsPanel = () => {
               setTheme(key as Theme)
             }}
             items={[
-              { label: 'System', value: 'system' },
-              { label: 'Light', value: 'light' },
-              { label: 'Dark', value: 'dark' }
+              {
+                label: 'System',
+                value: 'system',
+                icon: <LuMonitor className="w-4 h-4 text-muted-foreground" />
+              },
+              {
+                label: 'Light',
+                value: 'light',
+                icon: <LuSun className="w-4 h-4 text-muted-foreground" />
+              },
+              {
+                label: 'Dark',
+                value: 'dark',
+                icon: <LuMoon className="w-4 h-4 text-muted-foreground" />
+              }
+            ]}
+          />
+        </div>
+
+        <div className="border border-muted rounded-lg p-4 space-y-4">
+          <div className="font-semibold">Color Palette</div>
+          <Select
+            name="colorPalette"
+            selectedKey={colorTheme}
+            aria-label="Color palette"
+            onSelectionChange={(key) => {
+              if (!key) return
+              const next = key as ColorTheme
+              trackEvent('color-palette-updated', { theme: next })
+              setColorTheme(next)
+            }}
+            items={[
+              { label: 'Ember', value: 'ember', icon: <ColorSwatch theme="ember" /> },
+              { label: 'Ocean', value: 'ocean', icon: <ColorSwatch theme="ocean" /> },
+              { label: 'Forest', value: 'forest', icon: <ColorSwatch theme="forest" /> },
+              { label: 'Violet', value: 'violet', icon: <ColorSwatch theme="violet" /> },
+              { label: 'Rose', value: 'rose', icon: <ColorSwatch theme="rose" /> }
             ]}
           />
         </div>
