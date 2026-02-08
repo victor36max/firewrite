@@ -10,7 +10,8 @@ import { trackEvent } from '@renderer/services/tracking'
 
 export const ToolsSettingsPanel = () => {
   const [key, rerender] = useRerender()
-  const { tavilyApiKey, setTavilyApiKey } = useSettingsStore()
+  const tavilyApiKey = useSettingsStore((store) => store.tavilyApiKey)
+  const setTavilyApiKey = useSettingsStore((store) => store.setTavilyApiKey)
   const { showToast } = useToast()
   const handleClearTavilyApiKey = () => {
     trackEvent('tool-removed', {

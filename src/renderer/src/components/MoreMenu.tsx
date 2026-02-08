@@ -31,14 +31,14 @@ export const MoreMenuItem = ({ className, children, ...props }: MenuItemProps) =
 export const MoreMenu = () => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
   const [isMoveNoteDialogOpen, setIsMoveNoteDialogOpen] = useState(false)
-  const { currentNoteId } = useCurrentNoteIdStore()
+  const currentNoteId = useCurrentNoteIdStore((store) => store.currentNoteId)
   const { data: title = 'New Note' } = useCurrentNote({
     select: (note) => note.title
   })
   const { data: currentFolderId } = useCurrentNote({
     select: (note) => note.folderId
   })
-  const { getMarkdownContent } = useLexicalEditorStore()
+  const getMarkdownContent = useLexicalEditorStore((store) => store.getMarkdownContent)
   const { showToast } = useToast()
   const exportMarkdown = async () => {
     const markdown = await getMarkdownContent()

@@ -22,8 +22,10 @@ export const FolderRowMenu = ({
   const [isMoveOpen, setIsMoveOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const { currentFolderId, setCurrentFolderId } = useCurrentFolderIdStore()
-  const { expandedFolderIds, setExpandedFolderIds } = useFolderTreeStateStore()
+  const currentFolderId = useCurrentFolderIdStore((store) => store.currentFolderId)
+  const setCurrentFolderId = useCurrentFolderIdStore((store) => store.setCurrentFolderId)
+  const expandedFolderIds = useFolderTreeStateStore((store) => store.expandedFolderIds)
+  const setExpandedFolderIds = useFolderTreeStateStore((store) => store.setExpandedFolderIds)
 
   return (
     <>

@@ -22,8 +22,8 @@ export const NoteRowMenu = ({
   const [isMoveOpen, setIsMoveOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const { setCurrentNoteId } = useCurrentNoteIdStore()
-  const { setCurrentFolderId } = useCurrentFolderIdStore()
+  const setCurrentNoteId = useCurrentNoteIdStore((store) => store.setCurrentNoteId)
+  const setCurrentFolderId = useCurrentFolderIdStore((store) => store.setCurrentFolderId)
 
   const ensureSelected = () => {
     setCurrentFolderId(null)

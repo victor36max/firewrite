@@ -49,12 +49,10 @@ const getHeadersFromFormData = (formData: FormData) => {
 
 export const LlmSettingsPanel = () => {
   const { showToast } = useToast()
-  const {
-    llmProvider: initialLlmProvider,
-    setLlmProvider: setLlmProvider,
-    llmConfig,
-    setLlmConfig
-  } = useSettingsStore()
+  const initialLlmProvider = useSettingsStore((store) => store.llmProvider)
+  const setLlmProvider = useSettingsStore((store) => store.setLlmProvider)
+  const llmConfig = useSettingsStore((store) => store.llmConfig)
+  const setLlmConfig = useSettingsStore((store) => store.setLlmConfig)
   const [llmProviderFormState, setLlmProviderFormState] = useState<LlmProvider | null>(
     initialLlmProvider
   )

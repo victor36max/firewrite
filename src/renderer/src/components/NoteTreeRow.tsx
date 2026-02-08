@@ -16,8 +16,10 @@ export const NoteTreeRow = ({
   depth: number
   isRoot?: boolean
 }) => {
-  const { currentFolderId, setCurrentFolderId } = useCurrentFolderIdStore()
-  const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
+  const currentFolderId = useCurrentFolderIdStore((store) => store.currentFolderId)
+  const setCurrentFolderId = useCurrentFolderIdStore((store) => store.setCurrentFolderId)
+  const currentNoteId = useCurrentNoteIdStore((store) => store.currentNoteId)
+  const setCurrentNoteId = useCurrentNoteIdStore((store) => store.setCurrentNoteId)
   const clearAllDragState = useTreeDragStateStore((s) => s.clear)
 
   const title = note.title || 'New Note'

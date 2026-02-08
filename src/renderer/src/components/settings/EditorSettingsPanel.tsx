@@ -2,7 +2,8 @@ import { Select } from '../primitives/Select'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 
 export const EditorSettingsPanel = () => {
-  const { isAutocompleteEnabled, setAutocompleteEnabled } = useSettingsStore()
+  const isAutocompleteEnabled = useSettingsStore((store) => store.isAutocompleteEnabled)
+  const setAutocompleteEnabled = useSettingsStore((store) => store.setAutocompleteEnabled)
   const selectedKey = isAutocompleteEnabled ? 'enabled' : 'disabled'
 
   return (

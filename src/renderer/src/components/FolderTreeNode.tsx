@@ -16,20 +16,21 @@ import { useSortedFolderEntries } from '@renderer/hooks/useSortedFolderEntries'
 
 export const FolderTreeNode = ({ folder, depth }: { folder: Folder; depth: number }) => {
   const listKey = `${folder.id}:${folder.parentId ?? 'root'}`
-  const { expandedFolderIds, toggleFolderExpanded, ensureExpanded } = useFolderTreeStateStore()
+  const expandedFolderIds = useFolderTreeStateStore((store) => store.expandedFolderIds)
+  const toggleFolderExpanded = useFolderTreeStateStore((store) => store.toggleFolderExpanded)
+  const ensureExpanded = useFolderTreeStateStore((store) => store.ensureExpanded)
   const expandedFolderIdSet = new Set(expandedFolderIds)
   const isExpanded = expandedFolderIdSet.has(folder.id)
 
-  const { currentFolderId, setCurrentFolderId } = useCurrentFolderIdStore()
-  const { setCurrentNoteId } = useCurrentNoteIdStore()
+  const currentFolderId = useCurrentFolderIdStore((store) => store.currentFolderId)
+  const setCurrentFolderId = useCurrentFolderIdStore((store) => store.setCurrentFolderId)
+  const setCurrentNoteId = useCurrentNoteIdStore((store) => store.setCurrentNoteId)
   const { mutate: updateNote } = useUpdateNoteMutation()
   const { mutate: updateFolder } = useUpdateFolderMutation()
 
-  const {
-    dragOverFolderId,
-    setDragOverFolderId,
-    clear: clearAllDragState
-  } = useTreeDragStateStore()
+  const dragOverFolderId = useTreeDragStateStore((store) => store.dragOverFolderId)
+  const setDragOverFolderId = useTreeDragStateStore((store) => store.setDragOverFolderId)
+  const clearAllDragState = useTreeDragStateStore((store) => store.clear)
   const clearDragOverFolder = () => setDragOverFolderId(null)
   const handleDragOverFolder = (id: string) => setDragOverFolderId(id)
 

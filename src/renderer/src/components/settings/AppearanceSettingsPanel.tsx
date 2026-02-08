@@ -5,8 +5,12 @@ import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { LuMonitor, LuMoon, LuSun } from 'react-icons/lu'
 
 export const AppearanceSettingsPanel = () => {
-  const { theme, setTheme, folderSortMode, setFolderSortMode, colorTheme, setColorTheme } =
-    useSettingsStore()
+  const theme = useSettingsStore((store) => store.theme)
+  const setTheme = useSettingsStore((store) => store.setTheme)
+  const folderSortMode = useSettingsStore((store) => store.folderSortMode)
+  const setFolderSortMode = useSettingsStore((store) => store.setFolderSortMode)
+  const colorTheme = useSettingsStore((store) => store.colorTheme)
+  const setColorTheme = useSettingsStore((store) => store.setColorTheme)
 
   const colorThemeHex: Record<ColorTheme, string> = {
     ember: '#b85a44',

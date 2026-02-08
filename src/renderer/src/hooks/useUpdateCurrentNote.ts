@@ -4,7 +4,7 @@ import { useCurrentNoteIdStore } from './stores/useCurrentNodeIdStore'
 import { useCallback } from 'react'
 
 export const useUpdateCurrentNote = () => {
-  const { currentNoteId } = useCurrentNoteIdStore()
+  const currentNoteId = useCurrentNoteIdStore((store) => store.currentNoteId)
   const { mutateAsync: updateNote } = useUpdateNoteMutation()
 
   return useCallback(

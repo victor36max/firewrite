@@ -20,6 +20,10 @@ type SettingsStore = {
   setColorTheme: (theme: ColorTheme) => void
   isAutocompleteEnabled: boolean
   setAutocompleteEnabled: (isEnabled: boolean) => void
+  leftSidebarWidth: number
+  setLeftSidebarWidth: (width: number) => void
+  rightSidebarWidth: number
+  setRightSidebarWidth: (width: number) => void
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -39,7 +43,11 @@ export const useSettingsStore = create<SettingsStore>()(
       colorTheme: 'ember',
       setColorTheme: (theme) => set({ colorTheme: theme }),
       isAutocompleteEnabled: true,
-      setAutocompleteEnabled: (isEnabled) => set({ isAutocompleteEnabled: isEnabled })
+      setAutocompleteEnabled: (isEnabled) => set({ isAutocompleteEnabled: isEnabled }),
+      leftSidebarWidth: 250,
+      setLeftSidebarWidth: (width) => set({ leftSidebarWidth: width }),
+      rightSidebarWidth: 250,
+      setRightSidebarWidth: (width) => set({ rightSidebarWidth: width })
     }),
     {
       name: 'settings',

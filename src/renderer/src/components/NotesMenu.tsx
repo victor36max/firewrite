@@ -25,15 +25,17 @@ export const NotesMenu = (): React.JSX.Element => {
   const [isDeleteNoteDialogOpen, setIsDeleteNoteDialogOpen] = useState(false)
   const [isCreateFolderDialogOpen, setIsCreateFolderDialogOpen] = useState(false)
   const [isDeleteFolderDialogOpen, setIsDeleteFolderDialogOpen] = useState(false)
-  const { currentFolderId, setCurrentFolderId } = useCurrentFolderIdStore()
-  const { currentNoteId, setCurrentNoteId } = useCurrentNoteIdStore()
-  const { expandedFolderIds, ensureExpanded, setExpandedFolderIds } = useFolderTreeStateStore()
-  const {
-    dragOverFolderId,
-    dragOverRoot,
-    setDragOverRoot,
-    clear: clearAllDragState
-  } = useTreeDragStateStore()
+  const currentFolderId = useCurrentFolderIdStore((store) => store.currentFolderId)
+  const setCurrentFolderId = useCurrentFolderIdStore((store) => store.setCurrentFolderId)
+  const currentNoteId = useCurrentNoteIdStore((store) => store.currentNoteId)
+  const setCurrentNoteId = useCurrentNoteIdStore((store) => store.setCurrentNoteId)
+  const expandedFolderIds = useFolderTreeStateStore((store) => store.expandedFolderIds)
+  const ensureExpanded = useFolderTreeStateStore((store) => store.ensureExpanded)
+  const setExpandedFolderIds = useFolderTreeStateStore((store) => store.setExpandedFolderIds)
+  const dragOverFolderId = useTreeDragStateStore((store) => store.dragOverFolderId)
+  const dragOverRoot = useTreeDragStateStore((store) => store.dragOverRoot)
+  const setDragOverRoot = useTreeDragStateStore((store) => store.setDragOverRoot)
+  const clearAllDragState = useTreeDragStateStore((store) => store.clear)
   const { data: noteCount } = useNoteCountQuery()
   const { data: rootData } = useFolderQuery(null)
   const { mutate: createNote } = useCreateNoteMutation({

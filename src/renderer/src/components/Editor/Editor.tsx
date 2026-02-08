@@ -44,7 +44,8 @@ export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
   const { data: noteContent } = useCurrentNoteContent()
   const { showToast } = useToast()
-  const { isAutocompleteEnabled, setAutocompleteEnabled } = useSettingsStore()
+  const isAutocompleteEnabled = useSettingsStore((store) => store.isAutocompleteEnabled)
+  const setAutocompleteEnabled = useSettingsStore((store) => store.setAutocompleteEnabled)
 
   const setEditor = useLexicalEditorStore((store) => store.setEditor)
 

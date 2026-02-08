@@ -1,14 +1,16 @@
 import { cn } from '@renderer/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface DraggableHandleProps {
   targetRef: React.RefObject<HTMLDivElement | null>
   align: 'left' | 'right'
+  onWidthChange?: (width: number) => void
 }
 
-export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
+export const DraggableHandle = ({ targetRef, align, onWidthChange }: DraggableHandleProps) => {
   const [isHovering, setIsHovering] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const latestWidthRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!isDragging) {
@@ -32,6 +34,7 @@ export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
             ? Math.min(maxWidth, Math.max(minWidth, e.clientX))
             : Math.min(maxWidth, Math.max(minWidth, window.innerWidth - e.clientX))
         target.style.width = `${newWidth}px`
+        latestWidthRef.current = newWidth
 
         // TODO: Hacky way to trigger textarea resize
         window.dispatchEvent(new Event('resize'))
@@ -40,6 +43,9 @@ export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
 
     const handleMouseUp = (): void => {
       setIsDragging(false)
+      if (latestWidthRef.current !== null) {
+        onWidthChange?.(latestWidthRef.current)
+      }
     }
 
     document.addEventListener('mousemove', handleMouseMove)
@@ -48,7 +54,7 @@ export const DraggableHandle = ({ targetRef, align }: DraggableHandleProps) => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging, targetRef, align])
+  }, [isDragging, targetRef, align, onWidthChange])
 
   return (
     <div

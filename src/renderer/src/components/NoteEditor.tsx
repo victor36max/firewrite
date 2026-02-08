@@ -14,7 +14,7 @@ const Container = ({ children, className, ...props }: React.HTMLAttributes<HTMLD
 }
 
 export const NoteEditor = (): React.JSX.Element | null => {
-  const { currentNoteId } = useCurrentNoteIdStore()
+  const currentNoteId = useCurrentNoteIdStore((store) => store.currentNoteId)
   return (
     <div className="min-h-full" contentEditable suppressContentEditableWarning>
       <Container

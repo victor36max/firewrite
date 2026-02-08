@@ -20,7 +20,7 @@ export const DeleteNoteDialog = ({ noteId, isOpen, onOpenChange }: DeleteNoteDia
     select: (note) => note.folderId
   })
   const { data: notes } = useNotesQuery(noteFolderId ?? null, { enabled: !!isOpen })
-  const { setCurrentNoteId } = useCurrentNoteIdStore()
+  const setCurrentNoteId = useCurrentNoteIdStore((store) => store.setCurrentNoteId)
   const { showToast } = useToast()
   const { data: title } = useCurrentNote({
     select: (note) => note.title
