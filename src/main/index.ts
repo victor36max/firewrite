@@ -11,7 +11,7 @@ import {
 } from 'electron'
 import { join } from 'path'
 import fs from 'fs'
-import debounce from 'lodash/debounce'
+import { debounce } from 'lodash'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import electronUpdater from 'electron-updater'
