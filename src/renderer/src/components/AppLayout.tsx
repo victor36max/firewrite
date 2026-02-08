@@ -19,24 +19,30 @@ export const AppLayout = ({
   const [isShowRightSideBar, setIsShowRightSideBar] = useState(true)
 
   useHotkeys(
-    ['ctrl+l', 'meta+l'],
+    ['ctrl+shift+backslash', 'meta+shift+backslash'],
     (e) => {
       e.preventDefault()
       e.stopPropagation()
       setIsShowRightSideBar(!isShowRightSideBar)
     },
     {
-      enableOnContentEditable: true
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
     },
     [isShowRightSideBar]
   )
 
   useHotkeys(
-    ['ctrl+h', 'meta+h'],
+    // Some keyboard libs normalize '\' as the named key 'backslash'.
+    ['ctrl+backslash', 'meta+backslash'],
     (e) => {
       e.preventDefault()
       e.stopPropagation()
       setIsShowLeftSideBar(!isShowLeftSideBar)
+    },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: ['input', 'textarea']
     },
     [isShowLeftSideBar]
   )

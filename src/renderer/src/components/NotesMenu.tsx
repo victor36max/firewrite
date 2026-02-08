@@ -103,14 +103,16 @@ export const NotesMenu = (): React.JSX.Element => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="pt-5 pb-2 px-2 flex flex-row justify-between items-center sticky top-0 bg-background">
-        <SettingsDialog />
-        <div className="flex flex-row gap-2">
-          <IconButton onClick={() => setIsCreateFolderDialogOpen(true)} Icon={LuFolderPlus} />
-          <IconButton
-            onClick={() => createNote({ title: '', content: '', folderId: currentFolderId })}
-            Icon={LuPlus}
-          />
+      <div className="pt-5 pb-2 px-2 sticky top-0 bg-background">
+        <div className="flex flex-row justify-between items-center">
+          <SettingsDialog />
+          <div className="flex flex-row gap-2">
+            <IconButton onClick={() => setIsCreateFolderDialogOpen(true)} Icon={LuFolderPlus} />
+            <IconButton
+              onClick={() => createNote({ title: '', content: '', folderId: currentFolderId })}
+              Icon={LuPlus}
+            />
+          </div>
         </div>
       </div>
 
