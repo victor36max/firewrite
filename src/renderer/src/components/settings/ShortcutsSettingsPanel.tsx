@@ -73,7 +73,7 @@ export const ShortcutsSettingsPanel = () => {
             <Row
               title="Delete selected note/folder"
               description="Deletes the currently selected item in the Notes sidebar"
-              macKeys={['⌘', '⌫']}
+              macKeys={['⌘', 'Backspace']}
               winKeys={['Ctrl', 'Backspace']}
             />
           </div>

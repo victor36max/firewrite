@@ -158,6 +158,16 @@ export const Chat = (): React.JSX.Element => {
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex-1 overflow-y-auto gap-4 flex flex-col py-4" ref={scrollViewRef}>
+        {messages.length === 0 && !isResponding && (
+          <div className="px-6 flex-1 flex flex-col items-center justify-center text-center">
+            <div className="text-sm font-medium">Ask a question</div>
+            <div className="text-sm text-muted-foreground mt-1 max-w-xs">
+              {isLlmConfigured
+                ? 'Use the input below to ask about the current note.'
+                : 'Configure an LLM in Settings first, then ask about the current note.'}
+            </div>
+          </div>
+        )}
         {messages.map(renderMessage)}
         {isResponding && (
           <div className="px-6 flex flex-row justify-start">
