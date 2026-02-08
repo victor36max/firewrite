@@ -280,6 +280,11 @@ export const SelectionMenuPlugin = ({
             return
           }
 
+          if (nativeSelection.rangeCount === 0) {
+            setIsOpen(false)
+            return
+          }
+
           const nativeRange = nativeSelection.getRangeAt(0)
 
           const selectionRect = nativeRange.getBoundingClientRect()

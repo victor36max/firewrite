@@ -47,7 +47,7 @@ export const TitleInput = (): React.JSX.Element | null => {
 
     const currentRef = ref.current
 
-    currentRef.innerHTML = title || ''
+    currentRef.textContent = title || ''
 
     const handleInput = (e: Event) => {
       const currentTitle = (e.target as HTMLDivElement).textContent || ''

@@ -42,16 +42,12 @@ export const Chat = (): React.JSX.Element => {
         messages: newMessages
       })
     },
-    onSuccess: async ({ textStream }) => {
-      const currentMessages = [...messages]
+    onSuccess: async ({ textStream }, newMessages) => {
       const messageId = crypto.randomUUID()
       let currentMessage = ''
       for await (const chunk of textStream) {
         currentMessage += chunk
-        setMessages([
-          ...currentMessages,
-          { id: messageId, role: 'assistant', content: currentMessage }
-        ])
+        setMessages([...newMessages, { id: messageId, role: 'assistant', content: currentMessage }])
       }
     },
     onError: (error) => {

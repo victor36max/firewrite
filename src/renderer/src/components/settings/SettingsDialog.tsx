@@ -50,9 +50,14 @@ export const SettingsDialog = () => {
     }
 
     // On macOS, the Settings menu item is in the main menu, so we rely on its shortcut to open the settings dialog
-    window.electron.ipcRenderer.on('open-settings', () => {
+    const handler = () => {
       setIsOpen(true)
-    })
+    }
+    const removeListener = window.electron.ipcRenderer.on('open-settings', handler)
+
+    return () => {
+      removeListener()
+    }
   }, [platform])
 
   useHotkeys(
