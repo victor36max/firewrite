@@ -70,9 +70,15 @@ const ImprovementSuggestionMenu = ({
   onPressMenuItem: (suggestion: string) => void
   onClose: () => void
 }) => {
-  useHotkeys('esc', () => {
-    onClose()
-  })
+  useHotkeys(
+    'esc',
+    () => {
+      onClose()
+    },
+    {
+      enableOnContentEditable: true
+    }
+  )
 
   return (
     <Menu

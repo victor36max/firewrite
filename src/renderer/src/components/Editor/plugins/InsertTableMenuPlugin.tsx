@@ -2,13 +2,14 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { mergeRegister } from '@lexical/utils'
 import { cn } from '@renderer/utils'
 import { INSERT_TABLE_COMMAND } from '@lexical/table'
-import { $getSelection, $isRangeSelection, getDOMSelection } from 'lexical'
+import { $getSelection, $isRangeSelection } from 'lexical'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { OPEN_INSERT_TABLE_MENU_COMMAND } from '@renderer/components/Editor/plugins/table-commands'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 import { LuX } from 'react-icons/lu'
+import { Button } from 'react-aria-components'
 
 interface InsertTableMenuPluginProps {
   anchorElement: HTMLDivElement | null
@@ -36,16 +37,18 @@ export const InsertTableMenuPlugin = ({
     })
   }, [maxColumns, maxRows])
 
-  const close = useCallback(() => {
-    setIsOpen(false)
-  }, [])
-
   useHotkeys(
     'esc',
-    () => {
-      if (isOpen) close()
+    (e) => {
+      if (!isOpen) return
+      e.preventDefault()
+      e.stopPropagation()
+      setIsOpen(false)
     },
-    [isOpen, close]
+    {
+      enableOnContentEditable: true
+    },
+    [setIsOpen, isOpen]
   )
 
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
@@ -60,26 +63,19 @@ export const InsertTableMenuPlugin = ({
         setIsOpen(false)
         return
       }
+      const selectionNode = selection.anchor.getNode()
 
-      const nativeSelection = getDOMSelection(editor._window)
-      if (!nativeSelection) {
+      if (!selectionNode) {
         setIsOpen(false)
         return
       }
-
-      const nativeRange = nativeSelection.rangeCount ? nativeSelection.getRangeAt(0) : null
-      if (!nativeRange) {
+      const selectionElement = editor.getElementByKey(selectionNode.getKey())
+      if (!selectionElement) {
         setIsOpen(false)
         return
       }
-
-      const selectionRect = nativeRange.getBoundingClientRect()
-      // Collapsed ranges sometimes return a 0x0 rect; prefer the first client rect when available.
-      const firstClientRect = nativeRange.getClientRects()?.[0]
-      const caretRect =
-        firstClientRect && (firstClientRect.width !== 0 || firstClientRect.height !== 0)
-          ? firstClientRect
-          : selectionRect
+      const selectionRect = selectionElement.getBoundingClientRect()
+      const caretRect = selectionRect
       const anchorRect = anchorElement.getBoundingClientRect()
       const menuWidth = menuRef.current.clientWidth
       const menuHeight = menuRef.current.clientHeight
@@ -103,9 +99,9 @@ export const InsertTableMenuPlugin = ({
         columns: String(columns),
         includeHeaders: { rows: true, columns: false }
       })
-      close()
+      setIsOpen(false)
     },
-    [close, editor]
+    [editor, setIsOpen]
   )
 
   useEffect(() => {
@@ -156,7 +152,13 @@ export const InsertTableMenuPlugin = ({
           <div className="text-sm text-muted-foreground">
             {size.rows} x {size.columns}
           </div>
-          <IconButton type="button" Icon={LuX} onPress={close} variant="default" size="sm" />
+          <IconButton
+            type="button"
+            Icon={LuX}
+            onPress={() => setIsOpen(false)}
+            variant="default"
+            size="sm"
+          />
         </div>
 
         <div className="rounded-md bg-muted-light p-2">
@@ -164,7 +166,7 @@ export const InsertTableMenuPlugin = ({
             {cells.map(({ r, c }) => {
               const isHighlighted = r <= size.rows && c <= size.columns
               return (
-                <button
+                <Button
                   key={`${r}-${c}`}
                   type="button"
                   className={cn(
