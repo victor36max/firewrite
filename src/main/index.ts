@@ -138,6 +138,20 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  // Zoom-out accelerator can be dropped by the menu on some keyboard layouts.
+  // This fallback ensures Cmd/Ctrl + '-' (or '_') still reduces zoom.
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return
+    const isCmdOrCtrl = input.meta || input.control
+    if (!isCmdOrCtrl) return
+    if (input.key !== '-' && input.key !== '_' && input.key !== 'Minus') return
+
+    event.preventDefault()
+    const currentZoom = mainWindow?.webContents.getZoomLevel() ?? 0
+    const nextZoom = Math.max(-3, currentZoom - 0.5)
+    mainWindow?.webContents.setZoomLevel(nextZoom)
+  })
+
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
