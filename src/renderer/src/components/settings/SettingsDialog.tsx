@@ -15,6 +15,7 @@ import { LlmSettingsPanel } from './LlmSettingsPanel'
 import { ToolsSettingsPanel } from './ToolsSettingsPanel'
 import { AppearanceSettingsPanel } from './AppearanceSettingsPanel'
 import { ShortcutsSettingsPanel } from './ShortcutsSettingsPanel'
+import { EditorSettingsPanel } from './EditorSettingsPanel'
 import { usePlatformQuery } from '@renderer/hooks/queries/usePlatformQuery'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -104,6 +105,7 @@ export const SettingsDialog = () => {
                 }}
               >
                 <SettingCategoryMenuItem id="llm" title="LLM" />
+                <SettingCategoryMenuItem id="editor" title="Editor" />
                 <SettingCategoryMenuItem id="tools" title="Tools" />
                 <SettingCategoryMenuItem id="appearance" title="Appearance" />
                 <SettingCategoryMenuItem id="shortcuts" title="Shortcuts" />
@@ -111,6 +113,7 @@ export const SettingsDialog = () => {
               <div className="flex-1 border-l border-muted overflow-y-auto">
                 {settingCategoryId === 'appearance' && <AppearanceSettingsPanel />}
                 {settingCategoryId === 'llm' && <LlmSettingsPanel />}
+                {settingCategoryId === 'editor' && <EditorSettingsPanel />}
                 {settingCategoryId === 'tools' && <ToolsSettingsPanel />}
                 {settingCategoryId === 'shortcuts' && <ShortcutsSettingsPanel />}
               </div>

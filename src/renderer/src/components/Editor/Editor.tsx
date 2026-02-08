@@ -36,12 +36,36 @@ import { TableActionMenuPlugin } from './plugins/TableActionMenuPlugin'
 import { InsertTableMenuPlugin } from './plugins/InsertTableMenuPlugin'
 import { TableCellActionNode } from './nodes/TableCellActionNode'
 import { TableCellActionPlugin } from './plugins/TableCellActionPlugin'
+import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useToast } from '@renderer/hooks/useToast'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
   const { data: noteContent } = useCurrentNoteContent()
+  const { showToast } = useToast()
+  const { isAutocompleteEnabled, setAutocompleteEnabled } = useSettingsStore()
 
   const setEditor = useLexicalEditorStore((store) => store.setEditor)
+
+  useHotkeys(
+    ['ctrl+shift+a', 'meta+shift+a'],
+    (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const nextValue = !isAutocompleteEnabled
+      setAutocompleteEnabled(nextValue)
+      showToast({
+        title: `Autocomplete ${nextValue ? 'enabled' : 'disabled'}`,
+        variant: 'success'
+      })
+    },
+    {
+      enableOnContentEditable: true
+    },
+    [isAutocompleteEnabled, setAutocompleteEnabled, showToast]
+  )
 
   if (!noteContent) {
     return null
@@ -149,7 +173,7 @@ export const Editor = (): React.JSX.Element | null => {
       <TabIndentationPlugin />
       {/* <TreeViewPlugin /> */}
       <SlashMenuPlugin />
-      <AutocompletePlugin />
+      {isAutocompleteEnabled && <AutocompletePlugin />}
       <SelectionMenuPlugin anchorElement={anchorElement} />
       <InsertTableMenuPlugin anchorElement={anchorElement} />
       <TableCellActionPlugin />

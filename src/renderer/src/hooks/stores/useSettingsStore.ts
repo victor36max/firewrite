@@ -18,6 +18,8 @@ type SettingsStore = {
   setFolderSortMode: (mode: 'updated' | 'alpha') => void
   colorTheme: ColorTheme
   setColorTheme: (theme: ColorTheme) => void
+  isAutocompleteEnabled: boolean
+  setAutocompleteEnabled: (isEnabled: boolean) => void
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -35,7 +37,9 @@ export const useSettingsStore = create<SettingsStore>()(
       folderSortMode: 'updated',
       setFolderSortMode: (mode) => set({ folderSortMode: mode }),
       colorTheme: 'ember',
-      setColorTheme: (theme) => set({ colorTheme: theme })
+      setColorTheme: (theme) => set({ colorTheme: theme }),
+      isAutocompleteEnabled: true,
+      setAutocompleteEnabled: (isEnabled) => set({ isAutocompleteEnabled: isEnabled })
     }),
     {
       name: 'settings',

@@ -58,6 +58,12 @@ export const ShortcutsSettingsPanel = () => {
               macKeys={['⌘', 'Shift', '\\']}
               winKeys={['Ctrl', 'Shift', '\\']}
             />
+            <Row
+              title="Toggle autocomplete"
+              description="Enable or disable inline editor suggestions"
+              macKeys={['⌘', 'Shift', 'A']}
+              winKeys={['Ctrl', 'Shift', 'A']}
+            />
           </div>
         </div>
 
