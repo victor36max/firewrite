@@ -6,9 +6,12 @@ import {
   safeStorage,
   nativeTheme,
   Menu,
-  MenuItem
+  MenuItem,
+  screen
 } from 'electron'
 import { join } from 'path'
+import fs from 'fs'
+import debounce from 'lodash/debounce'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import electronUpdater from 'electron-updater'
@@ -17,11 +20,100 @@ const { autoUpdater } = electronUpdater
 
 let mainWindow: BrowserWindow | null = null
 
+type WindowState = {
+  bounds: { x: number; y: number; width: number; height: number }
+  isMaximized: boolean
+  isFullScreen: boolean
+}
+
+const WINDOW_STATE_FILENAME = 'window-state.json'
+const WINDOW_STATE_SAVE_DEBOUNCE_MS = 300
+
+const getWindowStatePath = () => join(app.getPath('userData'), WINDOW_STATE_FILENAME)
+
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+const isValidBounds = (
+  bounds: WindowState['bounds'] | undefined
+): bounds is WindowState['bounds'] =>
+  !!bounds &&
+  isFiniteNumber(bounds.x) &&
+  isFiniteNumber(bounds.y) &&
+  isFiniteNumber(bounds.width) &&
+  isFiniteNumber(bounds.height) &&
+  bounds.width > 0 &&
+  bounds.height > 0
+
+const toBoolean = (value: unknown) => value === true
+
+const readWindowState = (): WindowState | null => {
+  try {
+    const raw = fs.readFileSync(getWindowStatePath(), 'utf-8')
+    const state = JSON.parse(raw) as WindowState
+    if (!isValidBounds(state?.bounds)) return null
+    return {
+      bounds: state.bounds,
+      isMaximized: toBoolean(state?.isMaximized),
+      isFullScreen: toBoolean(state?.isFullScreen)
+    }
+  } catch {
+    return null
+  }
+}
+
+const isBoundsVisible = (bounds: WindowState['bounds']) => {
+  if (!isValidBounds(bounds)) return false
+  try {
+    const { x, y, width, height } = bounds
+    const display = screen.getDisplayMatching(bounds)
+    const { workArea } = display
+    const withinHorizontal = x + width > workArea.x && x < workArea.x + workArea.width
+    const withinVertical = y + height > workArea.y && y < workArea.y + workArea.height
+    return withinHorizontal && withinVertical
+  } catch {
+    return false
+  }
+}
+
+const clampBoundsToDisplay = (bounds: WindowState['bounds']) => {
+  const display = (() => {
+    try {
+      return screen.getDisplayMatching(bounds)
+    } catch {
+      return screen.getPrimaryDisplay()
+    }
+  })()
+  const { workArea } = display
+  const width = Math.min(bounds.width, workArea.width)
+  const height = Math.min(bounds.height, workArea.height)
+  const x = Math.min(Math.max(bounds.x, workArea.x), workArea.x + workArea.width - width)
+  const y = Math.min(Math.max(bounds.y, workArea.y), workArea.y + workArea.height - height)
+  return { x, y, width, height }
+}
+
+const writeWindowState = (window: BrowserWindow) => {
+  const isMaximized = window.isMaximized()
+  const isFullScreen = window.isFullScreen()
+  const bounds = isMaximized || isFullScreen ? window.getNormalBounds() : window.getBounds()
+  const state: WindowState = { bounds, isMaximized, isFullScreen }
+  try {
+    fs.writeFileSync(getWindowStatePath(), JSON.stringify(state))
+  } catch (error) {
+    console.warn('Failed to persist window state', error)
+  }
+}
+
 function createWindow() {
+  const savedState = readWindowState()
+  const shouldRestoreBounds = savedState && isBoundsVisible(savedState.bounds)
+  const restoredBounds =
+    savedState && shouldRestoreBounds ? clampBoundsToDisplay(savedState.bounds) : null
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: restoredBounds ? restoredBounds.width : 900,
+    height: restoredBounds ? restoredBounds.height : 670,
+    ...(restoredBounds ? { x: restoredBounds.x, y: restoredBounds.y } : {}),
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -32,6 +124,12 @@ function createWindow() {
   })
 
   mainWindow.on('ready-to-show', () => {
+    if (savedState?.isMaximized) {
+      mainWindow?.maximize()
+    }
+    if (savedState?.isFullScreen) {
+      mainWindow?.setFullScreen(true)
+    }
     mainWindow?.show()
   })
 
@@ -47,6 +145,15 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  const saveState = debounce(() => {
+    if (!mainWindow) return
+    writeWindowState(mainWindow)
+  }, WINDOW_STATE_SAVE_DEBOUNCE_MS)
+
+  mainWindow.on('resize', saveState)
+  mainWindow.on('move', saveState)
+  mainWindow.on('close', saveState)
 }
 
 const customizeMenu = () => {
