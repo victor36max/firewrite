@@ -5,9 +5,10 @@ import {
   DOMExportOutput,
   NodeKey,
   SerializedLexicalNode,
-  Spread
+  Spread,
+  $applyNodeReplacement
 } from 'lexical'
-import { Fragment } from 'react/jsx-runtime'
+import { ImageComponent } from './ImageComponent'
 
 export type SerializedImageNode = Spread<
   {
@@ -30,7 +31,7 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
   }
 
   static clone(node: ImageNode): ImageNode {
-    return new ImageNode(node.__url, node.__altText, node.__width, node.__height)
+    return new ImageNode(node.__url, node.__altText, node.__width, node.__height, node.__key)
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
@@ -65,6 +66,14 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
     this.__altText = altText
     this.__width = width
     this.__height = height
+  }
+
+  getUrl(): string | null {
+    return this.__url
+  }
+
+  getAltText(): string | null {
+    return this.__altText
   }
 
   exportJSON(): SerializedImageNode {
@@ -109,6 +118,30 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
   }
 
   decorate(): React.JSX.Element {
-    return <Fragment />
+    if (!this.__url) {
+      return <></>
+    }
+    return (
+      <ImageComponent
+        nodeKey={this.getKey()}
+        src={this.__url}
+        altText={this.__altText}
+        width={this.__width}
+        height={this.__height}
+      />
+    )
   }
+}
+
+export const $createImageNode = (
+  url: string,
+  altText: string | null = null,
+  width: number | null = null,
+  height: number | null = null
+): ImageNode => {
+  return $applyNodeReplacement(new ImageNode(url, altText, width, height))
+}
+
+export const $isImageNode = (node: unknown): node is ImageNode => {
+  return node instanceof ImageNode
 }

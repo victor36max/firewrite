@@ -7,7 +7,7 @@ import {
 } from 'lexical'
 import { create } from 'zustand'
 import { $convertToMarkdownString } from '@lexical/markdown'
-import { DEFAULT_TRANSFORMERS } from '@lexical/react/LexicalMarkdownShortcutPlugin'
+import { MARKDOWN_TRANSFORMERS } from '@renderer/components/Editor/markdownTransformers'
 
 export const useLexicalEditorStore = create<{
   editor: LexicalEditor | null
@@ -38,7 +38,7 @@ export const useLexicalEditorStore = create<{
 
     return new Promise((resolve) => {
       editor.read(() => {
-        resolve($convertToMarkdownString(DEFAULT_TRANSFORMERS))
+        resolve($convertToMarkdownString(MARKDOWN_TRANSFORMERS))
       })
     })
   },

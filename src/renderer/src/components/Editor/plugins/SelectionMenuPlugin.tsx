@@ -40,7 +40,7 @@ import { useSettingsStore, selectIfLlmConfigured } from '@renderer/hooks/stores/
 import { useToast } from '@renderer/hooks/useToast'
 import { $convertToMarkdownString } from '@lexical/markdown'
 import { $isCodeHighlightNode, $isCodeNode } from '@lexical/code'
-import { DEFAULT_TRANSFORMERS } from '@lexical/react/LexicalMarkdownShortcutPlugin'
+import { MARKDOWN_TRANSFORMERS } from '@renderer/components/Editor/markdownTransformers'
 import { trackEvent } from '@renderer/services/tracking'
 
 interface SelectionMenuPluginProps {
@@ -176,7 +176,7 @@ export const SelectionMenuPlugin = ({
 
       improve({
         title: title || '',
-        content: $convertToMarkdownString(DEFAULT_TRANSFORMERS, rootNode),
+        content: $convertToMarkdownString(MARKDOWN_TRANSFORMERS, rootNode),
         paragraph: topLevelNode ? topLevelNode.getTextContent() : '',
         selection: selectionText
       })
