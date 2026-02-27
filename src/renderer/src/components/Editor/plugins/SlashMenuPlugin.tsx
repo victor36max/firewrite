@@ -28,6 +28,7 @@ import {
   LuHeading1,
   LuHeading2,
   LuHeading3,
+  LuImage,
   LuList,
   LuListChecks,
   LuListOrdered,
@@ -39,6 +40,7 @@ import {
 import { $createCodeNode } from '@lexical/code'
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
 import { OPEN_INSERT_TABLE_MENU_COMMAND } from '@renderer/components/Editor/plugins/table-commands'
+import { OPEN_INSERT_IMAGE_DIALOG_COMMAND } from '@renderer/components/Editor/plugins/image-commands'
 
 class SlashMenuOption extends MenuOption {
   title: string
@@ -67,6 +69,7 @@ const getMenuOptions = (
   editor: LexicalEditor,
   actions: {
     openInsertTableMenu: () => void
+    openInsertImageDialog: () => void
   }
 ): Array<SlashMenuOption> => {
   return [
@@ -136,6 +139,11 @@ const getMenuOptions = (
       keywords: ['table', 'grid'],
       onSelect: () => actions.openInsertTableMenu()
     }),
+    new SlashMenuOption('Image', {
+      icon: <LuImage />,
+      keywords: ['image', 'photo', 'picture', 'file', 'url', 'link'],
+      onSelect: () => actions.openInsertImageDialog()
+    }),
     new SlashMenuOption('Code', {
       icon: <LuCode />,
       keywords: ['code'],
@@ -169,6 +177,9 @@ export const SlashMenuPlugin = (): React.JSX.Element => {
       getMenuOptions(editor, {
         openInsertTableMenu: () => {
           editor.dispatchCommand(OPEN_INSERT_TABLE_MENU_COMMAND, undefined)
+        },
+        openInsertImageDialog: () => {
+          editor.dispatchCommand(OPEN_INSERT_IMAGE_DIALOG_COMMAND, undefined)
         }
       }),
     [editor]

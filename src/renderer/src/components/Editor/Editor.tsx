@@ -5,10 +5,7 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
-import {
-  MarkdownShortcutPlugin,
-  DEFAULT_TRANSFORMERS
-} from '@lexical/react/LexicalMarkdownShortcutPlugin'
+import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin'
 import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { ListNode, ListItemNode } from '@lexical/list'
 import { TableNode, TableCellNode, TableRowNode } from '@lexical/table'
@@ -36,9 +33,12 @@ import { TableActionMenuPlugin } from './plugins/TableActionMenuPlugin'
 import { InsertTableMenuPlugin } from './plugins/InsertTableMenuPlugin'
 import { TableCellActionNode } from './nodes/TableCellActionNode'
 import { TableCellActionPlugin } from './plugins/TableCellActionPlugin'
+import { ImageNode } from './nodes/ImageNode'
+import { InsertImagePlugin } from './plugins/InsertImagePlugin'
 import { useSettingsStore } from '@renderer/hooks/stores/useSettingsStore'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useToast } from '@renderer/hooks/useToast'
+import { MARKDOWN_TRANSFORMERS } from './markdownTransformers'
 
 export const Editor = (): React.JSX.Element | null => {
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null)
@@ -93,7 +93,8 @@ export const Editor = (): React.JSX.Element | null => {
           ListItemNode,
           QuoteNode,
           AutocompleteNode,
-          CodeHighlightNode
+          CodeHighlightNode,
+          ImageNode
         ],
         theme: {
           list: {
@@ -167,7 +168,7 @@ export const Editor = (): React.JSX.Element | null => {
       />
       <SavePlugin />
       <HistoryPlugin />
-      <MarkdownShortcutPlugin transformers={DEFAULT_TRANSFORMERS} />
+      <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
       <ListPlugin hasStrictIndent />
       <CheckListPlugin />
       <TablePlugin />
@@ -177,6 +178,7 @@ export const Editor = (): React.JSX.Element | null => {
       {isAutocompleteEnabled && <AutocompletePlugin />}
       <SelectionMenuPlugin anchorElement={anchorElement} />
       <InsertTableMenuPlugin anchorElement={anchorElement} />
+      <InsertImagePlugin />
       <TableCellActionPlugin />
       <TableActionMenuPlugin anchorElement={anchorElement} />
       <LinkPlugin />
