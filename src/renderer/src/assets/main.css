@@ -240,8 +240,8 @@ div[contenteditable] {
     }
 
     /* Don't rely on thead/tbody/tfoot existing (Lexical may omit them, or insert colgroup). */
-    tr:first-of-type>th,
-    tr:first-of-type>td {
+    tr:first-of-type > th,
+    tr:first-of-type > td {
       @apply bg-muted-light text-sm font-semibold text-foreground;
     }
 
@@ -298,7 +298,7 @@ div[contenteditable] {
   }
 
   /* Code blocks */
-  .fw-content-root>code {
+  .fw-content-root > code {
     @apply my-4 text-sm bg-code-background text-code-foreground block rounded-md p-4 caret-white;
 
     .fw-attr {
