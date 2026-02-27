@@ -11,7 +11,7 @@ import {
   Popover,
   TextField
 } from 'react-aria-components'
-import { LuChevronDown, LuTrash, LuType } from 'react-icons/lu'
+import { LuChevronDown, LuImageOff, LuTrash, LuType } from 'react-icons/lu'
 import { Button } from '@renderer/components/primitives/Button'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 import { Input } from '@renderer/components/primitives/Input'
@@ -22,7 +22,6 @@ import { $getNodeByKey } from 'lexical'
 import { useState } from 'react'
 import { cn } from '@renderer/utils'
 import { $isImageNode } from './ImageNode'
-import { useToast } from '@renderer/hooks/useToast'
 
 type ImageComponentProps = {
   src: string
@@ -35,7 +34,8 @@ type ImageComponentProps = {
 export const ImageComponent = ({ src, altText, width, height, nodeKey }: ImageComponentProps) => {
   const [editor] = useLexicalComposerContext()
   const [isAltDialogOpen, setIsAltDialogOpen] = useState(false)
-  const { showToast } = useToast()
+  const [hasError, setHasError] = useState(false)
+  const [retryKey, setRetryKey] = useState(0)
 
   const updateAltText = (nextAltText: string) => {
     editor.update(() => {
@@ -98,18 +98,38 @@ export const ImageComponent = ({ src, altText, width, height, nodeKey }: ImageCo
           </Popover>
         </MenuTrigger>
       </div>
-      <img
-        src={src}
-        alt={altText || ''}
-        width={width ?? undefined}
-        height={height ?? undefined}
-        className="max-w-full h-auto"
-        onError={() => {
-          showToast({ title: 'Failed to load image', variant: 'error' })
-          deleteImage()
-        }}
-      />
-      {altText && <p className="text-sm text-muted-foreground italic">{altText}</p>}
+      {hasError ? (
+        <div
+          className="font-sans flex flex-col items-center justify-center gap-3 w-full border border-dashed border-muted rounded-lg bg-muted/30 text-muted-foreground"
+          style={{
+            height: height ? `${height}px` : '200px',
+            maxWidth: width ? `${width}px` : '100%'
+          }}
+        >
+          <LuImageOff className="w-6 h-6" />
+          <span className="text-sm">Failed to load image</span>
+          <Button
+            variant="secondary"
+            onPress={() => {
+              setHasError(false)
+              setRetryKey((k) => k + 1)
+            }}
+          >
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <img
+          key={retryKey}
+          src={src}
+          alt={altText || ''}
+          width={width ?? undefined}
+          height={height ?? undefined}
+          className="max-w-full h-auto"
+          onError={() => setHasError(true)}
+        />
+      )}
+      {altText && !hasError && <p className="text-sm text-muted-foreground italic">{altText}</p>}
       <DialogTrigger isOpen={isAltDialogOpen} onOpenChange={setIsAltDialogOpen}>
         <span className="hidden" />
         <ModalOverlay

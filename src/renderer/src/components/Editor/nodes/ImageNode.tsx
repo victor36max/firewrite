@@ -151,6 +151,7 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
     }
     return (
       <ImageComponent
+        key={this.__url}
         nodeKey={this.getKey()}
         src={this.__url}
         altText={this.__altText}
