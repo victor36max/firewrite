@@ -76,6 +76,34 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
     return this.__altText
   }
 
+  getWidth(): number | null {
+    return this.__width
+  }
+
+  getHeight(): number | null {
+    return this.__height
+  }
+
+  setUrl(url: string): void {
+    const writable = this.getWritable()
+    writable.__url = url
+  }
+
+  setAltText(altText: string | null): void {
+    const writable = this.getWritable()
+    writable.__altText = altText
+  }
+
+  setWidth(width: number | null): void {
+    const writable = this.getWritable()
+    writable.__width = width
+  }
+
+  setHeight(height: number | null): void {
+    const writable = this.getWritable()
+    writable.__height = height
+  }
+
   exportJSON(): SerializedImageNode {
     return {
       ...super.exportJSON(),

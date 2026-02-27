@@ -21,6 +21,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $getNodeByKey } from 'lexical'
 import { useState } from 'react'
 import { cn } from '@renderer/utils'
+import { $isImageNode } from './ImageNode'
+import { useToast } from '@renderer/hooks/useToast'
 
 type ImageComponentProps = {
   src: string
@@ -33,14 +35,13 @@ type ImageComponentProps = {
 export const ImageComponent = ({ src, altText, width, height, nodeKey }: ImageComponentProps) => {
   const [editor] = useLexicalComposerContext()
   const [isAltDialogOpen, setIsAltDialogOpen] = useState(false)
+  const { showToast } = useToast()
 
   const updateAltText = (nextAltText: string) => {
     editor.update(() => {
       const node = $getNodeByKey(nodeKey)
-      if (!node) return
-      if ('__altText' in node) {
-        ;(node as { __altText: string | null }).__altText = nextAltText || null
-      }
+      if (!$isImageNode(node)) return
+      node.setAltText(nextAltText || null)
     })
   }
 
@@ -103,6 +104,10 @@ export const ImageComponent = ({ src, altText, width, height, nodeKey }: ImageCo
         width={width ?? undefined}
         height={height ?? undefined}
         className="max-w-full h-auto"
+        onError={() => {
+          showToast({ title: 'Failed to load image', variant: 'error' })
+          deleteImage()
+        }}
       />
       {altText && <p className="text-sm text-muted-foreground italic">{altText}</p>}
       <DialogTrigger isOpen={isAltDialogOpen} onOpenChange={setIsAltDialogOpen}>

@@ -19,10 +19,12 @@ import {
 } from 'react-aria-components'
 import { IconButton } from '@renderer/components/primitives/IconButton'
 import { LuImage, LuX } from 'react-icons/lu'
+import { isValidUrl } from '@renderer/utils'
 
 export const InsertImagePlugin = (): React.JSX.Element | null => {
   const [editor] = useLexicalComposerContext()
   const [isOpen, setIsOpen] = useState(false)
+  const [urlError, setUrlError] = useState<string | null>(null)
 
   const insertImage = useCallback(
     (url: string, altText: string | null) => {
@@ -45,6 +47,7 @@ export const InsertImagePlugin = (): React.JSX.Element | null => {
         OPEN_INSERT_IMAGE_DIALOG_COMMAND,
         () => {
           setIsOpen(true)
+          setUrlError(null)
           return true
         },
         COMMAND_PRIORITY_HIGH
@@ -52,12 +55,16 @@ export const InsertImagePlugin = (): React.JSX.Element | null => {
     )
   }, [editor])
 
-  if (!editor) {
-    return null
-  }
-
   return (
-    <DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+    <DialogTrigger
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open)
+        if (!open) {
+          setUrlError(null)
+        }
+      }}
+    >
       <span className="hidden" />
       <ModalOverlay
         isDismissable
@@ -78,21 +85,36 @@ export const InsertImagePlugin = (): React.JSX.Element | null => {
               <Form
                 onSubmit={(e) => {
                   e.preventDefault()
+                  setUrlError(null)
                   const formData = new FormData(e.currentTarget)
                   const url = formData.get('imageUrl')
                   const alt = formData.get('altText')
                   if (typeof url !== 'string' || url.trim().length === 0) {
+                    setUrlError('Image URL is required')
                     return
                   }
-                  insertImage(url.trim(), typeof alt === 'string' ? alt : null)
+                  const trimmedUrl = url.trim()
+                  if (!isValidUrl(trimmedUrl)) {
+                    setUrlError('Please enter a valid URL')
+                    return
+                  }
+                  insertImage(trimmedUrl, typeof alt === 'string' ? alt : null)
                   setIsOpen(false)
                 }}
                 className="space-y-3"
               >
-                <TextField name="imageUrl" isRequired className="flex flex-col gap-2">
+                <TextField
+                  name="imageUrl"
+                  isRequired
+                  className="flex flex-col gap-2"
+                  isInvalid={!!urlError}
+                >
                   <Label>Image URL</Label>
-                  <Input placeholder="https://example.com/image.png" />
-                  <FieldError />
+                  <Input
+                    placeholder="https://example.com/image.png"
+                    onChange={() => setUrlError(null)}
+                  />
+                  <FieldError>{urlError}</FieldError>
                 </TextField>
                 <TextField name="altText" className="flex flex-col gap-2">
                   <Label>Alt text (optional)</Label>
